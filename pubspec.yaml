@@ -100,7 +100,7 @@ flutter_launcher_icons:
   image_path_android: "assets/icon_full.png"
   adaptive_icon_background: "#EDE07A"
   adaptive_icon_foreground: "assets/icon_transparent.png"
-  adaptive_icon_foreground_inset: 12 # only available for Android 8.0 devices and above
+  adaptive_icon_foreground_inset: 10 # only available for Android 8.0 devices and above
   # adaptive_icon_monochrome: "assets/icon/monochrome.png" # only available for Android 13 devices and above
 
   # windows:
