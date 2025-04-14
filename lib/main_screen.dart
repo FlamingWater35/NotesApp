@@ -21,8 +21,10 @@ class _MainScreenState extends State<MainScreen> {
   List<Map<String, String>> _notes = [];
   late List<Widget> _widgetOptions;
   bool _isLoading = true;
+  bool _isNavBarVisible = true;
 
   static const String _notesKey = 'notes_data';
+  static const Duration _kTransitionDuration = Duration(milliseconds: 400);
 
   @override
   void initState() {
@@ -134,6 +136,11 @@ class _MainScreenState extends State<MainScreen> {
   void _navigateToAddNote() async {
     _log.info("Navigating to Add Note screen");
     FocusScope.of(context).unfocus();
+
+    if(mounted) {
+      setState(() => _isNavBarVisible = false);
+    }
+
     final result = await Navigator.push<Map<String, String>>(
       context,
       PageRouteBuilder(
@@ -144,7 +151,6 @@ class _MainScreenState extends State<MainScreen> {
           const Curve curve = Curves.easeInOut; // Animation curve
 
           var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
           var offsetAnimation = animation.drive(tween);
 
           return SlideTransition(
@@ -152,9 +158,13 @@ class _MainScreenState extends State<MainScreen> {
             child: child,
           );
         },
-        transitionDuration: const Duration(milliseconds: 400),
+        transitionDuration: _kTransitionDuration,
       ),
     );
+
+    if(mounted) {
+      setState(() => _isNavBarVisible = true);
+    }
 
     if (result != null && mounted) {
       _log.info("Received new note data from AddNoteScreen.");
@@ -175,6 +185,10 @@ class _MainScreenState extends State<MainScreen> {
     _log.info("Navigating to Edit Note screen for ID: ${noteToEdit['id']} with tag: $heroTag");
     FocusScope.of(context).unfocus();
 
+    if(mounted) {
+      setState(() => _isNavBarVisible = false);
+    }
+
     final result = await Navigator.push<Map<String, String>>(
       context,
       MaterialPageRoute(
@@ -184,6 +198,10 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
+
+    if(mounted) {
+      setState(() => _isNavBarVisible = true);
+    }
 
     if (result != null && mounted) {
       _log.info("Received updated note data from EditNoteScreen for ID: ${result['id']}");
@@ -209,6 +227,8 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     _log.finer("Building MainScreen widget");
+    final navBarOffset = _isNavBarVisible ? Offset.zero : const Offset(0.0, 1.1);
+
     return Scaffold(
       resizeToAvoidBottomInset: false, // Prevent resize on keyboard
       body: _isLoading
@@ -224,22 +244,29 @@ class _MainScreenState extends State<MainScreen> {
               child: const Icon(Icons.add),
             )
           : null,
-      bottomNavigationBar: NavigationBar(
-        destinations: const <NavigationDestination>[
-          NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.settings),
-            icon: Icon(Icons.settings_outlined),
-            label: 'Settings',
-          ),
-        ],
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onItemTapped,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      bottomNavigationBar: AnimatedSlide(
+        duration: _kTransitionDuration,
+        offset: navBarOffset,
+        curve: Curves.easeInOut, // Match page transition curve
+        child: NavigationBar(
+          destinations: const <NavigationDestination>[
+            NavigationDestination(
+              selectedIcon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              selectedIcon: Icon(Icons.settings),
+              icon: Icon(Icons.settings_outlined),
+              label: 'Settings',
+            ),
+          ],
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: _onItemTapped,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          // Important: Prevent animation causing issues if nav bar rebuilds mid-animation
+          // key: ValueKey(_selectedIndex), // May help if issues arise
+        ),
       ),
     );
   }
