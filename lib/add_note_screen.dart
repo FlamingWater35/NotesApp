@@ -81,37 +81,39 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: <Widget>[
-            // Title TextField
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Title',
-                hintText: 'Enter note title',
-                border: OutlineInputBorder(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: <Widget>[
+              // Title TextField
+              TextField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  hintText: 'Enter note title',
+                  border: OutlineInputBorder(),
+                ),
+                style: Theme.of(context).textTheme.titleLarge,
+                textCapitalization: TextCapitalization.sentences,
               ),
-              style: Theme.of(context).textTheme.titleLarge,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-            const SizedBox(height: 16.0),
-            // Content TextField
-            TextField(
-              controller: _contentController,
-              decoration: const InputDecoration(
-                labelText: 'Content',
-                hintText: 'Enter your note details...',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
+              const SizedBox(height: 16.0),
+              // Content TextField
+              TextField(
+                controller: _contentController,
+                decoration: const InputDecoration(
+                  labelText: 'Content',
+                  hintText: 'Enter your note details...',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true,
+                ),
+                maxLines: 10,
+                minLines: 5,
+                keyboardType: TextInputType.multiline,
+                textCapitalization: TextCapitalization.sentences,
               ),
-              maxLines: 8,
-              minLines: 5,
-              keyboardType: TextInputType.multiline,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

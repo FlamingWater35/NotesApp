@@ -87,44 +87,48 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         tag: widget.heroTag, // Use the tag passed in constructor
         child: Material(
           type: MaterialType.transparency,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Card(
-              elevation: 0,
-              margin: EdgeInsets.zero,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView(
-                  children: <Widget>[
-                    TextField(
-                      controller: _titleController,
-                      decoration: const InputDecoration(
-                        labelText: 'Title',
-                        hintText: 'Enter note title',
-                        border: InputBorder.none,
-                        filled: false,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 0,
+                margin: EdgeInsets.zero,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView(
+                    children: <Widget>[
+                      // Title TextField
+                      TextField(
+                        controller: _titleController,
+                        decoration: const InputDecoration(
+                          labelText: 'Title',
+                          hintText: 'Enter note title',
+                          border: InputBorder.none,
+                          filled: false,
+                        ),
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textCapitalization: TextCapitalization.sentences,
+                        maxLines: null,
                       ),
-                      style: Theme.of(context).textTheme.headlineSmall,
-                      textCapitalization: TextCapitalization.sentences,
-                      maxLines: null,
-                    ),
-                    const SizedBox(height: 16.0),
-                    TextField(
-                      controller: _contentController,
-                      decoration: const InputDecoration(
-                        labelText: 'Content',
-                        hintText: 'Enter your note details...',
-                        border: InputBorder.none,
-                        filled: false,
-                        alignLabelWithHint: true,
-                      ),
-                      maxLines: null,
-                      minLines: 10,
-                      keyboardType: TextInputType.multiline,
-                      textCapitalization: TextCapitalization.sentences,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ],
+                      const SizedBox(height: 16.0),
+                      // Content TextField
+                      TextField(
+                        controller: _contentController,
+                        decoration: const InputDecoration(
+                          labelText: 'Content',
+                          hintText: 'Enter your note details...',
+                          border: InputBorder.none,
+                          filled: false,
+                          alignLabelWithHint: true,
+                        ),
+                        maxLines: null,
+                        minLines: 10,
+                        keyboardType: TextInputType.multiline,
+                        textCapitalization: TextCapitalization.sentences,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                       ),
+                    ],
+                  ),
                 ),
               ),
             ),
