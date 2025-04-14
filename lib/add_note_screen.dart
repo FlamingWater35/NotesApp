@@ -41,7 +41,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       return;
     }
 
+    final String uniqueId = DateTime.now().toIso8601String() + UniqueKey().toString();
+
     final noteData = {
+      'id': uniqueId,
       'title': title.isEmpty ? 'Untitled Note' : title,
       'content': content,
     };

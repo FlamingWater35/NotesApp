@@ -4,11 +4,13 @@ import 'package:logging/logging.dart';
 class HomeScreen extends StatefulWidget {
   final List<Map<String, String>> notes;
   final void Function(Map<String, String> note) onDeleteNote;
+  final void Function(Map<String, String> note, String heroTag) onNoteTap;
 
   const HomeScreen({
     super.key,
     required this.notes,
     required this.onDeleteNote,
+    required this.onNoteTap,
   });
 
   @override
@@ -157,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          // Notes List
+
           Expanded(
             child: _filteredNotes.isEmpty
                 ? Center(
@@ -179,31 +181,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemCount: _filteredNotes.length,
                     itemBuilder: (context, index) {
                       final note = _filteredNotes[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: ListTile(
-                          title: Text(
-                            note['title'] ?? 'Error: Missing Title',
-                            style: const TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                          subtitle: Text(
-                            note['content'] ?? '',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-                            tooltip: 'Delete Note',
-                            onPressed: () {
-                              _log.fine("Delete button pressed for note: ${note['title']}");
-                              _showDeleteConfirmation(context, note);
+                      final String heroTag = note['id'] ?? Object.hash(note['title'], note['content']).toString();
+                      return Hero(
+                        tag: heroTag, // Use the unique ID as the tag
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: ListTile(
+                            title: Text(
+                              note['title'] ?? 'Error: Missing Title',
+                              style: const TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            subtitle: Text(
+                              note['content'] ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                              tooltip: 'Delete Note',
+                              onPressed: () {
+                                _log.fine("Delete button pressed for note ID: ${note['id']}");
+                                _showDeleteConfirmation(context, note);
+                              },
+                            ),
+
+                            onTap: () {
+                              FocusScope.of(context).unfocus();
+                              _log.info('Tapped on note ID: ${note['id']}');
+                              widget.onNoteTap(note, heroTag);
                             },
                           ),
-                          onTap: () {
-                            FocusScope.of(context).unfocus();
-                            _log.info('Tapped on note: ${note['title']}');
-                            // TODO: Navigate to a Note Detail/Edit screen
-                          },
                         ),
                       );
                     },

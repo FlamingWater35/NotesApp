@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:logging/logging.dart';
 
 import 'add_note_screen.dart';
+import 'edit_note_screen.dart';
 import 'home_screen.dart';
 import 'settings_screen.dart';
 
@@ -37,6 +38,7 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(
         notes: _notes,
         onDeleteNote: _deleteNote,
+        onNoteTap: _navigateToEditNote,
       ),
       const SettingsScreen(),
     ];
@@ -47,13 +49,21 @@ class _MainScreenState extends State<MainScreen> {
     final prefs = await SharedPreferences.getInstance();
     final String? notesString = prefs.getString(_notesKey);
     List<Map<String, String>> loadedNotes = [];
+    bool needsResave = false;
 
     if (notesString != null && notesString.isNotEmpty) {
       try {
         final List<dynamic> decodedList = jsonDecode(notesString);
-        loadedNotes = decodedList
-            .map((item) => Map<String, String>.from(item as Map))
-            .toList();
+        loadedNotes = decodedList.map((item) {
+          final noteMap = Map<String, String>.from(item as Map);
+          // Assign an ID if missing (for older data before ID was added)
+          if (noteMap['id'] == null || noteMap['id']!.isEmpty) {
+            noteMap['id'] = DateTime.now().toIso8601String() + UniqueKey().toString();
+            _log.warning("Assigned new ID to note with title: ${noteMap['title']}");
+            needsResave = true;
+          }
+          return noteMap;
+        }).toList();
         _log.info("Successfully loaded ${loadedNotes.length} notes.");
       } catch (e, stackTrace) {
         _log.severe("Error decoding notes from SharedPreferences", e, stackTrace);
@@ -69,9 +79,12 @@ class _MainScreenState extends State<MainScreen> {
         _widgetOptions = _buildWidgetOptions();
         _isLoading = false;
       });
-       _log.fine("State updated after loading notes.");
+      _log.fine("State updated after loading notes.");
+      if (needsResave) {
+        await _saveNotes();
+      }
     } else {
-       _log.warning("Tried to update state after loading notes, but widget was unmounted.");
+      _log.warning("Tried to update state after loading notes, but widget was unmounted.");
     }
   }
 
@@ -155,6 +168,41 @@ class _MainScreenState extends State<MainScreen> {
       _log.info("AddNoteScreen was closed without saving.");
     } else {
        _log.warning("Tried to update state after adding note, but widget was unmounted.");
+    }
+  }
+
+  Future<void> _navigateToEditNote(Map<String, String> noteToEdit, String heroTag) async {
+    _log.info("Navigating to Edit Note screen for ID: ${noteToEdit['id']} with tag: $heroTag");
+    FocusScope.of(context).unfocus();
+
+    final result = await Navigator.push<Map<String, String>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditNoteScreen(
+          initialNoteData: noteToEdit,
+          heroTag: heroTag,
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      _log.info("Received updated note data from EditNoteScreen for ID: ${result['id']}");
+      setState(() {
+        final index = _notes.indexWhere((note) => note['id'] == result['id']);
+        if (index != -1) {
+          _notes = List.from(_notes);
+          _notes[index] = result;
+          _widgetOptions = _buildWidgetOptions();
+          _log.fine("State updated with edited note ID: ${result['id']}.");
+        } else {
+          _log.warning("Could not find note with ID ${result['id']} to update.");
+        }
+      });
+      await _saveNotes();
+    } else if (result == null) {
+       _log.info("EditNoteScreen closed without explicit saving.");
+    } else {
+       _log.warning("Tried to update state after editing note, but widget was unmounted.");
     }
   }
 
