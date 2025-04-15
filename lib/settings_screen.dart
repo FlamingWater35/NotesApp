@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../components/backup_service.dart';
-import '../components/restore_service.dart';
+import 'components/backup_service.dart';
+import 'components/restore_service.dart';
+import 'update_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final ValueNotifier<ThemeMode> themeNotifier;
@@ -25,6 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final _log = Logger('SettingsScreen');
   String _appVersion = 'Loading...';
   bool _isBackupRestoreRunning = false;
+  final String _updateHeroTag = 'update-hero-tag';
 
   @override
   void initState() {
@@ -101,10 +103,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _handleCheckForUpdates() {
-    _log.info("Check for Updates button tapped - (Not Implemented)");
-    // TODO: Implement update check logic (e.g., check against a server/store)
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Update check not yet implemented.')),
+    _log.info("Check for Updates button tapped - Navigating");
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UpdateScreen(heroTag: _updateHeroTag),
+      ),
     );
   }
 
@@ -197,11 +201,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Text('Application', style: theme.textTheme.titleSmall),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.system_update_alt_outlined),
-                  title: const Text('Check for Updates'),
-                  onTap: _handleCheckForUpdates,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                Hero(
+                  tag: _updateHeroTag,
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: ListTile(
+                      leading: const Icon(Icons.system_update_alt_outlined),
+                      title: const Text('Check for Updates'),
+                      onTap: _handleCheckForUpdates,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    ),
+                  ),
                 ),
               ],
             ),

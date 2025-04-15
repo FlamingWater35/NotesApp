@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'main_screen.dart';
+import 'components/update_service.dart';
 
 void main() {
   _setupLogging();
@@ -30,6 +31,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final ValueNotifier<ThemeMode> _themeNotifier = ValueNotifier(ThemeMode.system);
+
+  @override
+  void initState() {
+    super.initState();
+    _runUpdateCleanup();
+  }
+
+  Future<void> _runUpdateCleanup() async {
+    MyApp._log.info("Running update file cleanup check...");
+    await UpdateService.cleanUpUpdateFile();
+  }
 
   @override
   void dispose() {
