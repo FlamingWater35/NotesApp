@@ -140,15 +140,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 hintText: 'Search notes...',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        tooltip: 'Clear Search',
-                        onPressed: () {
-                          _log.fine("Clear search button pressed.");
-                          _searchController.clear();
-                        },
-                      )
-                    : null,
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      tooltip: 'Clear Search',
+                      onPressed: () {
+                        _log.fine("Clear search button pressed.");
+                        _searchController.clear();
+                      },
+                    )
+                  : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide.none,
@@ -162,59 +162,59 @@ class _HomeScreenState extends State<HomeScreen> {
 
           Expanded(
             child: _filteredNotes.isEmpty
-                ? Center(
-                  child: Text(
-                    _searchController.text.isEmpty && widget.notes.isEmpty
-                        ? 'No notes yet. Tap + to add one!'
-                        : _searchController.text.isNotEmpty
-                            ? 'No notes found matching your search.'
-                            : '', // Should be empty if notes exist but filter doesn't match
-                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                       color: Theme.of(context).colorScheme.onSurfaceVariant
-                     ),
-                     textAlign: TextAlign.center,
-                   ),
-                )
-                : ListView.builder(
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    itemCount: _filteredNotes.length,
-                    itemBuilder: (context, index) {
-                      final note = _filteredNotes[index];
-                      final String heroTag = note['id'] ?? Object.hash(note['title'], note['content']).toString();
-                      return Hero(
-                        tag: heroTag, // Use the unique ID as the tag
-                        child: Card(
-                          margin: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: ListTile(
-                            title: Text(
-                              note['title'] ?? 'Error: Missing Title',
-                              style: const TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            subtitle: Text(
-                              note['content'] ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-                              tooltip: 'Delete Note',
-                              onPressed: () {
-                                _log.fine("Delete button pressed for note ID: ${note['id']}");
-                                _showDeleteConfirmation(context, note);
-                              },
-                            ),
-
-                            onTap: () {
-                              FocusScope.of(context).unfocus();
-                              _log.info('Tapped on note ID: ${note['id']}');
-                              widget.onNoteTap(note, heroTag);
-                            },
-                          ),
-                        ),
-                      );
-                    },
+              ? Center(
+                child: Text(
+                  _searchController.text.isEmpty && widget.notes.isEmpty
+                    ? 'No notes yet. Tap + to add one!'
+                    : _searchController.text.isNotEmpty
+                      ? 'No notes found matching your search.'
+                      : '', // Should be empty if notes exist but filter doesn't match
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant
                   ),
+                  textAlign: TextAlign.center,
+                ),
+              )
+              : ListView.builder(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                itemCount: _filteredNotes.length,
+                itemBuilder: (context, index) {
+                  final note = _filteredNotes[index];
+                  final String heroTag = note['id'] ?? Object.hash(note['title'], note['content']).toString();
+                  return Hero(
+                    tag: heroTag, // Use the unique ID as the tag
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: ListTile(
+                        title: Text(
+                          note['title'] ?? 'Error: Missing Title',
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Text(
+                          note['content'] ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                          tooltip: 'Delete Note',
+                          onPressed: () {
+                            _log.fine("Delete button pressed for note ID: ${note['id']}");
+                            _showDeleteConfirmation(context, note);
+                          },
+                        ),
+
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          _log.info('Tapped on note ID: ${note['id']}');
+                          widget.onNoteTap(note, heroTag);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
           ),
         ],
       ),
