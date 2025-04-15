@@ -47,8 +47,26 @@ class _MainScreenState extends State<MainScreen> {
         onDeleteNote: _deleteNote,
         onNoteTap: _navigateToEditNote,
       ),
-      SettingsScreen(themeNotifier: widget.themeNotifier),
+      SettingsScreen(
+        themeNotifier: widget.themeNotifier,
+        currentNotes: _notes,
+        onNotesRestored: _handleNotesRestored,
+      ),
     ];
+  }
+
+  Future<void> _handleNotesRestored(List<Map<String, String>> restoredNotes) async {
+    _log.info("Handling ${restoredNotes.length} restored notes.");
+    if (mounted) {
+      setState(() {
+        _notes = restoredNotes;
+        _widgetOptions = _buildWidgetOptions();
+        _log.fine("State updated with restored notes.");
+      });
+      await _saveNotes();
+    } else {
+        _log.warning("Tried to handle restored notes, but widget was unmounted.");
+    }
   }
 
   Future<void> _loadNotes() async {

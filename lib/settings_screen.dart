@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../components/backup_service.dart';
+import '../components/restore_service.dart';
+
 class SettingsScreen extends StatefulWidget {
   final ValueNotifier<ThemeMode> themeNotifier;
+  final List<Map<String, String>> currentNotes;
+  final Future<void> Function(List<Map<String, String>> restoredNotes) onNotesRestored;
 
   const SettingsScreen({
     super.key,
     required this.themeNotifier,
+    required this.currentNotes,
+    required this.onNotesRestored,
   });
 
   @override
@@ -17,6 +24,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final _log = Logger('SettingsScreen');
   String _appVersion = 'Loading...';
+  bool _isBackupRestoreRunning = false;
 
   @override
   void initState() {
@@ -44,20 +52,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _handleBackup() {
-    _log.info("Backup button tapped - (Not Implemented)");
-    // TODO: Implement backup logic (e.g., pick file location, save JSON)
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Backup feature not yet implemented.')),
-    );
+  Future<void> _handleBackup() async {
+    if (_isBackupRestoreRunning) return;
+    setState(() => _isBackupRestoreRunning = true);
+    _log.info("Backup button tapped");
+
+    final bool success = await BackupService.backupNotes(widget.currentNotes);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(success ? 'Backup successful!' : 'Backup failed or cancelled (no notes added?).'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      setState(() => _isBackupRestoreRunning = false);
+    }
   }
 
-  void _handleRestore() {
-    _log.info("Restore button tapped - (Not Implemented)");
-    // TODO: Implement restore logic (e.g., pick file, read JSON, load notes)
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Restore feature not yet implemented.')),
-    );
+  Future<void> _handleRestore() async {
+    if (_isBackupRestoreRunning) return;
+    setState(() => _isBackupRestoreRunning = true);
+    _log.info("Restore button tapped");
+
+    final List<Map<String, String>>? restoredNotes = await RestoreService.restoreNotes();
+
+    if (mounted) {
+      if (restoredNotes != null) {
+        await widget.onNotesRestored(restoredNotes);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Restore successful!'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Restore failed or cancelled (invalid file format?)'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      setState(() => _isBackupRestoreRunning = false);
+    }
   }
 
   void _handleCheckForUpdates() {

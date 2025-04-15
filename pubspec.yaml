@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.2.3
   logging: ^1.2.0
   package_info_plus: ^8.3.0
+  file_picker: ^10.1.2
 
 dev_dependencies:
   flutter_test:
