@@ -20,34 +20,52 @@ void _setupLogging() {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
   static final _log = Logger('MyApp');
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final ValueNotifier<ThemeMode> _themeNotifier = ValueNotifier(ThemeMode.system);
+
+  @override
+  void dispose() {
+    _themeNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _log.info("Building MyApp widget");
+    MyApp._log.info("Building MyApp widget");
     const seedColor = Colors.blueAccent;
 
-    return MaterialApp(
-      title: 'Notes App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seedColor,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seedColor,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
-      themeMode: ThemeMode.system,
-      debugShowCheckedModeBanner: false,
-      home: const MainScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: _themeNotifier,
+      builder: (_, currentMode, __) {
+        return MaterialApp(
+          title: 'Notes App',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: seedColor,
+              brightness: Brightness.light,
+            ),
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: seedColor,
+              brightness: Brightness.dark,
+            ),
+            useMaterial3: true,
+          ),
+          themeMode: currentMode,
+          debugShowCheckedModeBanner: false,
+          home: MainScreen(themeNotifier: _themeNotifier),
+        );
+      }
     );
   }
 }

@@ -9,7 +9,12 @@ import 'home_screen.dart';
 import 'settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final ValueNotifier<ThemeMode> themeNotifier;
+
+  const MainScreen({
+    super.key,
+    required this.themeNotifier,
+  });
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -42,7 +47,7 @@ class _MainScreenState extends State<MainScreen> {
         onDeleteNote: _deleteNote,
         onNoteTap: _navigateToEditNote,
       ),
-      const SettingsScreen(),
+      SettingsScreen(themeNotifier: widget.themeNotifier),
     ];
   }
 
@@ -72,7 +77,7 @@ class _MainScreenState extends State<MainScreen> {
         await prefs.remove(_notesKey);
       }
     } else {
-       _log.info("No saved notes found or notes string was empty.");
+      _log.info("No saved notes found or notes string was empty.");
     }
 
     if (mounted) {
@@ -96,9 +101,9 @@ class _MainScreenState extends State<MainScreen> {
     try {
       final String notesString = jsonEncode(_notes);
       await prefs.setString(_notesKey, notesString);
-       _log.info("Notes saved successfully.");
+      _log.info("Notes saved successfully.");
     } catch (e, stackTrace) {
-       _log.severe("Error encoding notes for SharedPreferences", e, stackTrace);
+      _log.severe("Error encoding notes for SharedPreferences", e, stackTrace);
     }
   }
 
@@ -115,10 +120,10 @@ class _MainScreenState extends State<MainScreen> {
         });
         await _saveNotes();
       } else {
-         _log.warning("Tried to update state after deleting note, but widget was unmounted.");
+        _log.warning("Tried to update state after deleting note, but widget was unmounted.");
       }
     } else {
-       _log.warning("Note to delete was not found in the current notes list, or list length did not change.");
+      _log.warning("Note to delete was not found in the current notes list, or list length did not change.");
     }
   }
 
@@ -177,7 +182,7 @@ class _MainScreenState extends State<MainScreen> {
     } else if (result == null) {
       _log.info("AddNoteScreen was closed without saving.");
     } else {
-       _log.warning("Tried to update state after adding note, but widget was unmounted.");
+      _log.warning("Tried to update state after adding note, but widget was unmounted.");
     }
   }
 
@@ -218,9 +223,9 @@ class _MainScreenState extends State<MainScreen> {
       });
       await _saveNotes();
     } else if (result == null) {
-       _log.info("EditNoteScreen closed without explicit saving.");
+      _log.info("EditNoteScreen closed without explicit saving.");
     } else {
-       _log.warning("Tried to update state after editing note, but widget was unmounted.");
+      _log.warning("Tried to update state after editing note, but widget was unmounted.");
     }
   }
 

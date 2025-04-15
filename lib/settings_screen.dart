@@ -3,7 +3,12 @@ import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final ValueNotifier<ThemeMode> themeNotifier;
+
+  const SettingsScreen({
+    super.key,
+    required this.themeNotifier,
+  });
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -67,30 +72,96 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     _log.finer("Building SettingsScreen widget");
+    final theme = Theme.of(context);
+
     return SafeArea(
       child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 8.0),
+            child: Text(
+              'Settings',
+              style: theme.textTheme.headlineMedium,
+            ),
+          ),
+
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Text('Appearance', style: theme.textTheme.titleSmall),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                  child: ValueListenableBuilder<ThemeMode>(
+                    valueListenable: widget.themeNotifier,
+                    builder: (context, currentMode, child) {
+
+                      return SegmentedButton<ThemeMode>(
+                        selected: {currentMode},
+                        segments: const <ButtonSegment<ThemeMode>>[
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.light,
+                            label: Text('Light'),
+                            icon: Icon(Icons.light_mode_outlined),
+                          ),
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.dark,
+                            label: Text('Dark'),
+                            icon: Icon(Icons.dark_mode_outlined),
+                          ),
+                          ButtonSegment<ThemeMode>(
+                            value: ThemeMode.system,
+                            label: Text('System'),
+                            icon: Icon(Icons.settings_suggest_outlined),
+                          ),
+                        ],
+
+                        onSelectionChanged: (Set<ThemeMode> newSelection) {
+                          if (newSelection.isNotEmpty) {
+                            _log.info("Theme mode changed to: ${newSelection.first}");
+                            widget.themeNotifier.value = newSelection.first;
+                          }
+                        },
+                        showSelectedIcon: false,
+                        style: SegmentedButton.styleFrom(
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const Divider(indent: 16, endIndent: 16, height: 24),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Text('Data Management', style: theme.textTheme.titleSmall),
+                ),
                 ListTile(
                   leading: const Icon(Icons.backup_outlined),
                   title: const Text('Backup Notes'),
                   subtitle: const Text('Save notes to a file'),
                   onTap: _handleBackup,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 ),
                  ListTile(
                   leading: const Icon(Icons.restore_page_outlined),
                   title: const Text('Restore Notes'),
                   subtitle: const Text('Load notes from a backup file'),
                   onTap: _handleRestore,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 ),
-                const Divider(),
+                const Divider(indent: 16, endIndent: 16, height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Text('Application', style: theme.textTheme.titleSmall),
+                ),
                 ListTile(
                   leading: const Icon(Icons.system_update_alt_outlined),
                   title: const Text('Check for Updates'),
                   onTap: _handleCheckForUpdates,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 ),
               ],
             ),
