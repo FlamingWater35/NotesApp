@@ -65,7 +65,7 @@ class _MainScreenState extends State<MainScreen> {
       });
       await _saveNotes();
     } else {
-        _log.warning("Tried to handle restored notes, but widget was unmounted.");
+      _log.warning("Tried to handle restored notes, but widget was unmounted.");
     }
   }
 

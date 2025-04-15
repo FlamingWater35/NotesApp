@@ -43,7 +43,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     final String title = _titleController.text.trim();
     final String content = _contentController.text.trim();
 
-    // Prevent saving empty note if desired (or allow it)
+    // Prevent saving empty note if needed (or allow it)
     // if (title.isEmpty && content.isEmpty) { ... return; }
 
     final updatedNoteData = {
@@ -57,7 +57,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     if (mounted) {
       Navigator.pop(context, updatedNoteData);
     } else {
-       _log.warning("Tried to pop EditNoteScreen after update, but widget was unmounted.");
+      _log.warning("Tried to pop EditNoteScreen after update, but widget was unmounted.");
     }
   }
 
@@ -76,7 +76,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
-            onPressed: _updateNote, // Call update function
+            onPressed: _updateNote, 
             tooltip: 'Save Changes',
           ),
           const SizedBox(width: 8),

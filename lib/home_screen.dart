@@ -116,10 +116,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (confirmed == true) {
-       _log.info("Deletion confirmed for note: ${note['title']}");
-       widget.onDeleteNote(note);
+      _log.info("Deletion confirmed for note: ${note['title']}");
+      widget.onDeleteNote(note);
     } else {
-       _log.info("Deletion cancelled for note: ${note['title']}");
+      _log.info("Deletion cancelled for note: ${note['title']}");
     }
   }
 

@@ -47,6 +47,7 @@ class _MyAppState extends State<MyApp> {
       builder: (_, currentMode, __) {
         return MaterialApp(
           title: 'Notes App',
+
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
               seedColor: seedColor,
@@ -54,6 +55,7 @@ class _MyAppState extends State<MyApp> {
             ),
             useMaterial3: true,
           ),
+
           darkTheme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
               seedColor: seedColor,
@@ -61,6 +63,7 @@ class _MyAppState extends State<MyApp> {
             ),
             useMaterial3: true,
           ),
+          
           themeMode: currentMode,
           debugShowCheckedModeBanner: false,
           home: MainScreen(themeNotifier: _themeNotifier),

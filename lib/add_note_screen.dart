@@ -16,7 +16,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   @override
   void initState() {
     super.initState();
-     _log.fine("initState called");
+    _log.fine("initState called");
   }
 
 
@@ -29,7 +29,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   void _saveNote() {
-     _log.info("Attempting to save note...");
+    _log.info("Attempting to save note...");
     final String title = _titleController.text.trim();
     final String content = _contentController.text.trim();
 
@@ -54,13 +54,13 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     if (mounted) {
       Navigator.pop(context, noteData);
     } else {
-       _log.warning("Tried to pop AddNoteScreen, but widget was unmounted.");
+      _log.warning("Tried to pop AddNoteScreen, but widget was unmounted.");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-     _log.finer("Building AddNoteScreen widget");
+    _log.finer("Building AddNoteScreen widget");
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -81,6 +81,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           const SizedBox(width: 8),
         ],
       ),
+      
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

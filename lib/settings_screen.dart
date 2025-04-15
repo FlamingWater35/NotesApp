@@ -40,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         setState(() {
           _appVersion = 'Version ${info.version} (${info.buildNumber})';
         });
-         _log.info("App version loaded: $_appVersion");
+        _log.info("App version loaded: $_appVersion");
       }
     } catch (e, stackTrace) {
       _log.severe("Error getting package info", e, stackTrace);
