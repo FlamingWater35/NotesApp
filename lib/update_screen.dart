@@ -97,22 +97,21 @@ class _UpdateScreenState extends State<UpdateScreen> {
     if (!mounted) return;
 
     if (downloadedPath != null) {
-       final bool installInitiated = await UpdateService.installUpdate(downloadedPath);
-       if (!mounted) return;
+      final bool installInitiated = await UpdateService.installUpdate(downloadedPath);
+      if (!mounted) return;
 
-       if (installInitiated) {
-          _log.info("Install prompt likely shown. Waiting for user/OS action.");
-          // App might close here. If it returns, we might be post-install or cancelled.
-          // We can't reliably detect install success here. Cleanup happens on next launch.
-          // For better UX maybe show a generic message?
-          // setState(() { _status = UpdateStatus.idle; _errorMessage = "Installation process initiated."});
-       } else {
-          _log.warning("Failed to initiate installation prompt.");
-          setState(() {
-            _status = UpdateStatus.error;
-            _errorMessage = "Could not start installation. Check permissions.";
-          });
-       }
+      if (installInitiated) {
+        _log.info("Install prompt likely shown. Waiting for user/OS action.");
+        // App usually closes here, cleanup happens on next launch.
+        // Maybe show a generic message
+        // setState(() { _status = UpdateStatus.idle; _errorMessage = "Installation process initiated."});
+      } else {
+        _log.warning("Failed to initiate installation prompt.");
+        setState(() {
+          _status = UpdateStatus.error;
+          _errorMessage = "Could not start installation. Check permissions.";
+        });
+      }
     } else {
       setState(() {
         _status = UpdateStatus.error;

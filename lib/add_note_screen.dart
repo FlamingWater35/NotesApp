@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:intl/intl.dart';
 
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({super.key});
@@ -12,12 +13,18 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   final _log = Logger('AddNoteScreenState');
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
+  DateTime? _selectedDate = DateTime.now();
+  DateTime? _initialDate;
   bool _isDirty = false;
 
   @override
   void initState() {
     super.initState();
     _log.fine("initState called");
+    _selectedDate = DateTime.now();
+    _initialDate = _selectedDate;
+    _log.fine("Initial date set to: $_initialDate");
+
     _titleController.addListener(_checkIfDirty);
     _contentController.addListener(_checkIfDirty);
   }
@@ -33,7 +40,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   void _checkIfDirty() {
-    final bool currentlyDirty = _titleController.text.isNotEmpty || _contentController.text.isNotEmpty;
+    final bool currentlyDirty = _titleController.text.isNotEmpty || _contentController.text.isNotEmpty || 
+      _selectedDate != _initialDate;
 
     if (currentlyDirty != _isDirty) {
       setState(() {
@@ -57,11 +65,13 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     }
 
     final String uniqueId = DateTime.now().toIso8601String() + UniqueKey().toString();
+    final String dateString = (_selectedDate ?? DateTime.now()).toIso8601String();
 
     final noteData = {
       'id': uniqueId,
       'title': title.isEmpty ? 'Untitled Note' : title,
       'content': content,
+      'date': dateString,
     };
 
     _log.fine('Returning note data: $noteData');
@@ -97,9 +107,29 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     return shouldDiscard ?? false;
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate && mounted) {
+      setState(() {
+        _selectedDate = picked;
+        _checkIfDirty();
+      });
+       _log.fine("Date selected: $_selectedDate");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _log.finer("Building AddNoteScreen widget");
+    final String displayDate = _selectedDate != null
+      ? DateFormat.yMMMd().format(_selectedDate!)
+      : 'Select Date';
+
     return PopScope(
       canPop: !_isDirty,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
@@ -144,6 +174,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   textCapitalization: TextCapitalization.sentences,
                 ),
                 const SizedBox(height: 16.0),
+
                 // Content TextField
                 TextField(
                   controller: _contentController,
@@ -158,6 +189,35 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   keyboardType: TextInputType.multiline,
                   textCapitalization: TextCapitalization.sentences,
                 ),
+                const SizedBox(height: 16.0),
+
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _selectDate(context),
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today_outlined, size: 20),
+                              const SizedBox(width: 12),
+                              Text(
+                                displayDate,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                          const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
               ],
             ),
           ),

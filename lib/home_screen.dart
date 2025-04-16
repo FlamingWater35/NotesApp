@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<Map<String, String>> notes;
@@ -182,8 +183,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemBuilder: (context, index) {
                   final note = _filteredNotes[index];
                   final String heroTag = note['id'] ?? Object.hash(note['title'], note['content']).toString();
+                  String formattedDate = '';
+                  try {
+                    final dateString = note['date'];
+                    if (dateString != null && dateString.isNotEmpty) {
+                      final dateTime = DateTime.parse(dateString);
+                      formattedDate = DateFormat.yMd().format(dateTime);
+                    }
+                  } catch (e) {
+                    _log.warning("Could not parse date for note ID ${note['id']}: ${note['date']}", e);
+                    // formattedDate remains empty
+                  }
+
                   return Hero(
-                    tag: heroTag, // Use the unique ID as the tag
+                    tag: heroTag,
                     child: Card(
                       margin: const EdgeInsets.symmetric(vertical: 4.0),
                       child: ListTile(
@@ -192,8 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
                         subtitle: Text(
-                          note['content'] ?? '',
-                          maxLines: 1,
+                          '${formattedDate.isNotEmpty ? "$formattedDate - " : ""}${note['content'] ?? ''}',
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         trailing: IconButton(

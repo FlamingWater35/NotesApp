@@ -43,7 +43,7 @@ class RestoreService {
       }
 
       final List<Map<String, String>> restoredNotes = [];
-      bool needsResaveForIds = false;
+      bool needsResave = false;
 
       for (var item in decodedData) {
         if (item is Map) {
@@ -54,7 +54,20 @@ class RestoreService {
               if (noteMap['id'] == null || noteMap['id']!.isEmpty) {
                 noteMap['id'] = DateTime.now().toIso8601String() + UniqueKey().toString();
                 _log.warning("Assigned new ID during restore to note with title: ${noteMap['title']}");
-                needsResaveForIds = true;
+                needsResave = true;
+              }
+              if (noteMap['date'] == null || noteMap['date']!.isEmpty) {
+                noteMap['date'] = DateTime.now().toIso8601String();
+                _log.warning("Assigned current date during restore to note ID: ${noteMap['id']}");
+                needsResave = true;
+              } else {
+                try {
+                  DateTime.parse(noteMap['date']!);
+                } catch (_) {
+                  _log.warning("Invalid date format found during restore for note ID: ${noteMap['id']}, assigning current date.");
+                  noteMap['date'] = DateTime.now().toIso8601String();
+                  needsResave = true;
+                }
               }
               restoredNotes.add(noteMap);
             } else {
@@ -68,7 +81,7 @@ class RestoreService {
         }
       }
 
-      _log.info("Restore successful. Loaded ${restoredNotes.length} notes. Needs resave for IDs: $needsResaveForIds");
+      _log.info("Restore successful. Loaded ${restoredNotes.length} notes. Needs resave for IDs: $needsResave");
       return restoredNotes;
 
     } on FileSystemException catch (e, stackTrace) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:intl/intl.dart';
 
 class EditNoteScreen extends StatefulWidget {
   final Map<String, String> initialNoteData;
@@ -23,6 +24,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
   late String _initialTitle;
   late String _initialContent;
+  DateTime? _selectedDate;
+  DateTime? _initialDate;
   bool _isDirty = false;
 
   @override
@@ -32,6 +35,18 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _initialTitle = widget.initialNoteData['title'] ?? '';
     _initialContent = widget.initialNoteData['content'] ?? '';
     _noteId = widget.initialNoteData['id']!;
+
+    try {
+      final dateString = widget.initialNoteData['date'];
+      if (dateString != null && dateString.isNotEmpty) {
+        _initialDate = DateTime.tryParse(dateString);
+      }
+    } catch (e) {
+      _log.warning("Could not parse initial date string: ${widget.initialNoteData['date']}", e);
+    }
+    _initialDate ??= DateTime.now();
+    _selectedDate = _initialDate;
+    _log.fine("Initial date set to: $_initialDate");
 
     _titleController = TextEditingController(text: widget.initialNoteData['title']);
     _contentController = TextEditingController(text: widget.initialNoteData['content']);
@@ -50,7 +65,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   void _checkIfDirty() {
-    final bool currentlyDirty = _titleController.text != _initialTitle || _contentController.text != _initialContent;
+    final bool currentlyDirty = _titleController.text != _initialTitle || 
+      _contentController.text != _initialContent || _selectedDate != _initialDate;
 
     if (currentlyDirty != _isDirty) {
       setState(() {
@@ -64,6 +80,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _log.info("Attempting to update note ID: $_noteId");
     final String title = _titleController.text.trim();
     final String content = _contentController.text.trim();
+    final String dateString = (_selectedDate ?? DateTime.now()).toIso8601String();
 
     // Prevent saving empty note if needed (or allow it)
     // if (title.isEmpty && content.isEmpty) { ... return; }
@@ -72,6 +89,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       'id': _noteId, // Keep original ID
       'title': title.isEmpty ? 'Untitled Note' : title,
       'content': content,
+      'date': dateString,
     };
 
     _log.fine('Returning updated note data: $updatedNoteData');
@@ -107,11 +125,32 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     return shouldDiscard ?? false;
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != _selectedDate && mounted) {
+      setState(() {
+        _selectedDate = picked;
+        _checkIfDirty();
+      });
+       _log.fine("Date selected: $_selectedDate");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _log.finer("Building EditNoteScreen widget");
+    final String displayDate = _selectedDate != null
+      ? DateFormat.yMMMd().format(_selectedDate!)
+      : 'Select Date';
+      
     return PopScope(
-      canPop: !_isDirty, // Allow pop if not dirty
+      canPop: !_isDirty,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
         _log.fine('Pop invoked on EditNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result');
         if (didPop) return;
@@ -138,7 +177,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         ),
 
         body: Hero(
-          tag: widget.heroTag, // Use the tag passed in constructor
+          tag: widget.heroTag,
           child: Material(
             type: MaterialType.transparency,
             child: SafeArea(
@@ -148,7 +187,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                   elevation: 0,
                   margin: EdgeInsets.zero,
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: ListView(
                       children: <Widget>[
                         // Title TextField
@@ -165,6 +204,36 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                           maxLines: null,
                         ),
                         const SizedBox(height: 16.0),
+
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => _selectDate(context),
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.calendar_today_outlined, size: 20),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        displayDate,
+                                        style: Theme.of(context).textTheme.titleMedium,
+                                      ),
+                                    ],
+                                  ),
+                                  const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        const SizedBox(height: 16.0),
+
                         // Content TextField
                         TextField(
                           controller: _contentController,
