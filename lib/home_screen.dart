@@ -18,17 +18,22 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+enum SortProperty { date, title }
+
 class _HomeScreenState extends State<HomeScreen> {
   final _log = Logger('HomeScreenState');
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _filteredNotes = [];
   final FocusNode _searchFocusNode = FocusNode();
+
+  List<Map<String, String>> _displayedNotes = [];
+  SortProperty _sortBy = SortProperty.date;
+  bool _sortAscending = false;
 
   @override
   void initState() {
     super.initState();
     _log.fine("initState called");
-    _filterNotes(runSetState: false);
+    _updateDisplayedNotes();
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -37,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.didUpdateWidget(oldWidget);
     if (widget.notes != oldWidget.notes) {
       _log.fine("Notes list updated externally, running filter and forcing rebuild.");
-      _filterNotes(runSetState: true); // Force rebuild
+      _updateDisplayedNotes();
     }
   }
 
@@ -52,31 +57,53 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onSearchChanged() {
     _log.finer("Search text changed: ${_searchController.text}");
-    _filterNotes(runSetState: true);
+    _updateDisplayedNotes();
   }
 
-  void _filterNotes({required bool runSetState}) {
+  void _updateDisplayedNotes() {
     final query = _searchController.text.toLowerCase();
-    _log.finer("Filtering notes with query: '$query'");
-    List<Map<String, String>> newFilteredList;
+    _log.finer("Updating displayed notes. Query: '$query', SortBy: $_sortBy, Asc: $_sortAscending");
+
+    List<Map<String, String>> filteredNotes;
     if (query.isEmpty) {
-      newFilteredList = List.from(widget.notes);
+      filteredNotes = List.from(widget.notes);
     } else {
-      newFilteredList = widget.notes.where((note) {
+      filteredNotes = widget.notes.where((note) {
         final titleLower = note['title']?.toLowerCase() ?? '';
         final contentLower = note['content']?.toLowerCase() ?? '';
         return titleLower.contains(query) || contentLower.contains(query);
       }).toList();
     }
-    _log.finer("Filtering complete. ${newFilteredList.length} notes match.");
+    _log.finer("Filtering complete. ${filteredNotes.length} notes match query.");
 
-    if (runSetState) {
-      setState(() {
-        _filteredNotes = newFilteredList;
-      });
-    } else {
-      _filteredNotes = newFilteredList;
-    }
+    filteredNotes.sort((a, b) {
+      int compareResult = 0;
+      switch (_sortBy) {
+        case SortProperty.date:
+          try {
+            final dateA = DateTime.tryParse(a['date'] ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
+            final dateB = DateTime.tryParse(b['date'] ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
+            compareResult = dateA.compareTo(dateB);
+          } catch (e) {
+            _log.warning("Error parsing dates during sort: $e");
+            compareResult = 0;
+          }
+          break;
+        case SortProperty.title:
+          final titleA = a['title']?.toLowerCase() ?? '';
+          final titleB = b['title']?.toLowerCase() ?? '';
+          compareResult = titleA.compareTo(titleB);
+          break;
+      }
+      return _sortAscending ? compareResult : -compareResult;
+    });
+     _log.finer("Sorting complete.");
+
+    // Only call setState if the list content or order might have changed
+    // Called on every update, could optimize with list comparison
+    setState(() {
+      _displayedNotes = filteredNotes;
+    });
   }
 
   Future<void> _showDeleteConfirmation(BuildContext context, Map<String, String> note) async {
@@ -133,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Search Bar
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 4.0),
             child: TextField(
               controller: _searchController,
               focusNode: _searchFocusNode,
@@ -161,8 +188,64 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Wrap(
+                  spacing: 8.0,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('Date'),
+                      selected: _sortBy == SortProperty.date,
+                      onSelected: (selected) {
+                        if (selected) {
+                          _log.fine("Sort by Date selected.");
+                          setState(() { _sortBy = SortProperty.date; });
+                          _updateDisplayedNotes();
+                        }
+                      },
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                    ),
+                    ChoiceChip(
+                      label: const Text('Title'),
+                      selected: _sortBy == SortProperty.title,
+                      onSelected: (selected) {
+                        if (selected) {
+                          _log.fine("Sort by Title selected.");
+                          setState(() { _sortBy = SortProperty.title; });
+                          _updateDisplayedNotes();
+                        }
+                      },
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                    ),
+                  ],
+                ),
+
+                IconButton(
+                  icon: Icon(
+                    _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                    size: 20.0,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  tooltip: _sortAscending ? 'Sort Ascending' : 'Sort Descending',
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    _log.fine("Sort direction toggled.");
+                    setState(() { _sortAscending = !_sortAscending; });
+                    _updateDisplayedNotes();
+                  },
+                ),
+              ],
+            ),
+          ),
+
           Expanded(
-            child: _filteredNotes.isEmpty
+            child: _displayedNotes.isEmpty
               ? Center(
                 child: Text(
                   _searchController.text.isEmpty && widget.notes.isEmpty
@@ -178,10 +261,10 @@ class _HomeScreenState extends State<HomeScreen> {
               )
               : ListView.builder(
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                itemCount: _filteredNotes.length,
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                itemCount: _displayedNotes.length,
                 itemBuilder: (context, index) {
-                  final note = _filteredNotes[index];
+                  final note = _displayedNotes[index];
                   final String heroTag = note['id'] ?? Object.hash(note['title'], note['content']).toString();
                   String formattedDate = '';
                   try {
