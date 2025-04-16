@@ -86,32 +86,32 @@ class _HomeScreenState extends State<HomeScreen> {
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
-         return AlertDialog(
-           title: const Text('Delete Note?'),
-           content: Text('Are you sure you want to delete "${note['title'] ?? 'this note'}"? This action cannot be undone.'),
-           actions: <Widget>[
-             TextButton(
-               child: const Text('Cancel'),
-               onPressed: () => Navigator.of(buildContext).pop(false),
-             ),
-             TextButton(
-               style: TextButton.styleFrom(
-                 foregroundColor: Theme.of(buildContext).colorScheme.error,
-               ),
-               child: const Text('Delete'),
-               onPressed: () => Navigator.of(buildContext).pop(true),
-             ),
-           ],
-         );
+        return AlertDialog(
+          title: const Text('Delete Note?'),
+          content: Text('Are you sure you want to delete "${note['title'] ?? 'this note'}"? This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(buildContext).pop(false),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(buildContext).colorScheme.error,
+              ),
+              child: const Text('Delete'),
+              onPressed: () => Navigator.of(buildContext).pop(true),
+            ),
+          ],
+        );
       },
       transitionBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-         return ScaleTransition(
-           scale: CurvedAnimation(
-             parent: animation, // The animation controlled by showGeneralDialog
-             curve: Curves.easeOutBack,
-           ),
-           child: child,
-         );
+        return ScaleTransition(
+          scale: CurvedAnimation(
+            parent: animation, // The animation controlled by showGeneralDialog
+            curve: Curves.easeOutBack,
+          ),
+          child: child,
+        );
       },
     );
 

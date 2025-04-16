@@ -21,21 +21,43 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   late TextEditingController _contentController;
   late String _noteId; // Store the original ID
 
+  late String _initialTitle;
+  late String _initialContent;
+  bool _isDirty = false;
+
   @override
   void initState() {
     super.initState();
     _log.fine("initState called for editing note ID: ${widget.initialNoteData['id']}");
+    _initialTitle = widget.initialNoteData['title'] ?? '';
+    _initialContent = widget.initialNoteData['content'] ?? '';
+    _noteId = widget.initialNoteData['id']!;
+
     _titleController = TextEditingController(text: widget.initialNoteData['title']);
     _contentController = TextEditingController(text: widget.initialNoteData['content']);
-    _noteId = widget.initialNoteData['id']!; // Assume ID always exists here
+    _titleController.addListener(_checkIfDirty);
+    _contentController.addListener(_checkIfDirty);
   }
 
   @override
   void dispose() {
     _log.fine("dispose called");
+    _titleController.removeListener(_checkIfDirty);
+    _contentController.removeListener(_checkIfDirty);
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
+  }
+
+  void _checkIfDirty() {
+    final bool currentlyDirty = _titleController.text != _initialTitle || _contentController.text != _initialContent;
+
+    if (currentlyDirty != _isDirty) {
+      setState(() {
+        _isDirty = currentlyDirty;
+      });
+       _log.finer("Edit screen dirty state changed to: $_isDirty");
+    }
   }
 
   void _updateNote() {
@@ -61,73 +83,106 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     }
   }
 
+  Future<bool> _showDiscardDialog() async {
+    final bool? shouldDiscard = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Discard changes?'),
+        content: const Text('If you go back now, your changes will be lost.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Discard'),
+          ),
+        ],
+      ),
+    );
+    return shouldDiscard ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     _log.finer("Building EditNoteScreen widget");
-    return Scaffold(
-      appBar: AppBar(
-        // Back button pops with null
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context, null),
-          tooltip: 'Cancel Edit',
-        ),
-        title: const Text('Edit Note'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: _updateNote, 
-            tooltip: 'Save Changes',
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+    return PopScope(
+      canPop: !_isDirty, // Allow pop if not dirty
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        _log.fine('Pop invoked on EditNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result');
+        if (didPop) return;
 
-      body: Hero(
-        tag: widget.heroTag, // Use the tag passed in constructor
-        child: Material(
-          type: MaterialType.transparency,
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 0,
-                margin: EdgeInsets.zero,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListView(
-                    children: <Widget>[
-                      // Title TextField
-                      TextField(
-                        controller: _titleController,
-                        decoration: const InputDecoration(
-                          labelText: 'Title',
-                          hintText: 'Enter note title',
-                          border: InputBorder.none,
-                          filled: false,
+        final navigator = mounted ? Navigator.of(context, rootNavigator: true) : null;
+        final bool shouldDiscard = await _showDiscardDialog();
+
+        if (shouldDiscard && mounted && navigator != null) {
+          navigator.pop();
+        }
+      },
+
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Note'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: _updateNote, 
+              tooltip: 'Save Changes',
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+
+        body: Hero(
+          tag: widget.heroTag, // Use the tag passed in constructor
+          child: Material(
+            type: MaterialType.transparency,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                  elevation: 0,
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListView(
+                      children: <Widget>[
+                        // Title TextField
+                        TextField(
+                          controller: _titleController,
+                          decoration: const InputDecoration(
+                            labelText: 'Title',
+                            hintText: 'Enter note title',
+                            border: InputBorder.none,
+                            filled: false,
+                          ),
+                          style: Theme.of(context).textTheme.headlineSmall,
+                          textCapitalization: TextCapitalization.sentences,
+                          maxLines: null,
                         ),
-                        style: Theme.of(context).textTheme.headlineSmall,
-                        textCapitalization: TextCapitalization.sentences,
-                        maxLines: null,
-                      ),
-                      const SizedBox(height: 16.0),
-                      // Content TextField
-                      TextField(
-                        controller: _contentController,
-                        decoration: const InputDecoration(
-                          labelText: 'Content',
-                          hintText: 'Enter your note details...',
-                          border: InputBorder.none,
-                          filled: false,
-                          alignLabelWithHint: true,
-                        ),
-                        maxLines: null,
-                        minLines: 10,
-                        keyboardType: TextInputType.multiline,
-                        textCapitalization: TextCapitalization.sentences,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                       ),
-                    ],
+                        const SizedBox(height: 16.0),
+                        // Content TextField
+                        TextField(
+                          controller: _contentController,
+                          decoration: const InputDecoration(
+                            labelText: 'Content',
+                            hintText: 'Enter your note details...',
+                            border: InputBorder.none,
+                            filled: false,
+                            alignLabelWithHint: true,
+                          ),
+                          maxLines: null,
+                          minLines: 10,
+                          keyboardType: TextInputType.multiline,
+                          textCapitalization: TextCapitalization.sentences,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),

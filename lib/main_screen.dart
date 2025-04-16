@@ -166,23 +166,20 @@ class _MainScreenState extends State<MainScreen> {
 
     final result = await Navigator.push<Map<String, String>>(
       context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const AddNoteScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const Offset begin = Offset(1.0, 0.0); // Start position (off-screen right)
-          const Offset end = Offset.zero; // End position (on-screen)
-          const Curve curve = Curves.easeInOut; // Animation curve
-
-          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          var offsetAnimation = animation.drive(tween);
-
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
-          );
-        },
-        transitionDuration: _kTransitionDuration,
-      ),
+      MaterialPageRoute(builder: (context) => const AddNoteScreen()),
+      // Unfortunately this doesn't seem to work with predictive back gesture yet
+      // PageRouteBuilder(
+      //   pageBuilder: (context, animation, secondaryAnimation) => const AddNoteScreen(),
+      //   transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      //     const Offset begin = Offset(1.0, 0.0);
+      //     const Offset end = Offset.zero;
+      //     const Curve curve = Curves.easeInOut;
+      //     var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      //     var offsetAnimation = animation.drive(tween);
+      //     return SlideTransition(position: offsetAnimation, child: child);
+      //   },
+      //   transitionDuration: _kTransitionDuration,
+      // ),
     );
 
     if(mounted) {

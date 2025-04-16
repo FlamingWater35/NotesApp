@@ -240,13 +240,15 @@ class _UpdateScreenState extends State<UpdateScreen> {
       body: Hero(
         tag: widget.heroTag,
         child: Material(
-           type: MaterialType.transparency,
-           child: Center(
-             child: Padding(
-               padding: const EdgeInsets.all(16.0),
-               child: _buildContent(),
+          type: MaterialType.transparency,
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: _buildContent(),
+              ),
              ),
-           ),
+          ),
         ),
       ),
     );
