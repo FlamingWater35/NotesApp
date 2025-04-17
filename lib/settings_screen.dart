@@ -112,7 +112,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     _log.finer("Building SettingsScreen widget");
