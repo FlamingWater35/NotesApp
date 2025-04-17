@@ -148,10 +148,18 @@ class _MainScreenState extends State<MainScreen> {
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
       _log.fine("Navigation item tapped: index $index");
+      FocusScope.of(context).unfocus();
       setState(() {
-        FocusScope.of(context).unfocus();
         _selectedIndex = index;
         _widgetOptions = _buildWidgetOptions();
+      });
+
+      // Fix for search bar getting focused on settings screen after exiting update check screen
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          FocusScope.of(context).requestFocus(FocusNode());
+          _log.fine("Requested focus on a new empty node after tab switch frame.");
+        }
       });
     }
   }
