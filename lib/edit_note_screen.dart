@@ -82,7 +82,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _log.info("Attempting to update note ID: $_noteId");
     final String title = _titleController.text.trim();
     final String content = _contentController.text.trim();
-    final String dateString = (_selectedDate ?? DateTime.now()).toIso8601String();
+    final String dateString = (_selectedDate ?? _initialDate ?? DateTime.now()).toIso8601String();
     final String modifiedString = DateTime.now().toIso8601String();
 
     // Prevent saving empty note if needed (or allow it)
