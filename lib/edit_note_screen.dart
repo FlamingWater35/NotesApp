@@ -26,6 +26,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   late String _initialContent;
   DateTime? _selectedDate;
   DateTime? _initialDate;
+  late String _createdAtString;
   bool _isDirty = false;
 
   @override
@@ -47,6 +48,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     _initialDate ??= DateTime.now();
     _selectedDate = _initialDate;
     _log.fine("Initial date set to: $_initialDate");
+    _createdAtString = widget.initialNoteData['createdAt'] ?? DateTime.now().toIso8601String();
 
     _titleController = TextEditingController(text: widget.initialNoteData['title']);
     _contentController = TextEditingController(text: widget.initialNoteData['content']);
@@ -81,15 +83,18 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     final String title = _titleController.text.trim();
     final String content = _contentController.text.trim();
     final String dateString = (_selectedDate ?? DateTime.now()).toIso8601String();
+    final String modifiedString = DateTime.now().toIso8601String();
 
     // Prevent saving empty note if needed (or allow it)
     // if (title.isEmpty && content.isEmpty) { ... return; }
 
     final updatedNoteData = {
-      'id': _noteId, // Keep original ID
+      'id': _noteId,
       'title': title.isEmpty ? 'Untitled Note' : title,
       'content': content,
       'date': dateString,
+      'createdAt': _createdAtString,
+      'lastModified': modifiedString,
     };
 
     _log.fine('Returning updated note data: $updatedNoteData');

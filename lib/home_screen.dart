@@ -18,7 +18,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-enum SortProperty { date, title }
+enum SortProperty { date, title, lastModified, createdAt }
 
 class _HomeScreenState extends State<HomeScreen> {
   final _log = Logger('HomeScreenState');
@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final FocusNode _searchFocusNode = FocusNode();
 
   List<Map<String, String>> _displayedNotes = [];
-  SortProperty _sortBy = SortProperty.date;
+  SortProperty _sortBy = SortProperty.lastModified;
   bool _sortAscending = false;
 
   @override
@@ -78,22 +78,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
     filteredNotes.sort((a, b) {
       int compareResult = 0;
-      switch (_sortBy) {
-        case SortProperty.date:
-          try {
-            final dateA = DateTime.tryParse(a['date'] ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
-            final dateB = DateTime.tryParse(b['date'] ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
+      try {
+        switch (_sortBy) {
+          case SortProperty.date:
+            final dateA = DateTime.tryParse(a['date'] ?? '') ?? DateTime(1970);
+            final dateB = DateTime.tryParse(b['date'] ?? '') ?? DateTime(1970);
             compareResult = dateA.compareTo(dateB);
-          } catch (e) {
-            _log.warning("Error parsing dates during sort: $e");
-            compareResult = 0;
-          }
-          break;
-        case SortProperty.title:
-          final titleA = a['title']?.toLowerCase() ?? '';
-          final titleB = b['title']?.toLowerCase() ?? '';
-          compareResult = titleA.compareTo(titleB);
-          break;
+            break;
+          case SortProperty.title:
+            final titleA = a['title']?.toLowerCase() ?? '';
+            final titleB = b['title']?.toLowerCase() ?? '';
+            compareResult = titleA.compareTo(titleB);
+            break;
+          case SortProperty.lastModified:
+            final modA = DateTime.tryParse(a['lastModified'] ?? '') ?? DateTime(1970);
+            final modB = DateTime.tryParse(b['lastModified'] ?? '') ?? DateTime(1970);
+            compareResult = modA.compareTo(modB);
+            break;
+          case SortProperty.createdAt:
+            final createdA = DateTime.tryParse(a['createdAt'] ?? '') ?? DateTime(1970);
+            final createdB = DateTime.tryParse(b['createdAt'] ?? '') ?? DateTime(1970);
+            compareResult = createdA.compareTo(createdB);
+            break;
+        }
+      } catch (e) {
+        _log.warning("Error parsing data during sort for property $_sortBy: $e");
+        compareResult = 0;
       }
       return _sortAscending ? compareResult : -compareResult;
     });
@@ -151,10 +161,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  String _getSortPropertyText(SortProperty property) {
+    switch (property) {
+      case SortProperty.date: return 'Date';
+      case SortProperty.title: return 'Title';
+      case SortProperty.lastModified: return 'Last Modified';
+      case SortProperty.createdAt: return 'Created At';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     _log.finer("Building HomeScreen widget");
+    final theme = Theme.of(context);
+
     return SafeArea(
       child: Column(
         children: [
@@ -189,49 +209,73 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Wrap(
-                  spacing: 8.0,
-                  children: [
-                    ChoiceChip(
-                      label: const Text('Date'),
-                      selected: _sortBy == SortProperty.date,
-                      onSelected: (selected) {
-                        if (selected) {
-                          _log.fine("Sort by Date selected.");
-                          setState(() { _sortBy = SortProperty.date; });
-                          _updateDisplayedNotes();
-                        }
-                      },
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                Text(
+                  'Sort by: ',
+                  style: theme.textTheme.bodyMedium,
+                ),
+                Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0),),
+                PopupMenuButton<SortProperty>(
+                  initialValue: _sortBy,
+                  onSelected: (SortProperty newSortBy) {
+                    if (_sortBy != newSortBy) {
+                      _log.fine("Sort property changed to: $newSortBy");
+                      setState(() { _sortBy = newSortBy; });
+                      _updateDisplayedNotes();
+                    }
+                  },
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  position: PopupMenuPosition.under,
+
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _getSortPropertyText(_sortBy),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_drop_down,
+                        size: 20.0,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ],
+                  ),
+
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<SortProperty>>[
+                    const PopupMenuItem<SortProperty>(
+                      value: SortProperty.lastModified,
+                      child: Text('Last Modified'),
                     ),
-                    ChoiceChip(
-                      label: const Text('Title'),
-                      selected: _sortBy == SortProperty.title,
-                      onSelected: (selected) {
-                        if (selected) {
-                          _log.fine("Sort by Title selected.");
-                          setState(() { _sortBy = SortProperty.title; });
-                          _updateDisplayedNotes();
-                        }
-                      },
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                     const PopupMenuItem<SortProperty>(
+                      value: SortProperty.createdAt,
+                      child: Text('Created At'),
+                    ),
+                     const PopupMenuItem<SortProperty>(
+                      value: SortProperty.date,
+                      child: Text('Date'),
+                    ),
+                    const PopupMenuItem<SortProperty>(
+                      value: SortProperty.title,
+                      child: Text('Title'),
                     ),
                   ],
                 ),
+
+                const Spacer(),
 
                 IconButton(
                   icon: Icon(
                     _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
                     size: 20.0,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colorScheme.primary,
                   ),
-                  tooltip: _sortAscending ? 'Sort Ascending' : 'Sort Descending',
+                  tooltip: _sortAscending ? 'Ascending (A-Z, Oldest first)' : 'Descending (Z-A, Newest first)',
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
                   onPressed: () {

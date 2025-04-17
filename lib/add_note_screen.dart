@@ -65,6 +65,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     }
 
     final String uniqueId = DateTime.now().toIso8601String() + UniqueKey().toString();
+    final DateTime now = DateTime.now();
+    final String nowString = now.toIso8601String();
     final String dateString = (_selectedDate ?? DateTime.now()).toIso8601String();
 
     final noteData = {
@@ -72,6 +74,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       'title': title.isEmpty ? 'Untitled Note' : title,
       'content': content,
       'date': dateString,
+      'createdAt': nowString,
+      'lastModified': nowString,
     };
 
     _log.fine('Returning note data: $noteData');

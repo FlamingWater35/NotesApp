@@ -69,6 +69,18 @@ class RestoreService {
                   needsResave = true;
                 }
               }
+              final String nowString = DateTime.now().toIso8601String();
+              if (noteMap['createdAt'] == null || noteMap['createdAt']!.isEmpty) {
+                noteMap['createdAt'] = nowString;
+                _log.warning("Assigned current createdAt during restore to note ID: ${noteMap['id']}");
+                needsResave = true;
+              }
+              if (noteMap['lastModified'] == null || noteMap['lastModified']!.isEmpty) {
+                noteMap['lastModified'] = noteMap['createdAt']!;
+                _log.warning("Assigned createdAt as lastModified during restore to note ID: ${noteMap['id']}");
+                needsResave = true;
+              }
+
               restoredNotes.add(noteMap);
             } else {
               _log.warning("Skipping item during restore: Missing 'title' or 'content' key. Item: $item");
