@@ -107,25 +107,40 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   Future<bool> _showDiscardDialog() async {
-    final bool? shouldDiscard = await showDialog<bool>(
+    final bool? shouldDiscard = await showGeneralDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Discard changes?'),
-        content: const Text('If you go back now, your changes will be lost.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
+        return AlertDialog(
+          title: const Text('Discard changes?'),
+          content: const Text('If you go back now, your changes will be lost.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(buildContext).pop(false),
             ),
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Discard'),
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(buildContext).colorScheme.error,
+              ),
+              child: const Text('Discard'),
+              onPressed: () => Navigator.of(buildContext).pop(true),
+            ),
+          ],
+        );
+      },
+      transitionBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+        return ScaleTransition(
+          scale: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutBack,
           ),
-        ],
-      ),
+          child: child,
+        );
+      },
     );
     return shouldDiscard ?? false;
   }
@@ -159,6 +174,13 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
         _log.fine('Pop invoked on EditNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result');
         if (didPop) return;
+
+        // Keyboard focus check
+        if (mounted && MediaQuery.viewInsetsOf(context).bottom > 0) {
+          _log.fine("Keyboard is visible, unfocusing instead of showing discard dialog.");
+          FocusScope.of(context).unfocus();
+          return;
+        }
 
         final navigator = mounted ? Navigator.of(context, rootNavigator: true) : null;
         final bool shouldDiscard = await _showDiscardDialog();
