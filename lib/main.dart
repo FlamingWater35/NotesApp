@@ -96,17 +96,12 @@ class _MyAppState extends State<MyApp> {
     MyApp._log.info("Building MyApp widget");
     const seedColor = Colors.blueAccent;
 
-    const pageTransitionsTheme = PageTransitionsTheme(
-      builders: <TargetPlatform, PageTransitionsBuilder>{
-        // Predictive back transitions for Android
-        TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-        // Keep defaults for other platforms
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
-        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
-      },
-    );
+    // Predictive back transitions for Android
+    // const pageTransitionsTheme = PageTransitionsTheme(
+    //   builders: <TargetPlatform, PageTransitionsBuilder>{
+    //     TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+    //   },
+    // );
 
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: _themeNotifier,
@@ -121,7 +116,7 @@ class _MyAppState extends State<MyApp> {
               brightness: Brightness.light,
             ),
             useMaterial3: true,
-            pageTransitionsTheme: pageTransitionsTheme,
+            // pageTransitionsTheme: pageTransitionsTheme,
           ),
 
           darkTheme: ThemeData(
@@ -130,7 +125,7 @@ class _MyAppState extends State<MyApp> {
               brightness: Brightness.dark,
             ),
             useMaterial3: true,
-            pageTransitionsTheme: pageTransitionsTheme,
+            // pageTransitionsTheme: pageTransitionsTheme,
           ),
           
           themeMode: currentMode,
