@@ -25,22 +25,16 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  final List<Map<String, String>> _animatedListItems = [];
-
-  List<Map<String, String>> _filteredSortedNotesCache = [];
+  List<Map<String, String>> _displayedNotes = [];
   SortProperty _sortBy = SortProperty.lastModified;
   bool _sortAscending = false;
-
-  static const Duration _kAnimationDuration = Duration(milliseconds: 300);
 
   @override
   void initState() {
     super.initState();
     _log.fine("initState called");
-    _calculateFilteredSortedNotes();
-    _animatedListItems.addAll(_filteredSortedNotesCache);
-    _searchController.addListener(_onSearchOrSortChanged);
+    _updateDisplayedNotes();
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
@@ -48,29 +42,27 @@ class _HomeScreenState extends State<HomeScreen> {
     super.didUpdateWidget(oldWidget);
     if (widget.notes != oldWidget.notes) {
       _log.fine("Notes list updated externally, running filter and forcing rebuild.");
-      _updateAnimatedList();
+      _updateDisplayedNotes();
     }
   }
 
   @override
   void dispose() {
     _log.fine("dispose called");
-    _searchController.removeListener(_onSearchOrSortChanged);
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
   }
 
-  void _onSearchOrSortChanged() {
-    setState(() {
-      _log.finer("Search/Sort Changed. Triggering update. Search Text: ${_searchController.text}");
-      _updateAnimatedList();
-    });
+  void _onSearchChanged() {
+    _log.finer("Search text changed: ${_searchController.text}");
+    _updateDisplayedNotes();
   }
 
-  void _calculateFilteredSortedNotes() {
+  void _updateDisplayedNotes() {
     final query = _searchController.text.toLowerCase();
-    _log.finer("Calculating Filtered/Sorted Notes. Query: '$query', SortBy: $_sortBy, Asc: $_sortAscending");
+    _log.finer("Updating displayed notes. Query: '$query', SortBy: $_sortBy, Asc: $_sortAscending");
 
     List<Map<String, String>> filteredNotes;
     if (query.isEmpty) {
@@ -82,10 +74,11 @@ class _HomeScreenState extends State<HomeScreen> {
         return titleLower.contains(query) || contentLower.contains(query);
       }).toList();
     }
+    _log.finer("Filtering complete. ${filteredNotes.length} notes match query.");
 
     filteredNotes.sort((a, b) {
+      int compareResult = 0;
       try {
-        int compareResult = 0;
         switch (_sortBy) {
           case SortProperty.date:
             final dateA = DateTime.tryParse(a['date'] ?? '') ?? DateTime(1970);
@@ -108,132 +101,19 @@ class _HomeScreenState extends State<HomeScreen> {
             compareResult = createdA.compareTo(createdB);
             break;
         }
-        return _sortAscending ? compareResult : -compareResult;
       } catch (e) {
         _log.warning("Error parsing data during sort for property $_sortBy: $e");
-        return 0;
+        compareResult = 0;
       }
+      return _sortAscending ? compareResult : -compareResult;
     });
-     _filteredSortedNotesCache = filteredNotes;
-     _log.finer("Calculation complete. Target list size: ${_filteredSortedNotesCache.length}");
-  }
+     _log.finer("Sorting complete.");
 
-  void _updateAnimatedList() {
-    _calculateFilteredSortedNotes();
-
-    final List<Map<String, String>> newList = _filteredSortedNotesCache;
-    final List<Map<String, String>> oldList = List.from(_animatedListItems);
-
-    for (int i = oldList.length - 1; i >= 0; i--) {
-      final currentItem = oldList[i];
-      if (!newList.any((newItem) => newItem['id'] == currentItem['id'])) {
-        _log.finer("AnimatedList: Removing item at index $i, ID: ${currentItem['id']}");
-        final removedItemData = _animatedListItems.removeAt(i);
-        _listKey.currentState?.removeItem(
-          i,
-          (context, animation) => _buildItem(removedItemData, animation, isRemoving: true),
-          duration: _kAnimationDuration,
-        );
-      }
-    }
-
-    for (int i = 0; i < newList.length; i++) {
-      final newItem = newList[i];
-      if (!_animatedListItems.any((currentItem) => currentItem['id'] == newItem['id'])) {
-        _log.finer("AnimatedList: Inserting item at index $i, ID: ${newItem['id']}");
-        _animatedListItems.insert(i, newItem);
-        _listKey.currentState?.insertItem(i, duration: _kAnimationDuration);
-      }
-    }
-
-    if (!listEquals(_animatedListItems, newList)) {
-      _log.fine("AnimatedList: Synchronizing internal list order with target list.");
-      _animatedListItems.clear();
-      _animatedListItems.addAll(newList);
-      // If sorting doesn't visually update
-      // setState((){});
-    }
-  }
-
-  bool listEquals<T>(List<T>? a, List<T>? b) {
-    if (a == null) return b == null;
-    if (b == null || a.length != b.length) return false;
-    if (identical(a, b)) return true;
-    for (int index = 0; index < a.length; index += 1) {
-      if (a[index] != b[index]) {
-        if (a[index] is Map && b[index] is Map && (a[index] as Map)['id'] != (b[index] as Map)['id']) {
-          return false;
-        } else if (!(a[index] is Map && b[index] is Map)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  Widget _buildItem(Map<String, String> note, Animation<double> animation, {bool isRemoving = false}) {
-    return FadeTransition(
-      opacity: animation,
-      child: isRemoving
-        ? _buildNoteCard(note)
-        : SlideTransition(
-          position: Tween<Offset>(
-          begin: const Offset(0.0, 0.1),
-          end: Offset.zero,
-          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
-          child: _buildNoteCard(note),
-        ),
-    );
-  }
-
-  Widget _buildNoteCard(Map<String, String> note) {
-    final String heroTag = note['id'] ?? Object.hash(note['title'], note['content']).toString();
-    String formattedDate = '';
-    try {
-      final dateString = note['date'];
-      if (dateString != null && dateString.isNotEmpty) {
-        final dateTime = DateTime.parse(dateString);
-        formattedDate = DateFormat.yMd().format(dateTime);
-      }
-    } catch (e) {
-      _log.warning("Could not parse date for note ID ${note['id']}: ${note['date']}", e);
-      // formattedDate remains empty
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1.0),
-      child: Hero(
-        tag: heroTag,
-        child: Card(
-          margin: const EdgeInsets.symmetric(vertical: 4.0),
-          child: ListTile(
-            title: Text(
-              note['title'] ?? 'Error: Missing Title',
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-            subtitle: Text(
-              '${formattedDate.isNotEmpty ? "$formattedDate - " : ""}${note['content'] ?? ''}',
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: IconButton(
-              icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-              tooltip: 'Delete Note',
-              onPressed: () {
-                _log.fine("Delete button pressed for note ID: ${note['id']}");
-                _showDeleteConfirmation(context, note);
-              },
-            ),
-
-            onTap: () {
-              FocusScope.of(context).unfocus();
-              _log.info('Tapped on note ID: ${note['id']}');
-              widget.onNoteTap(note, heroTag);
-            },
-          ),
-        ),
-      ),
-    );
+    // Only call setState if the list content or order might have changed
+    // Called on every update, could optimize with list comparison
+    setState(() {
+      _displayedNotes = filteredNotes;
+    });
   }
 
   Future<void> _showDeleteConfirmation(BuildContext context, Map<String, String> note) async {
@@ -343,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (_sortBy != newSortBy) {
                       _log.fine("Sort property changed to: $newSortBy");
                       setState(() { _sortBy = newSortBy; });
-                      _onSearchOrSortChanged();
+                      _updateDisplayedNotes();
                     }
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -401,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     _log.fine("Sort direction toggled.");
                     setState(() { _sortAscending = !_sortAscending; });
-                    _onSearchOrSortChanged();
+                    _updateDisplayedNotes();
                   },
                 ),
               ],
@@ -409,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Expanded(
-            child: _animatedListItems.isEmpty
+            child: _displayedNotes.isEmpty
               ? Center(
                 child: Text(
                   _searchController.text.isEmpty && widget.notes.isEmpty
@@ -423,18 +303,56 @@ class _HomeScreenState extends State<HomeScreen> {
                   textAlign: TextAlign.center,
                 ),
               )
-              : AnimatedList(
-                key: _listKey,
-                initialItemCount: _animatedListItems.length,
+              : ListView.builder(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                itemBuilder: (context, index, animation) {
-                  if (index < _animatedListItems.length) {
-                    final note = _animatedListItems[index];
-                    return _buildItem(note, animation);
-                  } else {
-                    _log.severe("AnimatedList itemBuilder index out of bounds: $index");
-                    return Container();
+                itemCount: _displayedNotes.length,
+                itemBuilder: (context, index) {
+                  final note = _displayedNotes[index];
+                  final String heroTag = note['id'] ?? Object.hash(note['title'], note['content']).toString();
+                  String formattedDate = '';
+                  try {
+                    final dateString = note['date'];
+                    if (dateString != null && dateString.isNotEmpty) {
+                      final dateTime = DateTime.parse(dateString);
+                      formattedDate = DateFormat.yMd().format(dateTime);
+                    }
+                  } catch (e) {
+                    _log.warning("Could not parse date for note ID ${note['id']}: ${note['date']}", e);
+                    // formattedDate remains empty
                   }
+
+                  return Hero(
+                    tag: heroTag,
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: ListTile(
+                        title: Text(
+                          note['title'] ?? 'Error: Missing Title',
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Text(
+                          '${formattedDate.isNotEmpty ? "$formattedDate - " : ""}${note['content'] ?? ''}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                          tooltip: 'Delete Note',
+                          onPressed: () {
+                            _log.fine("Delete button pressed for note ID: ${note['id']}");
+                            _showDeleteConfirmation(context, note);
+                          },
+                        ),
+
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          _log.info('Tapped on note ID: ${note['id']}');
+                          widget.onNoteTap(note, heroTag);
+                        },
+                      ),
+                    ),
+                  );
                 },
               ),
           ),
