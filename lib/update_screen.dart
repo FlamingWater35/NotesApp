@@ -3,7 +3,7 @@ import 'package:logging/logging.dart';
 import 'components/update_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-enum UpdateStatus { idle, checking, available, downloading, error, installed }
+enum UpdateStatus { idle, checking, available, downloading, preparingInstall, error, installed }
 
 class UpdateScreen extends StatefulWidget {
   final String heroTag;
@@ -97,14 +97,23 @@ class _UpdateScreenState extends State<UpdateScreen> {
     if (!mounted) return;
 
     if (downloadedPath != null) {
+      _log.info("Download complete. Preparing for installation...");
+      setState(() {
+        _status = UpdateStatus.preparingInstall;
+      });
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      if (!mounted) return;
+
+      _log.info("Initiating installation...");
       final bool installInitiated = await UpdateService.installUpdate(downloadedPath);
       if (!mounted) return;
 
       if (installInitiated) {
         _log.info("Install prompt likely shown. Waiting for user/OS action.");
-        // App usually closes here, cleanup happens on next launch.
-        // Maybe show a generic message
-        // setState(() { _status = UpdateStatus.idle; _errorMessage = "Installation process initiated."});
+        setState(() {
+          _status = UpdateStatus.installed;
+        });
       } else {
         _log.warning("Failed to initiate installation prompt.");
         setState(() {
@@ -122,23 +131,27 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   void _updateDownloadProgress(double progress) {
     if (mounted) {
+      final clampedProgress = progress.clamp(0.0, 1.0);
       setState(() {
-        _downloadProgress = progress;
+        _downloadProgress = clampedProgress;
       });
     }
   }
 
   Widget _buildContent() {
+    final statusTextStyle = Theme.of(context).textTheme.titleMedium;
+
     switch (_status) {
       case UpdateStatus.checking:
-        return const Column(
+        return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text("Checking for updates..."),
+            Text("Checking for updates...", style: statusTextStyle),
           ],
         );
+
       case UpdateStatus.available:
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -157,21 +170,42 @@ class _UpdateScreenState extends State<UpdateScreen> {
             ),
           ],
         );
+
       case UpdateStatus.downloading:
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Downloading update ($_latestVersion)..."),
+            Text("Downloading update ($_latestVersion)...", style: statusTextStyle),
             const SizedBox(height: 16),
-            LinearProgressIndicator(
-              value: _downloadProgress < 0 ? null : _downloadProgress,
-              minHeight: 8,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: LinearProgressIndicator(
+                value: _downloadProgress < 0 ? null : _downloadProgress,
+                minHeight: 8,
+              ),
             ),
             const SizedBox(height: 8),
             if (_downloadProgress >= 0)
               Text("${(_downloadProgress * 100).toStringAsFixed(0)}%"),
           ],
         );
+
+      case UpdateStatus.preparingInstall:
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Starting install...", style: statusTextStyle),
+            SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: LinearProgressIndicator(
+                value: null,
+                minHeight: 8,
+              ),
+            ),
+          ],
+        );
+
       case UpdateStatus.error:
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -192,6 +226,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
             ),
           ],
         );
+
       case UpdateStatus.idle:
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -217,13 +252,14 @@ class _UpdateScreenState extends State<UpdateScreen> {
             ),
           ],
         );
-      case UpdateStatus.installed: // Unlikely to be shown directly
-        return const Column(
+
+      case UpdateStatus.installed:
+        return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.check_circle, size: 60, color: Colors.green),
             SizedBox(height: 16),
-            Text("Update successful!"), // Placeholder
+            Text("Install dialog shown", style: statusTextStyle),
           ],
         );
     }
