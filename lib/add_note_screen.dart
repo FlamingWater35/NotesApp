@@ -210,7 +210,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                     border: OutlineInputBorder(),
                     alignLabelWithHint: true,
                   ),
-                  maxLines: 10,
+                  maxLines: 20,
                   minLines: 5,
                   keyboardType: TextInputType.multiline,
                   textCapitalization: TextCapitalization.sentences,
