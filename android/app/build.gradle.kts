@@ -9,8 +9,8 @@ plugins {
 }
 
 android {
-    namespace = "com.example.notes_app"
-    compileSdk = flutter.compileSdkVersion
+    namespace = "com.flamingwater.notes_app"
+    compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     compileOptions {
