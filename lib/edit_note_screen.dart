@@ -29,6 +29,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   DateTime? _selectedDate;
   bool _isDirty = false;
   bool _isLoading = true;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -92,12 +93,16 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     }
   }
 
-  void _updateNote() {
-    if (_originalNote == null) {
+  void _updateNote() async {
+    if (_originalNote == null || _isSaving) {
       _log.warning("Attempted to update note before it was loaded.");
       return;
     }
     _log.info("Attempting to update note ID: ${widget.noteId}");
+    setState(() {
+      _isSaving = true;
+    });
+
     final String title = _titleController.text.trim();
     final String content = _contentController.text.trim();
     final DateTime newDate = _selectedDate ?? _originalNote!.date;
@@ -115,12 +120,26 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     );
 
     _log.fine('Calling provider to update note data: $updatedNote');
-    ref.read(notesProvider.notifier).updateNote(updatedNote);
+    try {
+      await ref.read(notesProvider.notifier).updateNote(updatedNote);
+      _log.fine('Provider update successful for ID ${widget.noteId}');
 
-    if (mounted) {
-      Navigator.pop(context);
-    } else {
-      _log.warning("Tried to pop EditNoteScreen after update, but widget was unmounted.");
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e, s) {
+      _log.severe('Error saving note via provider', e, s);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving note: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
   }
 
@@ -226,90 +245,112 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
         appBar: AppBar(
           title: const Text('Edit Note'),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: _isDirty ? _updateNote : null, 
-              tooltip: 'Save Changes',
-            ),
-            const SizedBox(width: 8),
+            if (_isSaving)
+              const Padding(
+                padding: EdgeInsets.only(right: 8.0),
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2.0),
+                  ),
+                ),
+              )
+            else
+              Padding(
+                padding: EdgeInsets.only(right: 8.0),
+                child: Center(
+                  child: IconButton(
+                    icon: const Icon(Icons.check),
+                    onPressed: _isDirty ? _updateNote : null, 
+                    tooltip: 'Save Changes',
+                  ),
+                ),
+              ),
           ],
         ),
 
-        body: Hero(
-          tag: widget.heroTag,
-          child: Material(
-            type: MaterialType.transparency,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Card(
-                  elevation: 0,
-                  margin: EdgeInsets.zero,
+        body: IgnorePointer(
+          ignoring: _isSaving,
+          child: Opacity(
+            opacity: _isSaving ? 0.5 : 1.0,
+            child: Hero(
+              tag: widget.heroTag,
+              child: Material(
+                type: MaterialType.transparency,
+                child: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: ListView(
-                      children: <Widget>[
-                        // Title TextField
-                        TextField(
-                          controller: _titleController,
-                          decoration: const InputDecoration(
-                            labelText: 'Title',
-                            hintText: 'Enter note title',
-                            border: InputBorder.none,
-                            filled: false,
-                          ),
-                          style: Theme.of(context).textTheme.headlineSmall,
-                          textCapitalization: TextCapitalization.sentences,
-                          maxLines: 1,
-                        ),
-                        const SizedBox(height: 16.0),
+                    child: Card(
+                      elevation: 0,
+                      margin: EdgeInsets.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ListView(
+                          children: <Widget>[
+                            // Title TextField
+                            TextField(
+                              controller: _titleController,
+                              decoration: const InputDecoration(
+                                labelText: 'Title',
+                                hintText: 'Enter note title',
+                                border: InputBorder.none,
+                                filled: false,
+                              ),
+                              style: Theme.of(context).textTheme.headlineSmall,
+                              textCapitalization: TextCapitalization.sentences,
+                              maxLines: 1,
+                            ),
+                            const SizedBox(height: 16.0),
 
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => _selectDate(context),
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => _selectDate(context),
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Icon(Icons.calendar_today_outlined, size: 20),
-                                      const SizedBox(width: 12),
-                                      Text(
-                                        displayDate,
-                                        style: Theme.of(context).textTheme.titleMedium,
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.calendar_today_outlined, size: 20),
+                                          const SizedBox(width: 12),
+                                          Text(
+                                            displayDate,
+                                            style: Theme.of(context).textTheme.titleMedium,
+                                          ),
+                                        ],
                                       ),
+                                      const Icon(Icons.arrow_drop_down, color: Colors.grey),
                                     ],
                                   ),
-                                  const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        const Divider(height: 1),
-                        const SizedBox(height: 16.0),
+                            const Divider(height: 1),
+                            const SizedBox(height: 16.0),
 
-                        // Content TextField
-                        TextField(
-                          controller: _contentController,
-                          decoration: const InputDecoration(
-                            labelText: 'Content',
-                            hintText: 'Enter your note details...',
-                            border: InputBorder.none,
-                            filled: false,
-                            alignLabelWithHint: true,
-                          ),
-                          maxLines: 20,
-                          minLines: 5,
-                          keyboardType: TextInputType.multiline,
-                          textCapitalization: TextCapitalization.sentences,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                      ],
+                            // Content TextField
+                            TextField(
+                              controller: _contentController,
+                              decoration: const InputDecoration(
+                                labelText: 'Content',
+                                hintText: 'Enter your note details...',
+                                border: InputBorder.none,
+                                filled: false,
+                                alignLabelWithHint: true,
+                              ),
+                              maxLines: 20,
+                              minLines: 5,
+                              keyboardType: TextInputType.multiline,
+                              textCapitalization: TextCapitalization.sentences,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),

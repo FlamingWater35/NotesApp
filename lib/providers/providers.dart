@@ -44,20 +44,27 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
     state = const AsyncLoading();
     final dbHelper = ref.read(databaseProvider);
 
-    state = await AsyncValue.guard(() async {
-      await dbHelper.updateNote(note);
-      return await dbHelper.getAllNotes();
-      // Alternative: Update locally
-      // final currentNotes = state.value ?? [];
-      // final index = currentNotes.indexWhere((n) => n.id == note.id);
-      // if (index != -1) {
-      //   final updatedList = List<Note>.from(currentNotes);
-      //   updatedList[index] = note;
-      //   return updatedList;
-      // }
-      // return currentNotes; // Should not happen if note exists
-    });
+    try {
+      state = await AsyncValue.guard(() async {
+        await dbHelper.updateNote(note);
+        return await dbHelper.getAllNotes();
+        // Alternative: Update locally
+        // final currentNotes = state.value ?? [];
+        // final index = currentNotes.indexWhere((n) => n.id == note.id);
+        // if (index != -1) {
+        //   final updatedList = List<Note>.from(currentNotes);
+        //   updatedList[index] = note;
+        //   return updatedList;
+        // }
+        // return currentNotes; // Should not happen if note exists
+      });
+    } catch (e, s) {
+      _log.severe("Error updating note in provider", e, s);
+      state = AsyncError(e, s);
+      rethrow;
+    } finally {
      _log.fine("NotesNotifier: updateNote finished for ID ${note.id}");
+    }
   }
 
   Future<void> deleteNote(String id) async {
