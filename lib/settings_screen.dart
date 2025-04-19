@@ -82,7 +82,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         await ref.read(notesProvider.notifier).replaceAllNotes(restoredNotes);
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(  // TODO: Fix this useless bar not showing up
             const SnackBar(
               content: Text('Restore successful!'),
               duration: Duration(seconds: 2),
