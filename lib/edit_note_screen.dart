@@ -1,59 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EditNoteScreen extends StatefulWidget {
-  final Map<String, String> initialNoteData;
+import '../providers/providers.dart';
+import '../models/note_model.dart';
+
+class EditNoteScreen extends ConsumerStatefulWidget {
+  final String noteId;
   final String heroTag;
 
   const EditNoteScreen({
     super.key,
-    required this.initialNoteData,
+    required this.noteId,
     required this.heroTag,
   });
 
   @override
-  State<EditNoteScreen> createState() => _EditNoteScreenState();
+  ConsumerState<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
-class _EditNoteScreenState extends State<EditNoteScreen> {
+class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   final _log = Logger('EditNoteScreenState');
   late TextEditingController _titleController;
   late TextEditingController _contentController;
-  late String _noteId; // Store the original ID
 
-  late String _initialTitle;
-  late String _initialContent;
+  Note? _originalNote;
   DateTime? _selectedDate;
-  DateTime? _initialDate;
-  late String _createdAtString;
   bool _isDirty = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _log.fine("initState called for editing note ID: ${widget.initialNoteData['id']}");
-    _initialTitle = widget.initialNoteData['title'] ?? '';
-    _initialContent = widget.initialNoteData['content'] ?? '';
-    _noteId = widget.initialNoteData['id']!;
+    _log.fine("initState called for editing note ID: ${widget.noteId}");
+    _titleController = TextEditingController();
+    _contentController = TextEditingController();
+    _loadNoteData();
+  }
 
-    try {
-      final dateString = widget.initialNoteData['date'];
-      if (dateString != null && dateString.isNotEmpty) {
-        _initialDate = DateTime.tryParse(dateString);
+  Future<void> _loadNoteData() async {
+    final note = ref.read(notesProvider.notifier).getNoteById(widget.noteId);
+
+    if (note != null && mounted) {
+      _originalNote = note;
+      _titleController.text = note.title;
+      _contentController.text = note.content;
+      _selectedDate = note.date;
+
+      _titleController.addListener(_checkIfDirty);
+      _contentController.addListener(_checkIfDirty);
+
+      setState(() {
+        _isLoading = false;
+      });
+      _log.fine("Successfully loaded data for note ID: ${widget.noteId}");
+    } else {
+      _log.severe("Could not find note with ID ${widget.noteId} to edit.");
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error: Could not load note data.'), backgroundColor: Colors.red),
+        );
+        Navigator.of(context).pop();
       }
-    } catch (e) {
-      _log.warning("Could not parse initial date string: ${widget.initialNoteData['date']}", e);
     }
-    _initialDate ??= DateTime.now();
-    _selectedDate = _initialDate;
-    _log.fine("Initial date set to: $_initialDate");
-    _createdAtString = widget.initialNoteData['createdAt'] ?? DateTime.now().toIso8601String();
-
-    _titleController = TextEditingController(text: widget.initialNoteData['title']);
-    _contentController = TextEditingController(text: widget.initialNoteData['content']);
-    _titleController.addListener(_checkIfDirty);
-    _contentController.addListener(_checkIfDirty);
   }
 
   @override
@@ -67,8 +78,11 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   void _checkIfDirty() {
-    final bool currentlyDirty = _titleController.text != _initialTitle || 
-      _contentController.text != _initialContent || _selectedDate != _initialDate;
+    if (_originalNote == null) return;
+
+    final bool currentlyDirty = _titleController.text != _originalNote!.title ||
+      _contentController.text != _originalNote!.content ||
+      _selectedDate != _originalNote!.date;
 
     if (currentlyDirty != _isDirty) {
       setState(() {
@@ -79,28 +93,32 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   void _updateNote() {
-    _log.info("Attempting to update note ID: $_noteId");
+    if (_originalNote == null) {
+      _log.warning("Attempted to update note before it was loaded.");
+      return;
+    }
+    _log.info("Attempting to update note ID: ${widget.noteId}");
     final String title = _titleController.text.trim();
     final String content = _contentController.text.trim();
-    final String dateString = (_selectedDate ?? _initialDate ?? DateTime.now()).toIso8601String();
-    final String modifiedString = DateTime.now().toIso8601String();
+    final DateTime newDate = _selectedDate ?? _originalNote!.date;
+    final DateTime modifiedTime = DateTime.now();
 
     // Prevent saving empty note if needed (or allow it)
     // if (title.isEmpty && content.isEmpty) { ... return; }
 
-    final updatedNoteData = {
-      'id': _noteId,
-      'title': title.isEmpty ? 'Untitled Note' : title,
-      'content': content,
-      'date': dateString,
-      'createdAt': _createdAtString,
-      'lastModified': modifiedString,
-    };
+    final updatedNote = _originalNote!.copyWith(
+      title: title.isEmpty ? 'Untitled Note' : title,
+      content: content,
+      date: newDate,
+      lastModified: modifiedTime,
+      // createdAt and id remain the same
+    );
 
-    _log.fine('Returning updated note data: $updatedNoteData');
+    _log.fine('Calling provider to update note data: $updatedNote');
+    ref.read(notesProvider.notifier).updateNote(updatedNote);
 
     if (mounted) {
-      Navigator.pop(context, updatedNoteData);
+      Navigator.pop(context);
     } else {
       _log.warning("Tried to pop EditNoteScreen after update, but widget was unmounted.");
     }
@@ -146,6 +164,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    if (_originalNote == null) return;
+
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
@@ -165,9 +185,21 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   @override
   Widget build(BuildContext context) {
     _log.finer("Building EditNoteScreen widget");
-    final String displayDate = _selectedDate != null
-      ? DateFormat.yMMMd().format(_selectedDate!)
-      : 'Select Date';
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Edit Note')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (_originalNote == null && !_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Error')),
+        body: const Center(child: Text('Failed to load note.')),
+      );
+    }
+
+    final String displayDate = DateFormat.yMMMd().format(_selectedDate ?? _originalNote!.date);
       
     return PopScope(
       canPop: !_isDirty,
@@ -176,11 +208,11 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         if (didPop) return;
 
         // Keyboard focus check
-        if (mounted && MediaQuery.viewInsetsOf(context).bottom > 0) {
-          _log.fine("Keyboard is visible, unfocusing instead of showing discard dialog.");
-          FocusScope.of(context).unfocus();
-          return;
-        }
+        // if (mounted && MediaQuery.viewInsetsOf(context).bottom > 0) {
+        //   _log.fine("Keyboard is visible, unfocusing instead of showing discard dialog.");
+        //   FocusScope.of(context).unfocus();
+        //   return;
+        // }
 
         final navigator = mounted ? Navigator.of(context, rootNavigator: true) : null;
         final bool shouldDiscard = await _showDiscardDialog();
@@ -196,7 +228,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
-              onPressed: _updateNote, 
+              onPressed: _isDirty ? _updateNote : null, 
               tooltip: 'Save Changes',
             ),
             const SizedBox(width: 8),

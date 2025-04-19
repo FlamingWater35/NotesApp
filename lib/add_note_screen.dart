@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddNoteScreen extends StatefulWidget {
+import '../providers/providers.dart';
+import '../models/note_model.dart';
+
+class AddNoteScreen extends ConsumerStatefulWidget {
   const AddNoteScreen({super.key});
 
   @override
-  State<AddNoteScreen> createState() => _AddNoteScreenState();
+  ConsumerState<AddNoteScreen> createState() => _AddNoteScreenState();
 }
 
-class _AddNoteScreenState extends State<AddNoteScreen> {
+class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   final _log = Logger('AddNoteScreenState');
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  DateTime? _selectedDate = DateTime.now();
-  DateTime? _initialDate;
+  DateTime _selectedDate = DateTime.now();
+  late DateTime _initialDate;
   bool _isDirty = false;
 
   @override
   void initState() {
     super.initState();
     _log.fine("initState called");
-    _selectedDate = DateTime.now();
     _initialDate = _selectedDate;
     _log.fine("Initial date set to: $_initialDate");
 
@@ -58,30 +61,31 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
 
     if (title.isEmpty && content.isEmpty) {
       _log.warning("Attempted to save an empty note.");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cannot save an empty note.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cannot save an empty note.')),
+        );
+      }
       return;
     }
 
-    final String uniqueId = DateTime.now().toIso8601String() + UniqueKey().toString();
+    final String uniqueId = DateTime.now().millisecondsSinceEpoch.toString() + UniqueKey().toString();
     final DateTime now = DateTime.now();
-    final String nowString = now.toIso8601String();
-    final String dateString = (_selectedDate ?? DateTime.now()).toIso8601String();
 
-    final noteData = {
-      'id': uniqueId,
-      'title': title.isEmpty ? 'Untitled Note' : title,
-      'content': content,
-      'date': dateString,
-      'createdAt': nowString,
-      'lastModified': nowString,
-    };
+    final newNote = Note(
+      id: uniqueId,
+      title: title.isEmpty ? 'Untitled Note' : title,
+      content: content,
+      date: _selectedDate,
+      createdAt: now,
+      lastModified: now,
+    );
 
-    _log.fine('Returning note data: $noteData');
+    _log.fine('Calling provider to add note data: $newNote');
+    ref.read(notesProvider.notifier).addNote(newNote);
 
     if (mounted) {
-      Navigator.pop(context, noteData);
+      Navigator.pop(context);
     } else {
       _log.warning("Tried to pop AddNoteScreen, but widget was unmounted.");
     }
@@ -129,7 +133,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
+      initialDate: _selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
@@ -145,9 +149,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   @override
   Widget build(BuildContext context) {
     _log.finer("Building AddNoteScreen widget");
-    final String displayDate = _selectedDate != null
-      ? DateFormat.yMMMd().format(_selectedDate!)
-      : 'Select Date';
+    final String displayDate = DateFormat.yMMMd().format(_selectedDate);
 
     return PopScope(
       canPop: !_isDirty,
@@ -156,11 +158,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
         if (didPop) return;
 
         // Keyboard focus check
-        if (mounted && MediaQuery.viewInsetsOf(context).bottom > 0) {
-          _log.fine("Keyboard is visible, unfocusing instead of showing discard dialog.");
-          FocusScope.of(context).unfocus();
-          return;
-        }
+        // if (mounted && MediaQuery.viewInsetsOf(context).bottom > 0) {
+        //   _log.fine("Keyboard is visible, unfocusing instead of showing discard dialog.");
+        //   FocusScope.of(context).unfocus();
+        //   return;
+        // }
 
         final navigator = mounted ? Navigator.of(context, rootNavigator: true) : null;
         final bool shouldDiscard = await _showDiscardDialog();
@@ -213,6 +215,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   maxLines: 20,
                   minLines: 5,
                   keyboardType: TextInputType.multiline,
+                  style: Theme.of(context).textTheme.bodyLarge,
                   textCapitalization: TextCapitalization.sentences,
                 ),
                 const SizedBox(height: 16.0),

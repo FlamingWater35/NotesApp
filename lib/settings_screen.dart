@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'components/backup_service.dart';
 import 'components/restore_service.dart';
 import 'update_screen.dart';
+import '../providers/providers.dart';
+import '../models/note_model.dart';
 
-class SettingsScreen extends StatefulWidget {
-  final ValueNotifier<ThemeMode> themeNotifier;
-  final List<Map<String, String>> currentNotes;
-  final Future<void> Function(List<Map<String, String>> restoredNotes) onNotesRestored;
-
-  const SettingsScreen({
-    super.key,
-    required this.themeNotifier,
-    required this.currentNotes,
-    required this.onNotesRestored,
-  });
+class SettingsScreen extends ConsumerStatefulWidget {
+  const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _log = Logger('SettingsScreen');
   String _appVersion = 'Loading...';
   bool _isBackupRestoreRunning = false;
@@ -59,7 +53,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isBackupRestoreRunning = true);
     _log.info("Backup button tapped");
 
-    final bool success = await BackupService.backupNotes(widget.currentNotes);
+    final notesAsync = ref.read(notesProvider);
+    final List<Note> currentNotes = notesAsync.value ?? [];
+
+    final bool success = await BackupService.backupNotes(currentNotes);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -77,11 +74,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isBackupRestoreRunning = true);
     _log.info("Restore button tapped");
 
-    final List<Map<String, String>>? restoredNotes = await RestoreService.restoreNotes();
+    final List<Note>? restoredNotes = await RestoreService.restoreNotes();
 
     if (mounted) {
       if (restoredNotes != null) {
-        await widget.onNotesRestored(restoredNotes);
+        _log.info("Restore service returned ${restoredNotes.length} notes.");
+        await ref.read(notesProvider.notifier).replaceAllNotes(restoredNotes);
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -98,7 +97,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         );
       }
+    }
+
+    if (mounted) {
       setState(() => _isBackupRestoreRunning = false);
+      _log.fine("Called final setState in _handleRestore.");
+    } else {
+      _log.warning("Skipped final setState in _handleRestore because widget was unmounted.");
     }
   }
 
@@ -117,6 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     _log.finer("Building SettingsScreen widget");
     final theme = Theme.of(context);
+    final currentMode = ref.watch(themeProvider);
 
     return SafeArea(
       child: Column(
@@ -139,41 +145,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                  child: ValueListenableBuilder<ThemeMode>(
-                    valueListenable: widget.themeNotifier,
-                    builder: (context, currentMode, child) {
+                  child: SegmentedButton<ThemeMode>(
+                    selected: {currentMode},
+                    segments: const <ButtonSegment<ThemeMode>>[
+                      ButtonSegment<ThemeMode>(
+                        value: ThemeMode.light,
+                        label: Text('Light'),
+                        icon: Icon(Icons.light_mode_outlined),
+                      ),
+                      ButtonSegment<ThemeMode>(
+                        value: ThemeMode.dark,
+                        label: Text('Dark'),
+                        icon: Icon(Icons.dark_mode_outlined),
+                      ),
+                      ButtonSegment<ThemeMode>(
+                        value: ThemeMode.system,
+                        label: Text('System'),
+                        icon: Icon(Icons.settings_suggest_outlined),
+                      ),
+                    ],
 
-                      return SegmentedButton<ThemeMode>(
-                        selected: {currentMode},
-                        segments: const <ButtonSegment<ThemeMode>>[
-                          ButtonSegment<ThemeMode>(
-                            value: ThemeMode.light,
-                            label: Text('Light'),
-                            icon: Icon(Icons.light_mode_outlined),
-                          ),
-                          ButtonSegment<ThemeMode>(
-                            value: ThemeMode.dark,
-                            label: Text('Dark'),
-                            icon: Icon(Icons.dark_mode_outlined),
-                          ),
-                          ButtonSegment<ThemeMode>(
-                            value: ThemeMode.system,
-                            label: Text('System'),
-                            icon: Icon(Icons.settings_suggest_outlined),
-                          ),
-                        ],
-
-                        onSelectionChanged: (Set<ThemeMode> newSelection) {
-                          if (newSelection.isNotEmpty) {
-                            _log.info("Theme mode changed to: ${newSelection.first}");
-                            widget.themeNotifier.value = newSelection.first;
-                          }
-                        },
-                        showSelectedIcon: false,
-                        style: SegmentedButton.styleFrom(
-                        ),
-                      );
+                    onSelectionChanged: (Set<ThemeMode> newSelection) {
+                      if (newSelection.isNotEmpty) {
+                        _log.info("Theme mode changed to: ${newSelection.first}");
+                        ref.read(themeProvider.notifier).setThemeMode(newSelection.first);
+                      }
                     },
+                    showSelectedIcon: false,
+                    style: SegmentedButton.styleFrom(),
                   ),
                 ),
                 const Divider(indent: 16, endIndent: 16, height: 24),
@@ -186,6 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leading: const Icon(Icons.backup_outlined),
                   title: const Text('Backup Notes'),
                   subtitle: const Text('Save notes to a file'),
+                  enabled: !_isBackupRestoreRunning,
                   onTap: _handleBackup,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 ),
@@ -193,10 +193,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leading: const Icon(Icons.restore_page_outlined),
                   title: const Text('Restore Notes'),
                   subtitle: const Text('Load notes from a backup file'),
+                  enabled: !_isBackupRestoreRunning,
                   onTap: _handleRestore,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 ),
+                if (_isBackupRestoreRunning)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                  ),
                 const Divider(indent: 16, endIndent: 16, height: 24),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Text('Application', style: theme.textTheme.titleSmall),

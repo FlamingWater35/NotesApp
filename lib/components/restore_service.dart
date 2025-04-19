@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:logging/logging.dart';
 
+import '../models/note_model.dart';
+
 class RestoreService {
   static final _log = Logger('RestoreService');
 
-  static Future<List<Map<String, String>>?> restoreNotes() async {
+  static Future<List<Note>?> restoreNotes() async {
     _log.info("Starting notes restore process...");
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -42,58 +43,30 @@ class RestoreService {
         return null;
       }
 
-      final List<Map<String, String>> restoredNotes = [];
-      bool needsResave = false;
-
-      for (var item in decodedData) {
-        if (item is Map) {
+      final List<Note> restoredNotes = [];
+      for (final item in decodedData) {
+        if (item is Map<String, dynamic>) {
           try {
-            final Map<String, String> noteMap = Map<String, String>.from(item);
-
-            if (noteMap.containsKey('title') && noteMap.containsKey('content')) {
-              if (noteMap['id'] == null || noteMap['id']!.isEmpty) {
-                noteMap['id'] = DateTime.now().toIso8601String() + UniqueKey().toString();
-                _log.warning("Assigned new ID during restore to note with title: ${noteMap['title']}");
-                needsResave = true;
-              }
-              if (noteMap['date'] == null || noteMap['date']!.isEmpty) {
-                noteMap['date'] = DateTime.now().toIso8601String();
-                _log.warning("Assigned current date during restore to note ID: ${noteMap['id']}");
-                needsResave = true;
-              } else {
-                try {
-                  DateTime.parse(noteMap['date']!);
-                } catch (_) {
-                  _log.warning("Invalid date format found during restore for note ID: ${noteMap['id']}, assigning current date.");
-                  noteMap['date'] = DateTime.now().toIso8601String();
-                  needsResave = true;
-                }
-              }
-              final String nowString = DateTime.now().toIso8601String();
-              if (noteMap['createdAt'] == null || noteMap['createdAt']!.isEmpty) {
-                noteMap['createdAt'] = nowString;
-                _log.warning("Assigned current createdAt during restore to note ID: ${noteMap['id']}");
-                needsResave = true;
-              }
-              if (noteMap['lastModified'] == null || noteMap['lastModified']!.isEmpty) {
-                noteMap['lastModified'] = noteMap['createdAt']!;
-                _log.warning("Assigned createdAt as lastModified during restore to note ID: ${noteMap['id']}");
-                needsResave = true;
-              }
-
-              restoredNotes.add(noteMap);
+            if (item['id'] != null && item['title'] != null && item['content'] != null &&
+                item['date'] != null && item['createdAt'] != null && item['lastModified'] != null) {
+              restoredNotes.add(Note.fromMap(item));
             } else {
-              _log.warning("Skipping item during restore: Missing 'title' or 'content' key. Item: $item");
+              _log.warning("Skipping invalid note data during restore: Missing required fields. Data: $item");
             }
-          } catch (e) {
-            _log.warning("Skipping item during restore: Could not cast item to Map<String, String>. Item: $item, Error: $e");
+          } catch (e, stackTrace) {
+            _log.warning("Error converting map to Note during restore. Skipping item. Data: $item", e, stackTrace);
           }
         } else {
-          _log.warning("Skipping item during restore: Item is not a Map. Item: $item");
+          _log.warning("Skipping non-map item found in backup file during restore. Item: $item");
         }
       }
 
-      _log.info("Restore successful. Loaded ${restoredNotes.length} notes. Needs resave for IDs: $needsResave");
+      if (restoredNotes.isEmpty && decodedData.isNotEmpty) {
+        _log.warning("Restore resulted in an empty list, possibly due to format errors in all entries.");
+        return null;
+      }
+
+      _log.info("Restore successful! Read ${restoredNotes.length} notes from: $filePath");
       return restoredNotes;
 
     } on FileSystemException catch (e, stackTrace) {

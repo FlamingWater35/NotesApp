@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatefulWidget {
-  final List<Map<String, String>> notes;
-  final void Function(Map<String, String> note) onDeleteNote;
-  final void Function(Map<String, String> note, String heroTag) onNoteTap;
+import '../models/note_model.dart';
+import '../providers/providers.dart';
+
+class HomeScreen extends ConsumerStatefulWidget {
+  final List<Note> notes;
+  final void Function(Note note) onNoteTap;
 
   const HomeScreen({
     super.key,
     required this.notes,
-    required this.onDeleteNote,
     required this.onNoteTap,
   });
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
 enum SortProperty { date, title, lastModified, createdAt }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _log = Logger('HomeScreenState');
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
-  List<Map<String, String>> _displayedNotes = [];
+  List<Note> _displayedNotes = [];
   SortProperty _sortBy = SortProperty.lastModified;
   bool _sortAscending = false;
 
@@ -33,16 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _log.fine("initState called");
-    _updateDisplayedNotes();
+    _updateDisplayedNotes(widget.notes);
     _searchController.addListener(_onSearchChanged);
   }
 
   @override
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.notes != oldWidget.notes) {
+    if (!identical(widget.notes, oldWidget.notes)) {
       _log.fine("Notes list updated externally, running filter and forcing rebuild.");
-      _updateDisplayedNotes();
+      _updateDisplayedNotes(widget.notes);
     }
   }
 
@@ -57,20 +59,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onSearchChanged() {
     _log.finer("Search text changed: ${_searchController.text}");
-    _updateDisplayedNotes();
+    _updateDisplayedNotes(widget.notes);
   }
 
-  void _updateDisplayedNotes() {
+  void _updateDisplayedNotes(List<Note> currentNotes) {
     final query = _searchController.text.toLowerCase();
     _log.finer("Updating displayed notes. Query: '$query', SortBy: $_sortBy, Asc: $_sortAscending");
 
-    List<Map<String, String>> filteredNotes;
+    List<Note> filteredNotes;
     if (query.isEmpty) {
-      filteredNotes = List.from(widget.notes);
+      filteredNotes = List.from(currentNotes);
     } else {
-      filteredNotes = widget.notes.where((note) {
-        final titleLower = note['title']?.toLowerCase() ?? '';
-        final contentLower = note['content']?.toLowerCase() ?? '';
+      filteredNotes = currentNotes.where((note) {
+        final titleLower = note.title.toLowerCase();
+        final contentLower = note.content.toLowerCase();
         return titleLower.contains(query) || contentLower.contains(query);
       }).toList();
     }
@@ -78,45 +80,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
     filteredNotes.sort((a, b) {
       int compareResult = 0;
-      try {
-        switch (_sortBy) {
-          case SortProperty.date:
-            final dateA = DateTime.tryParse(a['date'] ?? '') ?? DateTime(1970);
-            final dateB = DateTime.tryParse(b['date'] ?? '') ?? DateTime(1970);
-            compareResult = dateA.compareTo(dateB);
-            break;
-          case SortProperty.title:
-            final titleA = a['title']?.toLowerCase() ?? '';
-            final titleB = b['title']?.toLowerCase() ?? '';
-            compareResult = titleA.compareTo(titleB);
-            break;
-          case SortProperty.lastModified:
-            final modA = DateTime.tryParse(a['lastModified'] ?? '') ?? DateTime(1970);
-            final modB = DateTime.tryParse(b['lastModified'] ?? '') ?? DateTime(1970);
-            compareResult = modA.compareTo(modB);
-            break;
-          case SortProperty.createdAt:
-            final createdA = DateTime.tryParse(a['createdAt'] ?? '') ?? DateTime(1970);
-            final createdB = DateTime.tryParse(b['createdAt'] ?? '') ?? DateTime(1970);
-            compareResult = createdA.compareTo(createdB);
-            break;
-        }
-      } catch (e) {
-        _log.warning("Error parsing data during sort for property $_sortBy: $e");
-        compareResult = 0;
+      switch (_sortBy) {
+        case SortProperty.date:
+          compareResult = a.date.compareTo(b.date);
+          break;
+        case SortProperty.title:
+          compareResult = a.title.toLowerCase().compareTo(b.title.toLowerCase());
+          break;
+        case SortProperty.lastModified:
+          compareResult = a.lastModified.compareTo(b.lastModified);
+          break;
+        case SortProperty.createdAt:
+          compareResult = a.createdAt.compareTo(b.createdAt);
+          break;
       }
       return _sortAscending ? compareResult : -compareResult;
     });
-     _log.finer("Sorting complete.");
+    _log.finer("Sorting complete.");
 
-    // Only call setState if the list content or order might have changed
-    // Called on every update, could optimize with list comparison
-    setState(() {
-      _displayedNotes = filteredNotes;
-    });
+    if (mounted) {
+      setState(() {
+        _displayedNotes = filteredNotes;
+      });
+    }
   }
 
-  Future<void> _showDeleteConfirmation(BuildContext context, Map<String, String> note) async {
+  Future<void> _showDeleteConfirmation(BuildContext context, Note note) async {
     final bool? confirmed = await showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
@@ -126,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
       pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
         return AlertDialog(
           title: const Text('Delete Note?'),
-          content: Text('Are you sure you want to delete "${note['title'] ?? 'this note'}"? This action cannot be undone.'),
+          content: Text('Are you sure you want to delete "${note.title}"? This action cannot be undone.'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -154,10 +143,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (confirmed == true) {
-      _log.info("Deletion confirmed for note: ${note['title']}");
-      widget.onDeleteNote(note);
+      _log.info("Deletion confirmed for note: ${note.title} (ID: ${note.id})");
+      ref.read(notesProvider.notifier).deleteNote(note.id);
+
+      if(context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Note "${note.title}" deleted.'), duration: const Duration(seconds: 2)),
+        );
+      }
     } else {
-      _log.info("Deletion cancelled for note: ${note['title']}");
+      _log.info("Deletion cancelled for note: ${note.title}");
     }
   }
 
@@ -223,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (_sortBy != newSortBy) {
                       _log.fine("Sort property changed to: $newSortBy");
                       setState(() { _sortBy = newSortBy; });
-                      _updateDisplayedNotes();
+                      _updateDisplayedNotes(widget.notes);
                     }
                   },
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -281,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     _log.fine("Sort direction toggled.");
                     setState(() { _sortAscending = !_sortAscending; });
-                    _updateDisplayedNotes();
+                    _updateDisplayedNotes(widget.notes);
                   },
                 ),
               ],
@@ -296,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? 'No notes yet. Tap + to add one!'
                     : _searchController.text.isNotEmpty
                       ? 'No notes found matching your search.'
-                      : '', // Should be empty if notes exist but filter doesn't match
+                      : 'No notes found.', // Should be empty if notes exist but filter doesn't match
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant
                   ),
@@ -309,18 +304,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: _displayedNotes.length,
                 itemBuilder: (context, index) {
                   final note = _displayedNotes[index];
-                  final String heroTag = note['id'] ?? Object.hash(note['title'], note['content']).toString();
-                  String formattedDate = '';
-                  try {
-                    final dateString = note['date'];
-                    if (dateString != null && dateString.isNotEmpty) {
-                      final dateTime = DateTime.parse(dateString);
-                      formattedDate = DateFormat.yMd().format(dateTime);
-                    }
-                  } catch (e) {
-                    _log.warning("Could not parse date for note ID ${note['id']}: ${note['date']}", e);
-                    // formattedDate remains empty
-                  }
+                  final String heroTag = note.heroTag;
+                  final String formattedDate = DateFormat.yMd().format(note.date);
 
                   return Hero(
                     tag: heroTag,
@@ -328,11 +313,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       margin: const EdgeInsets.symmetric(vertical: 4.0),
                       child: ListTile(
                         title: Text(
-                          note['title'] ?? 'Error: Missing Title',
+                          note.title.isEmpty ? 'Untitled Note' : note.title,
                           style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
                         subtitle: Text(
-                          '${formattedDate.isNotEmpty ? "$formattedDate - " : ""}${note['content'] ?? ''}',
+                          '$formattedDate - ${note.content}',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -340,15 +325,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
                           tooltip: 'Delete Note',
                           onPressed: () {
-                            _log.fine("Delete button pressed for note ID: ${note['id']}");
+                            _log.fine("Delete button pressed for note ID: ${note.id}");
                             _showDeleteConfirmation(context, note);
                           },
                         ),
 
                         onTap: () {
                           FocusScope.of(context).unfocus();
-                          _log.info('Tapped on note ID: ${note['id']}');
-                          widget.onNoteTap(note, heroTag);
+                          _log.info('Tapped on note ID: ${note.id}');
+                          widget.onNoteTap(note);
                         },
                       ),
                     ),
