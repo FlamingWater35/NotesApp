@@ -125,8 +125,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           );
         },
         loading: () {
-           _log.finer("Displaying loading indicator.");
-           return const Center(child: CircularProgressIndicator());
+          _log.finer("Displaying loading indicator.");
+          return const Center(child: CircularProgressIndicator());
         },
         error: (error, stackTrace) {
           _log.severe("Error loading notes", error, stackTrace);
@@ -140,12 +140,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         },
       ),
       floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton(
-              onPressed: _navigateToAddNote,
-              tooltip: 'Add Note',
-              child: const Icon(Icons.add),
-            )
-          : null,
+        ? FloatingActionButton(
+            onPressed: _navigateToAddNote,
+            tooltip: 'Add Note',
+            child: const Icon(Icons.add),
+          )
+        : null,
       bottomNavigationBar: AnimatedSlide(
         duration: _kTransitionDuration,
         offset: navBarOffset,
@@ -165,7 +165,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           ],
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onItemTapped,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           // Prevent animation causing issues if nav bar rebuilds mid-animation
           // key: ValueKey(_selectedIndex),
         ),
