@@ -62,7 +62,7 @@ class MyApp extends ConsumerWidget {
     }
 
     return MaterialApp(
-      title: 'Notes App',
+      title: 'Notes',
 
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
