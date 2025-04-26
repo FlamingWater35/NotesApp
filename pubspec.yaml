@@ -20,12 +20,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   
-  ## Data management
+  # Data management
   flutter_riverpod: ^2.6.1
   sqflite: 2.4.2
   shared_preferences: ^2.5.3
 
-  ## Utility
+  # Utility
   logging: ^1.3.0
   package_info_plus: ^8.3.0
   file_picker: ^10.1.2
