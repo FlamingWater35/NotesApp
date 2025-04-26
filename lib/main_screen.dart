@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:animations/animations.dart';
 
 import 'add_note_screen.dart';
 import 'edit_note_screen.dart';
@@ -119,9 +120,20 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             ),
             const SettingsScreen(),
           ];
-          return IndexedStack(
-            index: _selectedIndex,
-            children: widgetOptions,
+          return PageTransitionSwitcher(
+            duration: _kTransitionDuration,
+            transitionBuilder: (
+              Widget child,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+            ) {
+              return FadeThroughTransition(
+                animation: animation,
+                secondaryAnimation: secondaryAnimation,
+                child: child,
+              );
+            },
+            child: widgetOptions[_selectedIndex],
           );
         },
         loading: () {

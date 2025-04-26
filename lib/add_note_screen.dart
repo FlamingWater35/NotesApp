@@ -203,23 +203,6 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                 ),
                 const SizedBox(height: 16.0),
 
-                // Content TextField
-                TextField(
-                  controller: _contentController,
-                  decoration: const InputDecoration(
-                    labelText: 'Content',
-                    hintText: 'Enter your note details...',
-                    border: OutlineInputBorder(),
-                    alignLabelWithHint: true,
-                  ),
-                  maxLines: 20,
-                  minLines: 5,
-                  keyboardType: TextInputType.multiline,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  textCapitalization: TextCapitalization.sentences,
-                ),
-                const SizedBox(height: 16.0),
-
                 Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -247,6 +230,24 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                   ),
                 ),
                 const Divider(height: 1),
+                const SizedBox(height: 20.0),
+
+                // Content TextField
+                TextField(
+                  controller: _contentController,
+                  decoration: const InputDecoration(
+                    labelText: 'Content',
+                    hintText: 'Enter your note details...',
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                  ),
+                  maxLines: 20,
+                  minLines: 5,
+                  keyboardType: TextInputType.multiline,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textCapitalization: TextCapitalization.sentences,
+                ),
+                const SizedBox(height: 16.0),
               ],
             ),
           ),
