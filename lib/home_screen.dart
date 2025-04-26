@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart' show listEquals;
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 import '../models/note_model.dart';
 import '../providers/providers.dart';
@@ -412,12 +413,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Expanded(
               child: showInitialEmptyMessage
                 ? Center(
-                    child: Text(
-                      'No notes yet. Tap + to add one!',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant
-                      ),
-                      textAlign: TextAlign.center,
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        TypewriterAnimatedText(
+                          'No notes yet. Tap + to add one!',
+                          textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant
+                          ),
+                          textAlign: TextAlign.center,
+                          speed: const Duration(milliseconds: 10)
+                        ),
+                      ],
+                      isRepeatingAnimation: false,
                     ),
                   )
                 : Stack(
@@ -438,12 +445,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.all(20.0),
-                            child: Text(
-                              'No notes found matching your search.',
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant
-                              ),
-                              textAlign: TextAlign.center,
+                            child: AnimatedTextKit(
+                              animatedTexts: [
+                                TypewriterAnimatedText(
+                                  'No notes found matching your search.',
+                                  textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  speed: const Duration(milliseconds: 10)
+                                ),
+                              ],
+                              isRepeatingAnimation: false,
                             ),
                           ),
                         ),

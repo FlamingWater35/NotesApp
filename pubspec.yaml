@@ -32,6 +32,7 @@ dependencies:
   intl: ^0.20.2
   path: ^1.9.1
   animations: ^2.0.11
+  animated_text_kit: ^4.2.3
 
   # Update check
   http: ^1.3.0
