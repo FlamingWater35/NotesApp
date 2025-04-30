@@ -124,116 +124,120 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final theme = Theme.of(context);
     final currentMode = ref.watch(themeProvider);
 
-    return SafeArea(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 8.0),
-            child: Text(
-              'Settings',
-              style: theme.textTheme.headlineMedium,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 8.0),
+          child: Text(
+            'Settings',
+            style: theme.textTheme.headlineMedium,
           ),
-
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Text('Appearance', style: theme.textTheme.titleSmall),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                  child: SegmentedButton<ThemeMode>(
-                    selected: {currentMode},
-                    segments: const <ButtonSegment<ThemeMode>>[
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.light,
-                        label: Text('Light'),
-                        icon: Icon(Icons.light_mode_outlined),
-                      ),
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.dark,
-                        label: Text('Dark'),
-                        icon: Icon(Icons.dark_mode_outlined),
-                      ),
-                      ButtonSegment<ThemeMode>(
-                        value: ThemeMode.system,
-                        label: Text('System'),
-                        icon: Icon(Icons.settings_suggest_outlined),
-                      ),
-                    ],
-
-                    onSelectionChanged: (Set<ThemeMode> newSelection) {
-                      if (newSelection.isNotEmpty) {
-                        _log.info("Theme mode changed to: ${newSelection.first}");
-                        ref.read(themeProvider.notifier).setThemeMode(newSelection.first);
-                      }
-                    },
-                    showSelectedIcon: false,
-                    style: SegmentedButton.styleFrom(),
+        ),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text('Appearance', style: theme.textTheme.titleSmall),
                   ),
-                ),
-                const Divider(indent: 16, endIndent: 16, height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: SegmentedButton<ThemeMode>(
+                      selected: {currentMode},
+                      segments: const <ButtonSegment<ThemeMode>>[
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.light,
+                          label: Text('Light'),
+                          icon: Icon(Icons.light_mode_outlined),
+                        ),
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.dark,
+                          label: Text('Dark'),
+                          icon: Icon(Icons.dark_mode_outlined),
+                        ),
+                        ButtonSegment<ThemeMode>(
+                          value: ThemeMode.system,
+                          label: Text('System'),
+                          icon: Icon(Icons.settings_suggest_outlined),
+                        ),
+                      ],
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Text('Data Management', style: theme.textTheme.titleSmall),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.backup_outlined),
-                  title: const Text('Backup Notes'),
-                  subtitle: const Text('Save notes to a file'),
-                  enabled: !_isBackupRestoreRunning,
-                  onTap: _handleBackup,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                 ListTile(
-                  leading: const Icon(Icons.restore_page_outlined),
-                  title: const Text('Restore Notes'),
-                  subtitle: const Text('Load notes from a backup file'),
-                  enabled: !_isBackupRestoreRunning,
-                  onTap: _handleRestore,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                if (_isBackupRestoreRunning)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
-                  ),
-                const Divider(indent: 16, endIndent: 16, height: 24),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Text('Application', style: theme.textTheme.titleSmall),
-                ),
-                Hero(
-                  tag: _updateHeroTag,
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: ListTile(
-                      leading: const Icon(Icons.system_update_alt_outlined),
-                      title: const Text('Check for Updates'),
-                      onTap: _handleCheckForUpdates,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      onSelectionChanged: (Set<ThemeMode> newSelection) {
+                        if (newSelection.isNotEmpty) {
+                          _log.info("Theme mode changed to: ${newSelection.first}");
+                          ref.read(themeProvider.notifier).setThemeMode(newSelection.first);
+                        }
+                      },
+                      showSelectedIcon: false,
+                      style: SegmentedButton.styleFrom(),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
+                  const Divider(indent: 16, endIndent: 16, height: 24),
 
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              _appVersion,
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text('Data Management', style: theme.textTheme.titleSmall),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.backup_outlined),
+                    title: const Text('Backup Notes'),
+                    subtitle: const Text('Save notes to a file'),
+                    enabled: !_isBackupRestoreRunning,
+                    onTap: _handleBackup,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.restore_page_outlined),
+                    title: const Text('Restore Notes'),
+                    subtitle: const Text('Load notes from a backup file'),
+                    enabled: !_isBackupRestoreRunning,
+                    onTap: _handleRestore,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  ),
+                  if (_isBackupRestoreRunning)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      child: Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                    ),
+                  const Divider(indent: 16, endIndent: 16, height: 24),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text('Application', style: theme.textTheme.titleSmall),
+                  ),
+                  Hero(
+                    tag: _updateHeroTag,
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: ListTile(
+                        leading: const Icon(Icons.system_update_alt_outlined),
+                        title: const Text('Check for Updates'),
+                        onTap: _handleCheckForUpdates,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                _appVersion,
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
       ),
-    );
+    );  
   }
 }

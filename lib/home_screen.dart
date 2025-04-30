@@ -310,13 +310,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final bool showInitialEmptyMessage = widget.notes.isEmpty && _searchController.text.isEmpty;
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: SafeArea(
-        child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 4.0),
+              padding: const EdgeInsets.fromLTRB(0.0, 12.0, 0.0, 4.0),
               child: TextField(
                 controller: _searchController,
                 focusNode: _searchFocusNode,
@@ -345,125 +344,133 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Row(
-                children: [
-                  Text(
-                    'Sort by: ',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0),),
-                  PopupMenuButton<SortProperty>(
-                    initialValue: _sortBy,
-                    onSelected: (SortProperty newSortBy) {
-                      if (_sortBy != newSortBy) {
-                        _log.fine("Sort property changed to: $newSortBy");
-                        setState(() { _sortBy = newSortBy; });
-                        _onSearchOrSortChanged();
-                      }
-                    },
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    position: PopupMenuPosition.under,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _getSortPropertyText(_sortBy),
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_drop_down,
-                          size: 20.0,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ],
+          ],
+        ),
+      ),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  children: [
+                    Text(
+                      'Sort by: ',
+                      style: theme.textTheme.bodyMedium,
                     ),
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<SortProperty>>[
-                      const PopupMenuItem<SortProperty>(value: SortProperty.lastModified, child: Text('Last Modified')),
-                      const PopupMenuItem<SortProperty>(value: SortProperty.createdAt, child: Text('Created At')),
-                      const PopupMenuItem<SortProperty>(value: SortProperty.date, child: Text('Date')),
-                      const PopupMenuItem<SortProperty>(value: SortProperty.title, child: Text('Title')),
-                    ],
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: Icon(
-                      _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
-                      size: 20.0,
-                      color: theme.colorScheme.primary,
-                    ),
-                    tooltip: _sortAscending ? 'Ascending (A-Z, Oldest first)' : 'Descending (Z-A, Newest first)',
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      _log.fine("Sort direction toggled.");
-                      setState(() { _sortAscending = !_sortAscending; });
-                      _onSearchOrSortChanged();
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            Expanded(
-              child: showInitialEmptyMessage
-                ? Center(
-                    child: AnimatedTextKit(
-                      animatedTexts: [
-                        TypewriterAnimatedText(
-                          'No notes yet. Tap + to add one!',
-                          textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant
-                          ),
-                          textAlign: TextAlign.center,
-                          speed: const Duration(milliseconds: 10)
-                        ),
-                      ],
-                      isRepeatingAnimation: false,
-                    ),
-                  )
-                : Stack(
-                    children: [
-                      AnimatedList(
-                        key: _listKey,
-                        initialItemCount: _displayedNotes.length,
-                        padding: EdgeInsets.zero,
-                        itemBuilder: (context, index, animation) {
-                          if (index >= _displayedNotes.length) {
-                            return Container();
-                          }
-                          final note = _displayedNotes[index];
-                          return _buildAnimatedItem(context, note, animation);
-                        },
-                      ),
-                      if (_shouldShowEmptyMessage)
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: AnimatedTextKit(
-                              animatedTexts: [
-                                TypewriterAnimatedText(
-                                  'No notes found matching your search.',
-                                  textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  speed: const Duration(milliseconds: 10)
-                                ),
-                              ],
-                              isRepeatingAnimation: false,
+                    Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0),),
+                    PopupMenuButton<SortProperty>(
+                      initialValue: _sortBy,
+                      onSelected: (SortProperty newSortBy) {
+                        if (_sortBy != newSortBy) {
+                          _log.fine("Sort property changed to: $newSortBy");
+                          setState(() { _sortBy = newSortBy; });
+                          _onSearchOrSortChanged();
+                        }
+                      },
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      position: PopupMenuPosition.under,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _getSortPropertyText(_sortBy),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
+                          Icon(
+                            Icons.arrow_drop_down,
+                            size: 20.0,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ],
+                      ),
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<SortProperty>>[
+                        const PopupMenuItem<SortProperty>(value: SortProperty.lastModified, child: Text('Last Modified')),
+                        const PopupMenuItem<SortProperty>(value: SortProperty.createdAt, child: Text('Created At')),
+                        const PopupMenuItem<SortProperty>(value: SortProperty.date, child: Text('Date')),
+                        const PopupMenuItem<SortProperty>(value: SortProperty.title, child: Text('Title')),
+                      ],
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: Icon(
+                        _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                        size: 20.0,
+                        color: theme.colorScheme.primary,
+                      ),
+                      tooltip: _sortAscending ? 'Ascending (A-Z, Oldest first)' : 'Descending (Z-A, Newest first)',
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        _log.fine("Sort direction toggled.");
+                        setState(() { _sortAscending = !_sortAscending; });
+                        _onSearchOrSortChanged();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              Expanded(
+                child: showInitialEmptyMessage
+                  ? Center(
+                      child: AnimatedTextKit(
+                        animatedTexts: [
+                          TypewriterAnimatedText(
+                            'No notes yet. Tap + to add one!',
+                            textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant
+                            ),
+                            textAlign: TextAlign.center,
+                            speed: const Duration(milliseconds: 8)
+                          ),
+                        ],
+                        isRepeatingAnimation: false,
+                      ),
+                    )
+                  : Stack(
+                      children: [
+                        AnimatedList(
+                          key: _listKey,
+                          initialItemCount: _displayedNotes.length,
+                          padding: EdgeInsets.zero,
+                          itemBuilder: (context, index, animation) {
+                            if (index >= _displayedNotes.length) {
+                              return Container();
+                            }
+                            final note = _displayedNotes[index];
+                            return _buildAnimatedItem(context, note, animation);
+                          },
                         ),
-                    ],
-                  ),
-            ),
-          ],
+                        if (_shouldShowEmptyMessage)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: AnimatedTextKit(
+                                animatedTexts: [
+                                  TypewriterAnimatedText(
+                                    'No notes found matching your search.',
+                                    textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    speed: const Duration(milliseconds: 8)
+                                  ),
+                                ],
+                                isRepeatingAnimation: false,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );
