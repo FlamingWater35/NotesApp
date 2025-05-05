@@ -148,7 +148,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text("Checking for updates...", style: statusTextStyle),
+            Text("Checking for updates...", style: statusTextStyle, textAlign: TextAlign.center),
           ],
         );
 
@@ -158,14 +158,14 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             const Icon(Icons.system_update_alt, size: 60, color: Colors.green),
             const SizedBox(height: 16),
-            Text("Update Available!", style: Theme.of(context).textTheme.headlineSmall),
+            Text("Update Available!", style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
             const SizedBox(height: 8),
-            Text("Current version: $_currentVersion"),
-            Text("New version: $_latestVersion"),
+            Text("Current version: $_currentVersion", textAlign: TextAlign.center),
+            Text("New version: $_latestVersion", textAlign: TextAlign.center),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               icon: const Icon(Icons.download_for_offline_outlined),
-              label: const Text("Download & Install"),
+              label: const Text("Download & Install", textAlign: TextAlign.center),
               onPressed: _startDownloadAndInstall,
             ),
           ],
@@ -175,7 +175,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Downloading update ($_latestVersion)...", style: statusTextStyle),
+            Text("Downloading update ($_latestVersion)...", style: statusTextStyle, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
@@ -194,7 +194,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Starting install...", style: statusTextStyle),
+            Text("Starting install...", style: statusTextStyle, textAlign: TextAlign.center),
             SizedBox(height: 16),
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
@@ -212,7 +212,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             Icon(Icons.error_outline, size: 60, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
-            Text("Update Failed", style: Theme.of(context).textTheme.headlineSmall),
+            Text("Update Failed", style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
@@ -221,7 +221,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
             const SizedBox(height: 24),
             TextButton.icon(
               icon: const Icon(Icons.refresh),
-              label: const Text("Retry Check"),
+              label: const Text("Retry Check", textAlign: TextAlign.center),
               onPressed: _performUpdateCheck,
             ),
           ],
@@ -233,11 +233,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             const Icon(Icons.check_circle_outline, size: 60, color: Colors.blue),
             const SizedBox(height: 16),
-            Text("You're up to date!", style: Theme.of(context).textTheme.headlineSmall),
+            Text("You're up to date!", style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
             const SizedBox(height: 8),
-            Text("Current version: $_currentVersion"),
+            Text("Current version: $_currentVersion", textAlign: TextAlign.center),
             if (_latestVersion != _currentVersion && _latestVersion.isNotEmpty)
-              Text("(Latest available: $_latestVersion)"),
+              Text("(Latest available: $_latestVersion)", textAlign: TextAlign.center),
             const SizedBox(height: 8),
             if(_errorMessage.isNotEmpty && !_errorMessage.contains("No new update available"))
               Padding(
@@ -247,7 +247,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
             const SizedBox(height: 24),
             TextButton.icon(
               icon: const Icon(Icons.refresh),
-              label: const Text("Check Again"),
+              label: const Text("Check Again", textAlign: TextAlign.center),
               onPressed: _performUpdateCheck,
             ),
           ],
@@ -259,7 +259,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             Icon(Icons.check_circle, size: 60, color: Colors.green),
             SizedBox(height: 16),
-            Text("Install dialog shown", style: statusTextStyle),
+            Text("Install dialog shown", style: statusTextStyle, textAlign: TextAlign.center),
           ],
         );
     }

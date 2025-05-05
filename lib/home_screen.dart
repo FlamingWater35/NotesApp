@@ -291,6 +291,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final bool showInitialEmptyMessage = widget.notes.isEmpty && _searchController.text.isEmpty;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Column(
           children: [
@@ -327,6 +328,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
+        forceMaterialTransparency: true,
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
