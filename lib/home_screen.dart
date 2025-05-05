@@ -295,7 +295,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         title: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(0.0, 12.0, 0.0, 4.0),
+              padding: const EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 4.0),
               child: TextField(
                 controller: _searchController,
                 focusNode: _searchFocusNode,
@@ -337,7 +337,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                 child: Row(
                   children: [
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0)),
+                    Padding(padding: const EdgeInsets.symmetric(horizontal: 6.0)),
                     Text('Sort by: ', style: theme.textTheme.bodyMedium),
                     Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0)),
                     PopupMenuButton<SortProperty>(
@@ -417,42 +417,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   )
                   : Stack(
-                      children: [
-                        ImplicitlyAnimatedList<Note>(
-                          items: _displayedNotes,
-                          padding: const EdgeInsets.only(bottom: 80.0),
-                          itemBuilder: (context, animation, note, index) {
-                            return _buildAnimatedItem(context, note, animation);
-                          },
-                          removeItemBuilder: (context, animation, note) {
-                            return _buildAnimatedItem(context, note, animation, isRemoving: true);
-                          },
-                          insertDuration: _animationDuration,
-                          removeDuration: _animationDuration,
-                          areItemsTheSame: (a, b) => a.id == b.id,
-                        ),
-                        if (_shouldShowEmptyMessage)
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                              child: AnimatedTextKit(
-                                animatedTexts: [
-                                  TypewriterAnimatedText(
-                                    'No notes found matching your search.',
-                                    textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    speed: const Duration(milliseconds: 8)
+                    children: [
+                      ImplicitlyAnimatedList<Note>(
+                        items: _displayedNotes,
+                        padding: const EdgeInsets.only(bottom: 80.0),
+                        itemBuilder: (context, animation, note, index) {
+                          return _buildAnimatedItem(context, note, animation);
+                        },
+                        removeItemBuilder: (context, animation, note) {
+                          return _buildAnimatedItem(context, note, animation, isRemoving: true);
+                        },
+                        insertDuration: _animationDuration,
+                        removeDuration: _animationDuration,
+                        areItemsTheSame: (a, b) => a.id == b.id,
+                      ),
+                      if (_shouldShowEmptyMessage)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                            child: AnimatedTextKit(
+                              animatedTexts: [
+                                TypewriterAnimatedText(
+                                  'No notes found matching your search.',
+                                  textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant
                                   ),
-                                ],
-                                isRepeatingAnimation: false,
-                                displayFullTextOnTap: true,
-                              ),
+                                  textAlign: TextAlign.center,
+                                  speed: const Duration(milliseconds: 8)
+                                ),
+                              ],
+                              isRepeatingAnimation: false,
+                              displayFullTextOnTap: true,
                             ),
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
+                  ),
               ),
             ],
           ),

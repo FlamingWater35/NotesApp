@@ -180,7 +180,6 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         autoFocus: false,
         scrollable: true,
-        checkBoxReadOnly: false,
         // Custom styles
         // customStyles: DefaultStyles( ... ),
         onLaunchUrl: (url) async {
@@ -291,14 +290,15 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                       ),
                     ),
                     const Divider(height: 1),
+                    const SizedBox(height: 12.0),
 
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: Theme.of(context).colorScheme.primary),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0), 
+                        padding: EdgeInsets.fromLTRB(10.0, 3.0, 10.0, 3.0), 
                         child: quillEditor,
                       ),
                     ),               

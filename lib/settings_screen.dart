@@ -200,11 +200,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     onTap: _handleRestore,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                   ),
-                  if (_isBackupRestoreRunning)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
-                    ),
                   const Divider(indent: 16, endIndent: 16, height: 24),
 
                   Padding(
