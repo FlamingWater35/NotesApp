@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 
 import '../providers/providers.dart';
 import '../models/note_model.dart';
@@ -94,22 +95,30 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   }
 
   void _updateNote() async {
+    _log.info("Attempting to update note ID: ${widget.noteId}");
     if (_originalNote == null || _isSaving) {
       _log.warning("Attempted to update note before it was loaded.");
       return;
     }
-    _log.info("Attempting to update note ID: ${widget.noteId}");
+
+    final String title = _titleController.text.trim();
+    if (title.isEmpty) {
+      _log.warning("Attempted to save a note without title.");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cannot save a note without a title.')),
+        );
+      }
+      return;
+    }
+
     setState(() {
       _isSaving = true;
     });
 
-    final String title = _titleController.text.trim();
     final String content = _contentController.text.trim();
     final DateTime newDate = _selectedDate ?? _originalNote!.date;
     final DateTime modifiedTime = DateTime.now();
-
-    // Prevent saving empty note if needed (or allow it)
-    // if (title.isEmpty && content.isEmpty) { ... return; }
 
     final updatedNote = _originalNote!.copyWith(
       title: title.isEmpty ? 'Untitled Note' : title,
@@ -189,7 +198,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: DateTime(2200),
     );
 
     if (picked != null && picked != _selectedDate && mounted) {

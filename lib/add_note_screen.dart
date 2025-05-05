@@ -57,18 +57,18 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   void _saveNote() {
     _log.info("Attempting to save note...");
     final String title = _titleController.text.trim();
-    final String content = _contentController.text.trim();
 
-    if (title.isEmpty && content.isEmpty) {
-      _log.warning("Attempted to save an empty note.");
+    if (title.isEmpty) {
+      _log.warning("Attempted to save a note without title.");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cannot save an empty note.')),
+          const SnackBar(content: Text('Cannot save a note without a title.')),
         );
       }
       return;
     }
 
+    final String content = _contentController.text.trim();
     final String uniqueId = DateTime.now().millisecondsSinceEpoch.toString() + UniqueKey().toString();
     final DateTime now = DateTime.now();
 
@@ -135,7 +135,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: DateTime(2200),
     );
     if (picked != null && picked != _selectedDate && mounted) {
       setState(() {
