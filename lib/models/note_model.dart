@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
 class Note {
@@ -25,17 +26,23 @@ class Note {
     try {
       final List<dynamic> deltaJson = jsonDecode(content);
       return Document.fromJson(deltaJson);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('Error decoding Quill JSON content for note ID $id: $e\n$stackTrace');
       final doc = Document();
       doc.insert(0, content);
       return doc;
     }
   }
 
+  String get plainTextContent {
+    final doc = contentDocument;
+    return doc.toPlainText().trim();
+  }
+
   factory Note.fromMap(Map<String, dynamic> map) {
     return Note(
       id: map['id'] as String,
-      title: map['title'] as String,
+      title: map['title'] as String? ?? '',
       content: map['content'] as String? ?? '',
       date: DateTime.tryParse(map['date'] as String? ?? '') ?? DateTime.now(),
       createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),

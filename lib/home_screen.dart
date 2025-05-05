@@ -44,14 +44,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     _log.fine("initState called");
-    _displayedNotes = _getFilteredAndSortedNotes(widget.notes);
-    _shouldShowEmptyMessage = _displayedNotes.isEmpty &&
-                              (_searchController.text.isNotEmpty || widget.notes.isNotEmpty) &&
-                              !(widget.notes.isEmpty && _searchController.text.isEmpty);
+    _updateDisplayedNotesAndEmptyMessage(widget.notes);
     _searchController.addListener(_onSearchOrSortChanged);
   }
 
- @override
+  @override
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(widget.notes, oldWidget.notes)) {
@@ -72,43 +69,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  void _onSearchOrSortChanged() {
-    final newList = _getFilteredAndSortedNotes(widget.notes);
+  void _updateDisplayedNotesAndEmptyMessage(List<Note> sourceNotes) {
+    final newList = _getFilteredAndSortedNotes(sourceNotes);
     if (mounted) {
       setState(() {
         _displayedNotes = newList;
       });
+      _handleEmptyMessage(newList, sourceNotes);
     }
-    _handleEmptyMessage(newList);
   }
 
-  void _handleEmptyMessage(List<Note> newList) {
+  void _onSearchOrSortChanged() {
+    _updateDisplayedNotesAndEmptyMessage(widget.notes);
+  }
+
+  void _handleEmptyMessage(List<Note> filteredList, List<Note> sourceNotes) {
     _emptyListTimer?.cancel();
-    if (newList.isEmpty) {
+    final bool isEmptyResult = filteredList.isEmpty;
+    final bool showBecauseSearchFailed = isEmptyResult && _searchController.text.isNotEmpty;
+    final bool showBecauseInitiallyEmpty = isEmptyResult && _searchController.text.isEmpty && sourceNotes.isEmpty;
+    final bool shouldShowNow = showBecauseSearchFailed || (isEmptyResult && !showBecauseInitiallyEmpty && sourceNotes.isNotEmpty);
+
+    if (shouldShowNow) {
       _emptyListTimer = Timer(_animationDuration + _timerBuffer, () {
         if (mounted) {
           setState(() {
-            _shouldShowEmptyMessage = (_searchController.text.isNotEmpty || widget.notes.isNotEmpty) &&
-                                      !(widget.notes.isEmpty && _searchController.text.isEmpty);
+            final currentFilteredList = _getFilteredAndSortedNotes(widget.notes);
+            final currentSourceNotes = widget.notes;
+            final currentIsEmptyResult = currentFilteredList.isEmpty;
+            final currentShowBecauseSearchFailed = currentIsEmptyResult && _searchController.text.isNotEmpty;
+            final currentShowBecauseInitiallyEmpty = currentIsEmptyResult && _searchController.text.isEmpty && currentSourceNotes.isEmpty;
+            _shouldShowEmptyMessage = currentShowBecauseSearchFailed || (currentIsEmptyResult && !currentShowBecauseInitiallyEmpty && currentSourceNotes.isNotEmpty);
           });
+          _log.finer("Empty message timer fired. shouldShowEmptyMessage: $_shouldShowEmptyMessage");
         }
       });
     } else {
-      setState(() {
-        _shouldShowEmptyMessage = false;
-      });
+      if (mounted && _shouldShowEmptyMessage) {
+        setState(() {
+          _shouldShowEmptyMessage = false;
+        });
+        _log.finer("List not empty or initially empty, hiding empty message.");
+      }
     }
   }
 
   List<Note> _getFilteredAndSortedNotes(List<Note> currentNotes) {
-    final query = _searchController.text.toLowerCase();
+    final query = _searchController.text.toLowerCase().trim();
     List<Note> filteredNotes;
+
     if (query.isEmpty) {
       filteredNotes = List.from(currentNotes);
     } else {
       filteredNotes = currentNotes.where((note) {
         final titleLower = note.title.toLowerCase();
-        final contentLower = note.content.toLowerCase();
+        final contentLower = note.plainTextContent.toLowerCase();
         return titleLower.contains(query) || contentLower.contains(query);
       }).toList();
     }
@@ -144,11 +159,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       begin: isRemoving ? const Offset(1.0, 0.0) : const Offset(-1.0, 0.0),
       end: Offset.zero,
     );
-
-    final curvedAnimation = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeInOut,
-    );
+    final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.easeInOut);
 
     return SizeTransition(
       sizeFactor: curvedAnimation,
@@ -163,6 +174,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildItemContent(BuildContext context, Note note, ThemeData theme, String formattedDate, String heroTag){
+    final String plainContent = note.plainTextContent;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: Hero(
@@ -171,15 +184,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           type: MaterialType.transparency,
           child: Card(
             margin: EdgeInsets.zero,
+            elevation: 0.5,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: ListTile(
               title: Text(
                 note.title.isEmpty ? 'Untitled Note' : note.title,
                 style: const TextStyle(fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
-                '$formattedDate - ${note.content}',
+                '$formattedDate - $plainContent',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
               trailing: IconButton(
                 icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
@@ -194,6 +214,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 _log.info('Tapped on note ID: ${note.id}');
                 widget.onNoteTap(note);
               },
+              // visualDensity: VisualDensity.compact,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
         ),
@@ -211,7 +233,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
         return AlertDialog(
           title: const Text('Delete Note?'),
-          content: Text('Are you sure you want to delete "${note.title}"? This action cannot be undone.'),
+          content: Text('Are you sure you want to delete "${note.title.isEmpty ? 'Untitled Note' : note.title}"? This action cannot be undone.'),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -244,7 +266,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       if(context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Note "${note.title}" deleted.'), duration: const Duration(seconds: 2)),
+          SnackBar(content: Text('Note "${note.title.isEmpty ? 'Untitled Note' : note.title}" deleted.'), duration: const Duration(seconds: 2)),
         );
       }
     } else {
@@ -279,10 +301,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 focusNode: _searchFocusNode,
                 decoration: InputDecoration(
                   hintText: 'Search notes...',
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search, size: 22),
                   suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(Icons.clear, size: 20),
                         tooltip: 'Clear Search',
                         onPressed: () {
                           _log.fine("Clear search button pressed.");
@@ -297,9 +319,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Theme.of(context).colorScheme.primaryContainer.withAlpha(128),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                  fillColor: theme.colorScheme.surfaceContainerHighest.withAlpha(140),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                 ),
+                style: theme.textTheme.bodyLarge,
               ),
             ),
           ],
@@ -311,14 +334,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                 child: Row(
                   children: [
-                    Text(
-                      'Sort by: ',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0),),
+                    Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0)),
+                    Text('Sort by: ', style: theme.textTheme.bodyMedium),
+                    Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0)),
                     PopupMenuButton<SortProperty>(
                       initialValue: _sortBy,
                       onSelected: (SortProperty newSortBy) {
@@ -377,11 +398,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 child: showInitialEmptyMessage
                   ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40.0),
                       child: AnimatedTextKit(
                         animatedTexts: [
                           TypewriterAnimatedText(
-                            'No notes yet. Tap + to add one!',
-                            textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            'No notes yet.\nTap the + button to add one!',
+                            textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Theme.of(context).colorScheme.onSurfaceVariant
                             ),
                             textAlign: TextAlign.center,
@@ -389,12 +412,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ],
                         isRepeatingAnimation: false,
+                        displayFullTextOnTap: true,
                       ),
-                    )
+                    ),
+                  )
                   : Stack(
                       children: [
                         ImplicitlyAnimatedList<Note>(
                           items: _displayedNotes,
+                          padding: const EdgeInsets.only(bottom: 80.0),
                           itemBuilder: (context, animation, note, index) {
                             return _buildAnimatedItem(context, note, animation);
                           },
@@ -408,12 +434,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         if (_shouldShowEmptyMessage)
                           Center(
                             child: Padding(
-                              padding: const EdgeInsets.all(20.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 40.0),
                               child: AnimatedTextKit(
                                 animatedTexts: [
                                   TypewriterAnimatedText(
                                     'No notes found matching your search.',
-                                    textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       color: Theme.of(context).colorScheme.onSurfaceVariant
                                     ),
                                     textAlign: TextAlign.center,
@@ -421,6 +447,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                 ],
                                 isRepeatingAnimation: false,
+                                displayFullTextOnTap: true,
                               ),
                             ),
                           ),
