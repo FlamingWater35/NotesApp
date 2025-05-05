@@ -177,9 +177,10 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       controller: _quillController,
       config: QuillEditorConfig(
         placeholder: 'Start writing your notes...',
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         autoFocus: false,
         scrollable: true,
+        minHeight: MediaQuery.of(context).size.height * 0.3,
         // Custom styles
         // customStyles: DefaultStyles( ... ),
         onLaunchUrl: (url) async {

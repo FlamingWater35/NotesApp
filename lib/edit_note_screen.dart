@@ -60,7 +60,9 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
         document: doc,
         selection: const TextSelection.collapsed(offset: 0),
         config: QuillControllerConfig(
-          clipboardConfig: QuillClipboardConfig(enableExternalRichPaste: true),
+          clipboardConfig: QuillClipboardConfig(
+            enableExternalRichPaste: true,
+          ),
         ),
       );
 
@@ -259,9 +261,10 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       controller: _quillController,
       config: QuillEditorConfig(
         placeholder: 'Start writing your notes...',
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         autoFocus: false,
         scrollable: true,
+        minHeight: MediaQuery.of(context).size.height * 0.3,
         // Custom styles
         // customStyles: DefaultStyles( ... ),
         onLaunchUrl: (url) async {
