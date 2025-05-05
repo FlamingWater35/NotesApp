@@ -204,14 +204,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final theme = Theme.of(context);
 
     final slideTween = Tween<Offset>(
-      begin: const Offset(-1.0, 0.0),
+      begin: isRemoving ? const Offset(1.0, 0.0) : const Offset(-1.0, 0.0),
       end: Offset.zero,
     );
 
+    final curvedAnimation = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeInOut,
+    );
+
     return SizeTransition(
-      sizeFactor: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+      sizeFactor: curvedAnimation,
       child: FadeTransition(
-        opacity: CurvedAnimation(parent: animation, curve: Curves.easeIn),
+        opacity: curvedAnimation,
         child: SlideTransition(
           position: animation.drive(slideTween.chain(CurveTween(curve: Curves.easeInOut))),
           child: _buildItemContent(context, note, theme, formattedDate, heroTag),
