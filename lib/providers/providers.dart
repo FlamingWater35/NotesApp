@@ -32,9 +32,6 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
     state = await AsyncValue.guard(() async {
       await dbHelper.insertNote(note);
       return await dbHelper.getAllNotes();
-      // Alternative (potentially faster for large lists, but less safe):
-      // final currentNotes = state.value ?? [];
-      // return [note, ...currentNotes]; // Add to beginning
     });
      _log.fine("NotesNotifier: addNote finished for ID ${note.id}");
   }
@@ -48,15 +45,6 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
       state = await AsyncValue.guard(() async {
         await dbHelper.updateNote(note);
         return await dbHelper.getAllNotes();
-        // Alternative: Update locally
-        // final currentNotes = state.value ?? [];
-        // final index = currentNotes.indexWhere((n) => n.id == note.id);
-        // if (index != -1) {
-        //   final updatedList = List<Note>.from(currentNotes);
-        //   updatedList[index] = note;
-        //   return updatedList;
-        // }
-        // return currentNotes; // Should not happen if note exists
       });
     } catch (e, s) {
       _log.severe("Error updating note in provider", e, s);
@@ -75,10 +63,6 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
     state = await AsyncValue.guard(() async {
       await dbHelper.deleteNote(id);
       return await dbHelper.getAllNotes();
-      // Alternative: Remove locally
-      // final currentNotes = state.value ?? [];
-      // final updatedList = currentNotes.where((n) => n.id != id).toList();
-      // return updatedList;
     });
     _log.fine("NotesNotifier: deleteNote finished for ID $id");
   }
