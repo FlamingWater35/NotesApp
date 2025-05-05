@@ -188,67 +188,75 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: ListView(
-              children: <Widget>[
-                // Title TextField
-                TextField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Title',
-                    hintText: 'Enter note title',
-                    border: OutlineInputBorder(),
-                  ),
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textCapitalization: TextCapitalization.sentences,
-                ),
-                const SizedBox(height: 16.0),
+            child: Card(
+              elevation: 0,
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListView(
+                  children: <Widget>[
+                    // Title TextField
+                    TextField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Title',
+                        hintText: 'Enter note title',
+                        border: InputBorder.none,
+                        filled: false,
+                      ),
+                      style: Theme.of(context).textTheme.titleLarge,
+                      textCapitalization: TextCapitalization.sentences,
+                    ),
+                    const SizedBox(height: 16.0),
 
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _selectDate(context),
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => _selectDate(context),
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(Icons.calendar_today_outlined, size: 20),
-                              const SizedBox(width: 12),
-                              Text(
-                                displayDate,
-                                style: Theme.of(context).textTheme.titleMedium,
+                              Row(
+                                children: [
+                                  const Icon(Icons.calendar_today_outlined, size: 20),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    displayDate,
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ],
                               ),
+                              const Icon(Icons.arrow_drop_down, color: Colors.grey),
                             ],
                           ),
-                          const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const Divider(height: 1),
-                const SizedBox(height: 20.0),
+                    const Divider(height: 1),
+                    const SizedBox(height: 16.0),
 
-                // Content TextField
-                TextField(
-                  controller: _contentController,
-                  decoration: const InputDecoration(
-                    labelText: 'Content',
-                    hintText: 'Enter your note details...',
-                    border: OutlineInputBorder(),
-                    alignLabelWithHint: true,
-                  ),
-                  maxLines: 20,
-                  minLines: 5,
-                  keyboardType: TextInputType.multiline,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  textCapitalization: TextCapitalization.sentences,
+                    // Content TextField
+                    TextField(
+                      controller: _contentController,
+                      decoration: const InputDecoration(
+                        labelText: 'Content',
+                        hintText: 'Enter your note details...',
+                        border: InputBorder.none,
+                        filled: false,
+                        alignLabelWithHint: true,
+                      ),
+                      maxLines: null,
+                      minLines: 15,
+                      keyboardType: TextInputType.multiline,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      textCapitalization: TextCapitalization.sentences,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16.0),
-              ],
+              ),
             ),
           ),
         ),
