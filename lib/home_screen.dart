@@ -140,14 +140,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       } else {
         _log.finest("List remains empty. Setting message visibility directly.");
         _shouldShowEmptyMessage = (_searchController.text.isNotEmpty || widget.notes.isNotEmpty) &&
-                                  !(widget.notes.isEmpty && _searchController.text.isEmpty);
+                                !(widget.notes.isEmpty && _searchController.text.isEmpty);
       }
     } else {
       _log.finest("List is not empty. Hiding empty message.");
       _shouldShowEmptyMessage = false;
     }
 
-    final Map<String, Note> oldNotesMap = { for (var note in oldList) note.id : note };
     final Map<String, Note> newNotesMap = { for (var note in newList) note.id : note };
 
     for (int i = oldList.length - 1; i >= 0; i--) {
@@ -163,15 +162,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }
     }
 
-    _displayedNotes = List.from(newList);
+    for (int newIndex = 0; newIndex < newList.length; newIndex++) {
+      final note = newList[newIndex];
+      final oldIndex = oldList.indexWhere((n) => n.id == note.id);
 
-    for (int i = 0; i < newList.length; i++) {
-      final note = newList[i];
-      if (!oldNotesMap.containsKey(note.id)) {
-        _log.finest("Inserting item at index $i (ID: ${note.id})");
-        _listKey.currentState?.insertItem(i, duration: _animationDuration);
+      if (oldIndex == -1) {
+        _log.finest("Inserting item at index $newIndex (ID: ${note.id})");
+        _listKey.currentState?.insertItem(newIndex, duration: _animationDuration);
+      } else if (oldIndex != newIndex) {
+        _log.finest("Item ${note.id} moved from $oldIndex to $newIndex");
+        final Note movedNote = oldList[oldIndex];
+        
+        _displayedNotes.removeAt(oldIndex);
+        _listKey.currentState?.removeItem(
+          oldIndex,
+          (context, animation) => const SizedBox.shrink(),
+          duration: Duration.zero,
+        );
+
+        final int adjustedNewIndex = (newIndex > oldIndex) ? newIndex - 1 : newIndex;
+
+        _displayedNotes.insert(adjustedNewIndex, movedNote);
+        _listKey.currentState?.insertItem(adjustedNewIndex, duration: _animationDuration);
       }
     }
+
+    _displayedNotes = List.from(newList);
 
     if (_listKey.currentState == null && _displayedNotes.isNotEmpty) {
       _log.warning("List has items, but AnimatedList state is null. A rebuild should occur.");
