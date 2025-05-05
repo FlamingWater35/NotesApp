@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:notes_app/l10n/app_localizations.dart';
 
 import 'main_screen.dart';
 import 'components/update_service.dart';
@@ -62,7 +65,19 @@ class MyApp extends ConsumerWidget {
     }
 
     return MaterialApp(
-      title: 'Notes',
+      onGenerateTitle: (context) {
+        final localizations = AppLocalizations.of(context);
+        return localizations.appTitle;
+      },
+      locale: null, // ref.watch(localeProvider),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        FlutterQuillLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
 
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

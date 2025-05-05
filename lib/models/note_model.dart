@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter_quill/flutter_quill.dart';
+
 class Note {
   final String id;
   final String title;
@@ -15,11 +18,25 @@ class Note {
     required this.lastModified,
   });
 
+  Document get contentDocument {
+    if (content.isEmpty) {
+      return Document();
+    }
+    try {
+      final List<dynamic> deltaJson = jsonDecode(content);
+      return Document.fromJson(deltaJson);
+    } catch (e) {
+      final doc = Document();
+      doc.insert(0, content);
+      return doc;
+    }
+  }
+
   factory Note.fromMap(Map<String, dynamic> map) {
     return Note(
       id: map['id'] as String,
       title: map['title'] as String,
-      content: map['content'] as String,
+      content: map['content'] as String? ?? '',
       date: DateTime.tryParse(map['date'] as String? ?? '') ?? DateTime.now(),
       createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),
       lastModified: DateTime.tryParse(map['lastModified'] as String? ?? '') ?? DateTime.now(),
@@ -60,9 +77,7 @@ class Note {
   @override
   bool operator ==(Object other) =>
     identical(this, other) ||
-    other is Note &&
-      runtimeType == other.runtimeType &&
-      id == other.id;
+    other is Note && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;

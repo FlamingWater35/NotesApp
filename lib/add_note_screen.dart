@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +18,11 @@ class AddNoteScreen extends ConsumerStatefulWidget {
 class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   final _log = Logger('AddNoteScreenState');
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _contentController = TextEditingController();
+
+  late QuillController _quillController;
+  final FocusNode _editorFocusNode = FocusNode();
+  final ScrollController _editorScrollController = ScrollController();
+
   DateTime _selectedDate = DateTime.now();
   late DateTime _initialDate;
   bool _isDirty = false;
@@ -28,29 +34,43 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
     _initialDate = _selectedDate;
     _log.fine("Initial date set to: $_initialDate");
 
+    _quillController = QuillController.basic(
+      config: QuillControllerConfig(
+        clipboardConfig: QuillClipboardConfig(
+          enableExternalRichPaste: true,
+          // onImagePaste: 
+        ),
+      ),
+    );
+
     _titleController.addListener(_checkIfDirty);
-    _contentController.addListener(_checkIfDirty);
+    _quillController.addListener(_checkIfDirty);
   }
 
   @override
   void dispose() {
     _log.fine("dispose called");
     _titleController.removeListener(_checkIfDirty);
-    _contentController.removeListener(_checkIfDirty);
+    _quillController.removeListener(_checkIfDirty);
     _titleController.dispose();
-    _contentController.dispose();
+    _quillController.dispose();
+
+    _editorFocusNode.dispose();
+    _editorScrollController.dispose();
     super.dispose();
   }
 
   void _checkIfDirty() {
-    final bool currentlyDirty = _titleController.text.isNotEmpty || _contentController.text.isNotEmpty || 
+    final bool quillContentChanged = !_quillController.document.isEmpty();
+    final bool currentlyDirty = _titleController.text.isNotEmpty ||
+      quillContentChanged ||
       _selectedDate != _initialDate;
 
     if (currentlyDirty != _isDirty) {
       setState(() {
         _isDirty = currentlyDirty;
       });
-       _log.finer("Dirty state changed to: $_isDirty");
+      _log.finer("Dirty state changed to: $_isDirty");
     }
   }
 
@@ -68,14 +88,14 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       return;
     }
 
-    final String content = _contentController.text.trim();
+    final String contentJson = jsonEncode(_quillController.document.toDelta().toJson());
     final String uniqueId = DateTime.now().millisecondsSinceEpoch.toString() + UniqueKey().toString();
     final DateTime now = DateTime.now();
 
     final newNote = Note(
       id: uniqueId,
       title: title.isEmpty ? 'Untitled Note' : title,
-      content: content,
+      content: contentJson,
       date: _selectedDate,
       createdAt: now,
       lastModified: now,
@@ -142,7 +162,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
         _selectedDate = picked;
         _checkIfDirty();
       });
-       _log.fine("Date selected: $_selectedDate");
+      _log.fine("Date selected: $_selectedDate");
     }
   }
 
@@ -150,6 +170,26 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   Widget build(BuildContext context) {
     _log.finer("Building AddNoteScreen widget");
     final String displayDate = DateFormat.yMMMd().format(_selectedDate);
+
+    final quillEditor = QuillEditor(
+      focusNode: _editorFocusNode,
+      scrollController: _editorScrollController,
+      controller: _quillController,
+      config: QuillEditorConfig(
+        placeholder: 'Start writing your notes...',
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        autoFocus: false,
+        scrollable: true,
+        checkBoxReadOnly: false,
+        // Custom styles
+        // customStyles: DefaultStyles( ... ),
+        onLaunchUrl: (url) async {
+          // Handle URL launching
+          _log.finer("Attempting to launch URL: $url");
+        },
+      ),
+    );
+
 
     return PopScope(
       canPop: !_isDirty,
@@ -199,15 +239,15 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                     TextField(
                       controller: _titleController,
                       decoration: const InputDecoration(
-                        labelText: 'Title',
-                        hintText: 'Enter note title',
+                        // labelText: 'Title',
+                        hintText: 'Title',
                         border: InputBorder.none,
                         filled: false,
                       ),
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                       textCapitalization: TextCapitalization.sentences,
                     ),
-                    const SizedBox(height: 16.0),
+                    const SizedBox(height: 8.0),
 
                     Material(
                       color: Colors.transparent,
@@ -236,24 +276,32 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                       ),
                     ),
                     const Divider(height: 1),
-                    const SizedBox(height: 16.0),
+                    const SizedBox(height: 8.0),
 
-                    // Content TextField
-                    TextField(
-                      controller: _contentController,
-                      decoration: const InputDecoration(
-                        labelText: 'Content',
-                        hintText: 'Enter your note details...',
-                        border: InputBorder.none,
-                        filled: false,
-                        alignLabelWithHint: true,
+                    QuillSimpleToolbar(
+                      controller: _quillController,
+                      config: QuillSimpleToolbarConfig(
+                        showAlignmentButtons: true,
+                        showLink: false,
+                        showQuote: false,
+                        showStrikeThrough: false,
+                        showCodeBlock: false,
+                        showInlineCode: false,
+                        // buttonOptions: QuillSimpleToolbarButtonOptions()
                       ),
-                      maxLines: null,
-                      minLines: 15,
-                      keyboardType: TextInputType.multiline,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      textCapitalization: TextCapitalization.sentences,
                     ),
+                    const Divider(height: 1),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Theme.of(context).colorScheme.primary),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0), 
+                        child: quillEditor,
+                      ),
+                    ),               
                   ],
                 ),
               ),

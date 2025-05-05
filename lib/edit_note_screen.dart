@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 
 import '../providers/providers.dart';
 import '../models/note_model.dart';
@@ -24,9 +25,13 @@ class EditNoteScreen extends ConsumerStatefulWidget {
 class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   final _log = Logger('EditNoteScreenState');
   late TextEditingController _titleController;
-  late TextEditingController _contentController;
+
+  late QuillController _quillController;
+  final FocusNode _editorFocusNode = FocusNode();
+  final ScrollController _editorScrollController = ScrollController();
 
   Note? _originalNote;
+  String _originalContentJson = '';
   DateTime? _selectedDate;
   bool _isDirty = false;
   bool _isLoading = true;
@@ -37,7 +42,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     super.initState();
     _log.fine("initState called for editing note ID: ${widget.noteId}");
     _titleController = TextEditingController();
-    _contentController = TextEditingController();
+    _quillController = QuillController.basic();
     _loadNoteData();
   }
 
@@ -47,11 +52,20 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     if (note != null && mounted) {
       _originalNote = note;
       _titleController.text = note.title;
-      _contentController.text = note.content;
       _selectedDate = note.date;
+      _originalContentJson = note.content;
+
+      final Document doc = note.contentDocument;
+      _quillController = QuillController(
+        document: doc,
+        selection: const TextSelection.collapsed(offset: 0),
+        config: QuillControllerConfig(
+          clipboardConfig: QuillClipboardConfig(enableExternalRichPaste: true),
+        ),
+      );
 
       _titleController.addListener(_checkIfDirty);
-      _contentController.addListener(_checkIfDirty);
+      _quillController.addListener(_checkIfDirty);
 
       setState(() {
         _isLoading = false;
@@ -73,31 +87,36 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   void dispose() {
     _log.fine("dispose called");
     _titleController.removeListener(_checkIfDirty);
-    _contentController.removeListener(_checkIfDirty);
+    _quillController.removeListener(_checkIfDirty);
     _titleController.dispose();
-    _contentController.dispose();
+
+    _quillController.dispose();
+    _editorFocusNode.dispose();
+    _editorScrollController.dispose();
     super.dispose();
   }
 
   void _checkIfDirty() {
     if (_originalNote == null) return;
 
+    final String currentContentJson = jsonEncode(_quillController.document.toDelta().toJson());
+    final bool contentChanged = currentContentJson != _originalContentJson;
+
     final bool currentlyDirty = _titleController.text != _originalNote!.title ||
-      _contentController.text != _originalNote!.content ||
-      _selectedDate != _originalNote!.date;
+      contentChanged || _selectedDate != _originalNote!.date;
 
     if (currentlyDirty != _isDirty) {
       setState(() {
         _isDirty = currentlyDirty;
       });
-       _log.finer("Edit screen dirty state changed to: $_isDirty");
+      _log.finer("Edit screen dirty state changed to: $_isDirty");
     }
   }
 
   void _updateNote() async {
     _log.info("Attempting to update note ID: ${widget.noteId}");
     if (_originalNote == null || _isSaving) {
-      _log.warning("Attempted to update note before it was loaded.");
+      _log.warning("Attempted to update note before it was loaded or while saving.");
       return;
     }
 
@@ -116,16 +135,15 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       _isSaving = true;
     });
 
-    final String content = _contentController.text.trim();
+    final String contentJson = jsonEncode(_quillController.document.toDelta().toJson());
     final DateTime newDate = _selectedDate ?? _originalNote!.date;
     final DateTime modifiedTime = DateTime.now();
 
     final updatedNote = _originalNote!.copyWith(
       title: title.isEmpty ? 'Untitled Note' : title,
-      content: content,
+      content: contentJson,
       date: newDate,
       lastModified: modifiedTime,
-      // createdAt and id remain the same
     );
 
     _log.fine('Calling provider to update note data: $updatedNote');
@@ -145,6 +163,12 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    } finally {
+      if (mounted && _isSaving) {
         setState(() {
           _isSaving = false;
         });
@@ -227,20 +251,32 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       );
     }
 
-    final String displayDate = DateFormat.yMMMd().format(_selectedDate ?? _originalNote!.date);
-      
+    final displayDate = DateFormat.yMMMd().format(_selectedDate ?? _originalNote!.date);
+
+    final quillEditor = QuillEditor(
+      focusNode: _editorFocusNode,
+      scrollController: _editorScrollController,
+      controller: _quillController,
+      config: QuillEditorConfig(
+        placeholder: 'Start writing your notes...',
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        autoFocus: false,
+        scrollable: true,
+        checkBoxReadOnly: false,
+        // Custom styles
+        // customStyles: DefaultStyles( ... ),
+        onLaunchUrl: (url) async {
+          // Handle URL launching
+          _log.finer("Attempting to launch URL: $url");
+        },
+      ),
+    );
+
     return PopScope(
-      canPop: !_isDirty,
+      canPop: !_isDirty || _isSaving,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
         _log.fine('Pop invoked on EditNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result');
-        if (didPop) return;
-
-        // Keyboard focus check
-        // if (mounted && MediaQuery.viewInsetsOf(context).bottom > 0) {
-        //   _log.fine("Keyboard is visible, unfocusing instead of showing discard dialog.");
-        //   FocusScope.of(context).unfocus();
-        //   return;
-        // }
+        if (didPop || _isSaving) return;
 
         final navigator = mounted ? Navigator.of(context, rootNavigator: true) : null;
         final bool shouldDiscard = await _showDiscardDialog();
@@ -256,24 +292,22 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
           actions: [
             if (_isSaving)
               const Padding(
-                padding: EdgeInsets.only(right: 8.0),
+                padding: EdgeInsets.only(right: 16.0),
                 child: Center(
                   child: SizedBox(
                     width: 24,
                     height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2.0),
+                    child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
                   ),
                 ),
               )
             else
               Padding(
-                padding: EdgeInsets.only(right: 8.0),
-                child: Center(
-                  child: IconButton(
-                    icon: const Icon(Icons.check),
-                    onPressed: _isDirty ? _updateNote : null, 
-                    tooltip: 'Save Changes',
-                  ),
+                padding: const EdgeInsets.only(right: 8.0),
+                child: IconButton(
+                  icon: const Icon(Icons.check),
+                  onPressed: (_isDirty && !_isSaving) ? _updateNote : null,
+                  tooltip: 'Save Changes',
                 ),
               ),
           ],
@@ -300,21 +334,21 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                             // Title TextField
                             TextField(
                               controller: _titleController,
+                              enabled: !_isSaving,
                               decoration: const InputDecoration(
-                                labelText: 'Title',
-                                hintText: 'Enter note title',
+                                hintText: 'Title',
                                 border: InputBorder.none,
                                 filled: false,
                               ),
-                              style: Theme.of(context).textTheme.titleLarge,
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                               textCapitalization: TextCapitalization.sentences,
                             ),
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: 8.0),
 
                             Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                onTap: () => _selectDate(context),
+                                onTap: _isSaving ? null : () => _selectDate(context),
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -331,31 +365,39 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                                           ),
                                         ],
                                       ),
-                                      const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                      Icon(Icons.arrow_drop_down, color: Colors.grey.withAlpha(_isSaving ? 128 : 255)),
                                     ],
                                   ),
                                 ),
                               ),
                             ),
                             const Divider(height: 1),
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: 8.0),
 
-                            // Content TextField
-                            TextField(
-                              controller: _contentController,
-                              decoration: const InputDecoration(
-                                labelText: 'Content',
-                                hintText: 'Enter your note details...',
-                                border: InputBorder.none,
-                                filled: false,
-                                alignLabelWithHint: true,
+                            QuillSimpleToolbar(
+                              controller: _quillController,
+                              config: QuillSimpleToolbarConfig(
+                                showAlignmentButtons: true,
+                                showLink: false,
+                                showQuote: false,
+                                showStrikeThrough: false,
+                                showCodeBlock: false,
+                                showInlineCode: false,
+                                // buttonOptions: QuillSimpleToolbarButtonOptions()
                               ),
-                              maxLines: null,
-                              minLines: 15,
-                              keyboardType: TextInputType.multiline,
-                              textCapitalization: TextCapitalization.sentences,
-                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            const Divider(height: 1),
+
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Theme.of(context).colorScheme.primary),
+                                borderRadius: BorderRadius.circular(8),
                               ),
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0), 
+                                child: quillEditor,
+                              ),
+                            ),
                           ],
                         ),
                       ),
