@@ -3,8 +3,8 @@ import 'package:logging/logging.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart' show listEquals;
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:animated_list_plus/animated_list_plus.dart';
 
 import '../models/note_model.dart';
 import '../providers/providers.dart';
@@ -30,7 +30,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   final Duration _animationDuration = const Duration(milliseconds: 300);
 
   List<Note> _displayedNotes = [];
@@ -74,9 +73,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _onSearchOrSortChanged() {
-    _log.finer("Search or sort parameters potentially changed. Recomputing list.");
-    setState(() {});
-    _updateAnimatedList(widget.notes);
+    final newList = _getFilteredAndSortedNotes(widget.notes);
+    if (mounted) {
+      setState(() {
+        _displayedNotes = newList;
+      });
+    }
+    _handleEmptyMessage(newList);
+  }
+
+  void _handleEmptyMessage(List<Note> newList) {
+    _emptyListTimer?.cancel();
+    if (newList.isEmpty) {
+      _emptyListTimer = Timer(_animationDuration + _timerBuffer, () {
+        if (mounted) {
+          setState(() {
+            _shouldShowEmptyMessage = (_searchController.text.isNotEmpty || widget.notes.isNotEmpty) &&
+                                      !(widget.notes.isEmpty && _searchController.text.isEmpty);
+          });
+        }
+      });
+    } else {
+      setState(() {
+        _shouldShowEmptyMessage = false;
+      });
+    }
   }
 
   List<Note> _getFilteredAndSortedNotes(List<Note> currentNotes) {
@@ -114,90 +135,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return filteredNotes;
   }
 
-  void _updateAnimatedList(List<Note> sourceNotes) {
-    final List<Note> oldList = List.from(_displayedNotes);
-    final List<Note> newList = _getFilteredAndSortedNotes(sourceNotes);
-
-    _log.finer("Updating animated list. Old count: ${oldList.length}, New count: ${newList.length}");
-
-    _emptyListTimer?.cancel();
-
-    if (newList.isEmpty) {
-      if (oldList.isNotEmpty) {
-        _log.finest("Transitioning to empty list. Starting timer.");
-        _shouldShowEmptyMessage = false;
-        _emptyListTimer = Timer(_animationDuration + _timerBuffer, () {
-          _log.finest("Empty list timer fired.");
-          if (mounted && _displayedNotes.isEmpty) {
-            _log.fine("List still empty after timer, showing empty message.");
-            setState(() {
-              _shouldShowEmptyMessage = true;
-            });
-          } else {
-            _log.finer("List not empty or widget unmounted when timer fired. Not showing empty message.");
-          }
-        });
-      } else {
-        _log.finest("List remains empty. Setting message visibility directly.");
-        _shouldShowEmptyMessage = (_searchController.text.isNotEmpty || widget.notes.isNotEmpty) &&
-                                !(widget.notes.isEmpty && _searchController.text.isEmpty);
-      }
-    } else {
-      _log.finest("List is not empty. Hiding empty message.");
-      _shouldShowEmptyMessage = false;
-    }
-
-    final Map<String, Note> newNotesMap = { for (var note in newList) note.id : note };
-
-    for (int i = oldList.length - 1; i >= 0; i--) {
-      final note = oldList[i];
-      if (!newNotesMap.containsKey(note.id)) {
-        _log.finest("Removing item at index $i (ID: ${note.id})");
-        final Note noteToRemove = oldList[i];
-        _listKey.currentState?.removeItem(
-          i,
-          (context, animation) => _buildAnimatedItem(context, noteToRemove, animation, isRemoving: true),
-          duration: _animationDuration,
-        );
-      }
-    }
-
-    for (int newIndex = 0; newIndex < newList.length; newIndex++) {
-      final note = newList[newIndex];
-      final oldIndex = oldList.indexWhere((n) => n.id == note.id);
-
-      if (oldIndex == -1) {
-        _log.finest("Inserting item at index $newIndex (ID: ${note.id})");
-        _listKey.currentState?.insertItem(newIndex, duration: _animationDuration);
-      } else if (oldIndex != newIndex) {
-        _log.finest("Item ${note.id} moved from $oldIndex to $newIndex");
-        final Note movedNote = oldList[oldIndex];
-        
-        _displayedNotes.removeAt(oldIndex);
-        _listKey.currentState?.removeItem(
-          oldIndex,
-          (context, animation) => const SizedBox.shrink(),
-          duration: Duration.zero,
-        );
-
-        final int adjustedNewIndex = (newIndex > oldIndex) ? newIndex - 1 : newIndex;
-
-        _displayedNotes.insert(adjustedNewIndex, movedNote);
-        _listKey.currentState?.insertItem(adjustedNewIndex, duration: _animationDuration);
-      }
-    }
-
-    _displayedNotes = List.from(newList);
-
-    if (_listKey.currentState == null && _displayedNotes.isNotEmpty) {
-      _log.warning("List has items, but AnimatedList state is null. A rebuild should occur.");
-    } else if (listEquals(oldList.map((e) => e.id).toList(), newList.map((e) => e.id).toList()) && !listEquals(oldList, newList)) {
-      _log.finer("Lists contain same items but order changed. Rebuild triggered by setState.");
-    } else if (oldList.isEmpty && newList.isEmpty) {
-      _log.finer("List remains empty. Rebuild triggered by setState.");
-    }
-  }
-
   Widget _buildAnimatedItem(BuildContext context, Note note, Animation<double> animation, {bool isRemoving = false}) {
     final String heroTag = note.heroTag;
     final String formattedDate = DateFormat.yMd().format(note.date);
@@ -220,7 +157,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: SlideTransition(
           position: animation.drive(slideTween.chain(CurveTween(curve: Curves.easeInOut))),
           child: _buildItemContent(context, note, theme, formattedDate, heroTag),
-        )
+        ),
       ),
     );
   }
@@ -456,17 +393,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     )
                   : Stack(
                       children: [
-                        AnimatedList(
-                          key: _listKey,
-                          initialItemCount: _displayedNotes.length,
-                          padding: EdgeInsets.zero,
-                          itemBuilder: (context, index, animation) {
-                            if (index >= _displayedNotes.length) {
-                              return Container();
-                            }
-                            final note = _displayedNotes[index];
+                        ImplicitlyAnimatedList<Note>(
+                          items: _displayedNotes,
+                          itemBuilder: (context, animation, note, index) {
                             return _buildAnimatedItem(context, note, animation);
                           },
+                          removeItemBuilder: (context, animation, note) {
+                            return _buildAnimatedItem(context, note, animation, isRemoving: true);
+                          },
+                          insertDuration: _animationDuration,
+                          removeDuration: _animationDuration,
+                          areItemsTheSame: (a, b) => a.id == b.id,
                         ),
                         if (_shouldShowEmptyMessage)
                           Center(

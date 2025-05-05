@@ -4,7 +4,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # Read more about Android versioning at https://developer.android.com/studio/publish/versioning
 # Read more about iOS versioning at https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.8+1
+version: 1.0.9+1
 
 environment:
   sdk: ^3.7.2
@@ -40,6 +40,7 @@ dependencies:
   device_info_plus: ^11.4.0
   open_filex: ^4.7.0
   permission_handler: ^12.0.0+1
+  animated_list_plus: ^0.5.2
 
 dev_dependencies:
   flutter_test:
