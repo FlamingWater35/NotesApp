@@ -141,7 +141,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  String _getLanguageName(Locale locale, AppLocalizations l10n) {
+  String _getLanguageName(Locale? locale, AppLocalizations l10n) {
+    if (locale == null) {
+      return l10n.languageSystemDefault;
+    }
     switch (locale.languageCode) {
       case 'ar':
         return 'العربية';
@@ -170,7 +173,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  void _showLanguageSelectionSheet(BuildContext context, Locale currentLocale, AppLocalizations l10n, WidgetRef ref) {
+  void _showLanguageSelectionSheet(BuildContext context, Locale? currentLocale, AppLocalizations l10n, WidgetRef ref) {
     final supportedLocales = AppLocalizations.supportedLocales;
     final theme = Theme.of(context);
 
@@ -186,15 +189,54 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (BuildContext bottomSheetContext) {
         return Consumer(
           builder: (context, sheetRef, child) {
-            final currentLocaleInSheet = sheetRef.watch(localeProvider);
+            final Locale? currentLocaleInSheet = sheetRef.watch(localeProvider);
 
             void handleLocaleSelection(Locale? newLocale) {
-              if (newLocale != null && newLocale != currentLocaleInSheet) {
-                _log.info("Language selected in sheet: ${newLocale.languageCode}");
-                ref.read(localeProvider.notifier).setLocale(newLocale);
-                Navigator.pop(bottomSheetContext);
-              }
+              _log.info("Language selected in sheet: ${newLocale?.languageCode ?? 'System Default'}");
+              ref.read(localeProvider.notifier).setLocale(newLocale);
+              Navigator.pop(bottomSheetContext);
             }
+            
+            var languageOptions = <Widget>[];
+
+            languageOptions.add(
+              ListTile(
+                title: Text(l10n.languageSystemDefault),
+                leading: Radio<Locale?>(
+                  value: null,
+                  groupValue: currentLocaleInSheet,
+                  onChanged: (Locale? val) => handleLocaleSelection(val),
+                  activeColor: theme.colorScheme.primary,
+                  visualDensity: VisualDensity.compact,
+                ),
+                selected: currentLocaleInSheet == null,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                visualDensity: VisualDensity.compact,
+                onTap: () => handleLocaleSelection(null),
+              )
+            );
+
+            languageOptions.addAll(
+              supportedLocales.map((locale) {
+                final languageName = _getLanguageName(locale, l10n);
+                final bool isSelected = locale == currentLocaleInSheet;
+
+                return ListTile(
+                  title: Text(languageName),
+                  leading: Radio<Locale?>(
+                    value: locale,
+                    groupValue: currentLocaleInSheet,
+                    onChanged: (Locale? val) => handleLocaleSelection(val),
+                    activeColor: theme.colorScheme.primary,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  selected: isSelected,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  visualDensity: VisualDensity.compact,
+                  onTap: () => handleLocaleSelection(locale),
+                );
+              }).toList()
+            );
 
             return SafeArea(
               child: Padding(
@@ -228,25 +270,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           color: Colors.transparent,
                           child: ListView(
                             padding: EdgeInsets.zero,
-                            children: supportedLocales.map((locale) {
-                              final languageName = _getLanguageName(locale, l10n);
-                              final bool isSelected = locale == currentLocaleInSheet;
-
-                              return ListTile(
-                                title: Text(languageName),
-                                leading: Radio<Locale>(
-                                  value: locale,
-                                  groupValue: currentLocaleInSheet,
-                                  onChanged: handleLocaleSelection,
-                                  activeColor: theme.colorScheme.primary,
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                                selected: isSelected,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                visualDensity: VisualDensity.compact,
-                                onTap: () => handleLocaleSelection(locale),
-                              );
-                            }).toList(),
+                            children: languageOptions,
                           ),
                         ),
                       ),
@@ -267,7 +291,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final currentMode = ref.watch(themeProvider);
-    final currentLocale = ref.watch(localeProvider);
+    final Locale? currentLocale = ref.watch(localeProvider);
 
     if (_appVersion.isEmpty && mounted) {
       _appVersion = l10n.appVersionLoading;
@@ -405,7 +429,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                _appVersion, // Already localized by _getAppVersion or initialized with loading state
+                _appVersion, 
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),

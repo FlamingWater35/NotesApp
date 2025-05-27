@@ -153,26 +153,32 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
   }
 }
 
-final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
+final localeProvider = StateNotifierProvider<LocaleNotifier, Locale?>((ref) {
   return LocaleNotifier();
 });
 
-class LocaleNotifier extends StateNotifier<Locale> {
-  LocaleNotifier() : super(const Locale('en')) {
+class LocaleNotifier extends StateNotifier<Locale?> {
+  LocaleNotifier() : super(null) {
     _loadSavedLocale();
   }
 
-  static const String _localeKey = 'selected_locale';
+  static const String _localeKey = 'selected_locale_language_code';
 
   final _log = Logger('LocaleNotifier');
 
-  Future<void> setLocale(Locale locale) async {
+  Future<void> setLocale(Locale? newLocale) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_localeKey, locale.languageCode);
-      state = locale;
-    } catch (e) {
-      _log.severe('Error saving locale: $e');
+      if (newLocale == null) {
+        await prefs.remove(_localeKey);
+        _log.info('Locale set to System Default and preference removed.');
+      } else {
+        await prefs.setString(_localeKey, newLocale.languageCode);
+        _log.info('Locale set to ${newLocale.languageCode} and preference saved.');
+      }
+      state = newLocale;
+    } catch (e, stackTrace) {
+      _log.severe('Error saving locale preference: $e', e, stackTrace);
     }
   }
 
@@ -183,10 +189,14 @@ class LocaleNotifier extends StateNotifier<Locale> {
       
       if (languageCode != null && languageCode.isNotEmpty) {
         state = Locale(languageCode);
+        _log.info('Loaded saved locale: $languageCode');
+      } else {
+        state = null;
+        _log.info('No saved locale found or saved as system default. Using system default.');
       }
-    } catch (e) {
-      state = const Locale('en');
-      _log.severe("Fallback to default locale");
+    } catch (e, stackTrace) {
+      _log.severe('Error loading saved locale, falling back to system default: $e', e, stackTrace);
+      state = null;
     }
   }
 }
