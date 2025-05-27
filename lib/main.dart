@@ -30,6 +30,7 @@ void _setupLogging() {
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
+
   static final _log = Logger('MyApp');
 
   @override
@@ -66,8 +67,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       onGenerateTitle: (context) {
-        final localizations = AppLocalizations.of(context);
-        return localizations.appTitle;
+        return AppLocalizations.of(context).appTitle;
       },
       locale: null, // ref.watch(localeProvider),
       localizationsDelegates: const [
@@ -87,7 +87,7 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
         snackBarTheme: buildSnackBarTheme(ColorScheme.fromSeed(
           seedColor: seedColor,
-          brightness: Brightness.dark,
+          brightness: Brightness.dark, // For light theme, snackbar usually uses dark background
         )),
         // pageTransitionsTheme: pageTransitionsTheme,
       ),
@@ -100,7 +100,7 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
         snackBarTheme: buildSnackBarTheme(ColorScheme.fromSeed(
           seedColor: seedColor,
-          brightness: Brightness.light,
+          brightness: Brightness.light, // For dark theme, snackbar usually uses light background
         )),
         // pageTransitionsTheme: pageTransitionsTheme,
       ),

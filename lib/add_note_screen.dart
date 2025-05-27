@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/providers.dart';
 import '../models/note_model.dart';
+import 'package:notes_app/l10n/app_localizations.dart';
 
 class AddNoteScreen extends ConsumerStatefulWidget {
   const AddNoteScreen({super.key});
@@ -16,16 +17,27 @@ class AddNoteScreen extends ConsumerStatefulWidget {
 }
 
 class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
-  final _log = Logger('AddNoteScreenState');
-  final TextEditingController _titleController = TextEditingController();
-
-  late QuillController _quillController;
   final FocusNode _editorFocusNode = FocusNode();
   final ScrollController _editorScrollController = ScrollController();
-
-  DateTime _selectedDate = DateTime.now();
   late DateTime _initialDate;
   bool _isDirty = false;
+  final _log = Logger('AddNoteScreenState');
+  late QuillController _quillController;
+  DateTime _selectedDate = DateTime.now();
+  final TextEditingController _titleController = TextEditingController();
+
+  @override
+  void dispose() {
+    _log.fine("dispose called");
+    _titleController.removeListener(_checkIfDirty);
+    _quillController.removeListener(_checkIfDirty);
+    _titleController.dispose();
+    _quillController.dispose();
+
+    _editorFocusNode.dispose();
+    _editorScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -47,19 +59,6 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
     _quillController.addListener(_checkIfDirty);
   }
 
-  @override
-  void dispose() {
-    _log.fine("dispose called");
-    _titleController.removeListener(_checkIfDirty);
-    _quillController.removeListener(_checkIfDirty);
-    _titleController.dispose();
-    _quillController.dispose();
-
-    _editorFocusNode.dispose();
-    _editorScrollController.dispose();
-    super.dispose();
-  }
-
   void _checkIfDirty() {
     final bool quillContentChanged = !_quillController.document.isEmpty();
     final bool currentlyDirty = _titleController.text.isNotEmpty ||
@@ -76,13 +75,14 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
   void _saveNote() {
     _log.info("Attempting to save note...");
+    final l10n = AppLocalizations.of(context);
     final String title = _titleController.text.trim();
 
     if (title.isEmpty) {
       _log.warning("Attempted to save a note without title.");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cannot save a note without a title.')),
+          SnackBar(content: Text(l10n.cannotSaveNoteWithoutTitle)),
         );
       }
       return;
@@ -94,7 +94,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
     final newNote = Note(
       id: uniqueId,
-      title: title.isEmpty ? 'Untitled Note' : title,
+      title: title,
       content: contentJson,
       date: _selectedDate,
       createdAt: now,
@@ -112,6 +112,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   }
 
   Future<bool> _showDiscardDialog() async {
+    final l10n = AppLocalizations.of(context);
     final bool? shouldDiscard = await showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
@@ -120,18 +121,18 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
         return AlertDialog(
-          title: const Text('Discard changes?'),
-          content: const Text('If you go back now, your changes will be lost.'),
+          title: Text(l10n.discardChangesDialogTitle),
+          content: Text(l10n.discardChangesDialogContent),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l10n.cancelButtonLabel),
               onPressed: () => Navigator.of(buildContext).pop(false),
             ),
             TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(buildContext).colorScheme.error,
               ),
-              child: const Text('Discard'),
+              child: Text(l10n.discardButtonLabel),
               onPressed: () => Navigator.of(buildContext).pop(true),
             ),
           ],
@@ -169,6 +170,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   @override
   Widget build(BuildContext context) {
     _log.finer("Building AddNoteScreen widget");
+    final l10n = AppLocalizations.of(context);
     final String displayDate = DateFormat.yMMMd().format(_selectedDate);
 
     final quillEditor = QuillEditor(
@@ -176,7 +178,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       scrollController: _editorScrollController,
       controller: _quillController,
       config: QuillEditorConfig(
-        placeholder: 'Start writing your notes...',
+        placeholder: l10n.quillPlaceholder,
         padding: const EdgeInsets.symmetric(vertical: 6),
         autoFocus: false,
         scrollable: true,
@@ -197,13 +199,6 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
         _log.fine('Pop invoked on AddNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result');
         if (didPop) return;
 
-        // Keyboard focus check
-        // if (mounted && MediaQuery.viewInsetsOf(context).bottom > 0) {
-        //   _log.fine("Keyboard is visible, unfocusing instead of showing discard dialog.");
-        //   FocusScope.of(context).unfocus();
-        //   return;
-        // }
-
         final navigator = mounted ? Navigator.of(context, rootNavigator: true) : null;
         final bool shouldDiscard = await _showDiscardDialog();
 
@@ -214,12 +209,12 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Add New Note'),
+          title: Text(l10n.addNoteScreenTitle),
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: _saveNote,
-              tooltip: 'Save Note',
+              tooltip: l10n.saveNoteTooltip,
             ),
             const SizedBox(width: 8),
           ],
@@ -238,9 +233,9 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                     // Title TextField
                     TextField(
                       controller: _titleController,
-                      decoration: const InputDecoration(
-                        // labelText: 'Title',
-                        hintText: 'Title',
+                      decoration: InputDecoration(
+                        // labelText: l10n.titleHint,
+                        hintText: l10n.titleHint,
                         border: InputBorder.none,
                         filled: false,
                       ),

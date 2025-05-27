@@ -7,35 +7,47 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/providers.dart';
 import '../models/note_model.dart';
+import 'package:notes_app/l10n/app_localizations.dart';
 
 class EditNoteScreen extends ConsumerStatefulWidget {
-  final String noteId;
-  final String heroTag;
-
   const EditNoteScreen({
     super.key,
     required this.noteId,
     required this.heroTag,
   });
 
+  final String heroTag;
+  final String noteId;
+
   @override
   ConsumerState<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
 class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
-  final _log = Logger('EditNoteScreenState');
-  late TextEditingController _titleController;
-
-  late QuillController _quillController;
   final FocusNode _editorFocusNode = FocusNode();
   final ScrollController _editorScrollController = ScrollController();
-
-  Note? _originalNote;
-  String _originalContentJson = '';
-  DateTime? _selectedDate;
   bool _isDirty = false;
   bool _isLoading = true;
   bool _isSaving = false;
+  final _log = Logger('EditNoteScreenState');
+  String _originalContentJson = '';
+  Note? _originalNote;
+  late QuillController _quillController;
+  DateTime? _selectedDate;
+  late TextEditingController _titleController;
+
+  @override
+  void dispose() {
+    _log.fine("dispose called");
+    _titleController.removeListener(_checkIfDirty);
+    _quillController.removeListener(_checkIfDirty);
+    _titleController.dispose();
+
+    _quillController.dispose();
+    _editorFocusNode.dispose();
+    _editorScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -76,26 +88,14 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     } else {
       _log.severe("Could not find note with ID ${widget.noteId} to edit.");
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error: Could not load note data.'), backgroundColor: Colors.red),
+          SnackBar(content: Text(l10n.errorCouldNotLoadNoteData), backgroundColor: Colors.red),
         );
         Navigator.of(context).pop();
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _log.fine("dispose called");
-    _titleController.removeListener(_checkIfDirty);
-    _quillController.removeListener(_checkIfDirty);
-    _titleController.dispose();
-
-    _quillController.dispose();
-    _editorFocusNode.dispose();
-    _editorScrollController.dispose();
-    super.dispose();
   }
 
   void _checkIfDirty() {
@@ -117,6 +117,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
 
   void _updateNote() async {
     _log.info("Attempting to update note ID: ${widget.noteId}");
+    final l10n = AppLocalizations.of(context);
     if (_originalNote == null || _isSaving) {
       _log.warning("Attempted to update note before it was loaded or while saving.");
       return;
@@ -127,7 +128,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       _log.warning("Attempted to save a note without title.");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Cannot save a note without a title.')),
+          SnackBar(content: Text(l10n.cannotSaveNoteWithoutTitle)),
         );
       }
       return;
@@ -142,7 +143,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     final DateTime modifiedTime = DateTime.now();
 
     final updatedNote = _originalNote!.copyWith(
-      title: title.isEmpty ? 'Untitled Note' : title,
+      title: title,
       content: contentJson,
       date: newDate,
       lastModified: modifiedTime,
@@ -161,7 +162,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving note: $e'),
+            content: Text(l10n.errorSavingNote(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -179,6 +180,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   }
 
   Future<bool> _showDiscardDialog() async {
+    final l10n = AppLocalizations.of(context);
     final bool? shouldDiscard = await showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
@@ -187,18 +189,18 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
         return AlertDialog(
-          title: const Text('Discard changes?'),
-          content: const Text('If you go back now, your changes will be lost.'),
+          title: Text(l10n.discardChangesDialogTitle),
+          content: Text(l10n.discardChangesDialogContent),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l10n.cancelButtonLabel),
               onPressed: () => Navigator.of(buildContext).pop(false),
             ),
             TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(buildContext).colorScheme.error,
               ),
-              child: const Text('Discard'),
+              child: Text(l10n.discardButtonLabel),
               onPressed: () => Navigator.of(buildContext).pop(true),
             ),
           ],
@@ -239,17 +241,18 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   @override
   Widget build(BuildContext context) {
     _log.finer("Building EditNoteScreen widget");
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Edit Note')),
+        appBar: AppBar(title: Text(l10n.editNoteScreenTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
     if (_originalNote == null && !_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Error')),
-        body: const Center(child: Text('Failed to load note.')),
+        appBar: AppBar(title: Text(l10n.errorAppBarTitle)),
+        body: Center(child: Text(l10n.failedToLoadNote)),
       );
     }
 
@@ -260,7 +263,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       scrollController: _editorScrollController,
       controller: _quillController,
       config: QuillEditorConfig(
-        placeholder: 'Start writing your notes...',
+        placeholder: l10n.quillPlaceholder,
         padding: const EdgeInsets.symmetric(vertical: 6),
         autoFocus: false,
         scrollable: true,
@@ -290,7 +293,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
 
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Edit Note'),
+          title: Text(l10n.editNoteScreenTitle),
           actions: [
             if (_isSaving)
               const Padding(
@@ -309,7 +312,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                 child: IconButton(
                   icon: const Icon(Icons.check),
                   onPressed: (_isDirty && !_isSaving) ? _updateNote : null,
-                  tooltip: 'Save Changes',
+                  tooltip: l10n.saveChangesTooltip,
                 ),
               ),
           ],
@@ -337,8 +340,8 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                             TextField(
                               controller: _titleController,
                               enabled: !_isSaving,
-                              decoration: const InputDecoration(
-                                hintText: 'Title',
+                              decoration: InputDecoration(
+                                hintText: l10n.titleHint,
                                 border: InputBorder.none,
                                 filled: false,
                               ),

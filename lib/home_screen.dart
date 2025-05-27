@@ -8,16 +8,17 @@ import 'package:animated_list_plus/animated_list_plus.dart';
 
 import '../models/note_model.dart';
 import '../providers/providers.dart';
+import 'package:notes_app/l10n/app_localizations.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
-  final List<Note> notes;
-  final void Function(Note note) onNoteTap;
-
   const HomeScreen({
     super.key,
     required this.notes,
     required this.onNoteTap,
   });
+
+  final List<Note> notes;
+  final void Function(Note note) onNoteTap;
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -26,27 +27,16 @@ class HomeScreen extends ConsumerStatefulWidget {
 enum SortProperty { date, title, lastModified, createdAt }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final Duration _animationDuration = const Duration(milliseconds: 300);
+  List<Note> _displayedNotes = [];
+  Timer? _emptyListTimer;
   final _log = Logger('HomeScreenState');
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-
-  final Duration _animationDuration = const Duration(milliseconds: 300);
-
-  List<Note> _displayedNotes = [];
-  SortProperty _sortBy = SortProperty.lastModified;
-  bool _sortAscending = false;
-
   bool _shouldShowEmptyMessage = false;
-  Timer? _emptyListTimer;
+  bool _sortAscending = false;
+  SortProperty _sortBy = SortProperty.lastModified;
   final Duration _timerBuffer = const Duration(milliseconds: 50);
-
-  @override
-  void initState() {
-    super.initState();
-    _log.fine("initState called");
-    _updateDisplayedNotesAndEmptyMessage(widget.notes);
-    _searchController.addListener(_onSearchOrSortChanged);
-  }
 
   @override
   void didUpdateWidget(covariant HomeScreen oldWidget) {
@@ -67,6 +57,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _log.fine("initState called");
+    _updateDisplayedNotesAndEmptyMessage(widget.notes);
+    _searchController.addListener(_onSearchOrSortChanged);
   }
 
   void _updateDisplayedNotesAndEmptyMessage(List<Note> sourceNotes) {
@@ -151,6 +149,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildAnimatedItem(BuildContext context, Note note, Animation<double> animation, {bool isRemoving = false}) {
+    final l10n = AppLocalizations.of(context);
     final String heroTag = note.heroTag;
     final String formattedDate = DateFormat.yMd().format(note.date);
     final theme = Theme.of(context);
@@ -167,13 +166,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         opacity: curvedAnimation,
         child: SlideTransition(
           position: animation.drive(slideTween.chain(CurveTween(curve: Curves.easeInOut))),
-          child: _buildItemContent(context, note, theme, formattedDate, heroTag),
+          child: _buildItemContent(context, l10n, note, theme, formattedDate, heroTag),
         ),
       ),
     );
   }
 
-  Widget _buildItemContent(BuildContext context, Note note, ThemeData theme, String formattedDate, String heroTag){
+  Widget _buildItemContent(BuildContext context, AppLocalizations l10n, Note note, ThemeData theme, String formattedDate, String heroTag){
     final String plainContent = note.plainTextContent;
 
     return Padding(
@@ -188,7 +187,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: ListTile(
               title: Text(
-                note.title.isEmpty ? 'Untitled Note' : note.title,
+                note.title.isEmpty ? l10n.untitledNote : note.title,
                 style: const TextStyle(fontWeight: FontWeight.w500),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -203,7 +202,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               trailing: IconButton(
                 icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
-                tooltip: 'Delete Note',
+                tooltip: l10n.deleteNoteTooltip,
                 onPressed: () {
                   _log.fine("Delete button pressed for note ID: ${note.id}");
                   _showDeleteConfirmation(context, note);
@@ -224,6 +223,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _showDeleteConfirmation(BuildContext context, Note note) async {
+    final l10n = AppLocalizations.of(context);
+    final String displayTitle = note.title.isEmpty ? l10n.untitledNote : note.title;
+
     final bool? confirmed = await showGeneralDialog<bool>(
       context: context,
       barrierDismissible: true,
@@ -232,18 +234,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
         return AlertDialog(
-          title: const Text('Delete Note?'),
-          content: Text('Are you sure you want to delete "${note.title.isEmpty ? 'Untitled Note' : note.title}"? This action cannot be undone.'),
+          title: Text(l10n.deleteNoteDialogTitle),
+          content: Text(l10n.deleteNoteDialogContent(displayTitle)),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l10n.cancelButtonLabel),
               onPressed: () => Navigator.of(buildContext).pop(false),
             ),
             TextButton(
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(buildContext).colorScheme.error,
               ),
-              child: const Text('Delete'),
+              child: Text(l10n.deleteButtonLabel),
               onPressed: () => Navigator.of(buildContext).pop(true),
             ),
           ],
@@ -266,7 +268,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       if(context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Note "${note.title.isEmpty ? 'Untitled Note' : note.title}" deleted.'), duration: const Duration(seconds: 2)),
+          SnackBar(content: Text(l10n.noteDeletedSnackbar(displayTitle)), duration: const Duration(seconds: 2)),
         );
       }
     } else {
@@ -274,18 +276,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  String _getSortPropertyText(SortProperty property) {
+  String _getSortPropertyText(BuildContext context, SortProperty property) {
+    final l10n = AppLocalizations.of(context);
     switch (property) {
-      case SortProperty.date: return 'Date';
-      case SortProperty.title: return 'Title';
-      case SortProperty.lastModified: return 'Last Modified';
-      case SortProperty.createdAt: return 'Created At';
+      case SortProperty.date: return l10n.sortPropertyDate;
+      case SortProperty.title: return l10n.sortPropertyTitle;
+      case SortProperty.lastModified: return l10n.sortPropertyLastModified;
+      case SortProperty.createdAt: return l10n.sortPropertyCreatedAt;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     _log.finer("Building HomeScreen widget. Displayed notes count: ${_displayedNotes.length}");
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     final bool showInitialEmptyMessage = widget.notes.isEmpty && _searchController.text.isEmpty;
@@ -301,12 +305,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 controller: _searchController,
                 focusNode: _searchFocusNode,
                 decoration: InputDecoration(
-                  hintText: 'Search notes...',
+                  hintText: l10n.searchNotesHint,
                   prefixIcon: const Icon(Icons.search, size: 22),
                   suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear, size: 20),
-                        tooltip: 'Clear Search',
+                        tooltip: l10n.clearSearchTooltip,
                         onPressed: () {
                           _log.fine("Clear search button pressed.");
                           if (_searchController.text.isNotEmpty) {
@@ -340,7 +344,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Row(
                   children: [
                     Padding(padding: const EdgeInsets.symmetric(horizontal: 6.0)),
-                    Text('Sort by: ', style: theme.textTheme.bodyMedium),
+                    Text(l10n.sortByLabel, style: theme.textTheme.bodyMedium),
                     Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0)),
                     PopupMenuButton<SortProperty>(
                       initialValue: _sortBy,
@@ -357,7 +361,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            _getSortPropertyText(_sortBy),
+                            _getSortPropertyText(context, _sortBy),
                             style: theme.textTheme.titleSmall?.copyWith(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w500,
@@ -371,10 +375,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ],
                       ),
                       itemBuilder: (BuildContext context) => <PopupMenuEntry<SortProperty>>[
-                        const PopupMenuItem<SortProperty>(value: SortProperty.lastModified, child: Text('Last Modified')),
-                        const PopupMenuItem<SortProperty>(value: SortProperty.createdAt, child: Text('Created At')),
-                        const PopupMenuItem<SortProperty>(value: SortProperty.date, child: Text('Date')),
-                        const PopupMenuItem<SortProperty>(value: SortProperty.title, child: Text('Title')),
+                        PopupMenuItem<SortProperty>(value: SortProperty.lastModified, child: Text(l10n.sortPropertyLastModified)),
+                        PopupMenuItem<SortProperty>(value: SortProperty.createdAt, child: Text(l10n.sortPropertyCreatedAt)),
+                        PopupMenuItem<SortProperty>(value: SortProperty.date, child: Text(l10n.sortPropertyDate)),
+                        PopupMenuItem<SortProperty>(value: SortProperty.title, child: Text(l10n.sortPropertyTitle)),
                       ],
                     ),
                     const Spacer(),
@@ -384,7 +388,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         size: 20.0,
                         color: theme.colorScheme.primary,
                       ),
-                      tooltip: _sortAscending ? 'Ascending (A-Z, Oldest first)' : 'Descending (Z-A, Newest first)',
+                      tooltip: _sortAscending ? l10n.sortAscendingTooltip : l10n.sortDescendingTooltip,
                       visualDensity: VisualDensity.compact,
                       padding: EdgeInsets.zero,
                       onPressed: () {
@@ -405,7 +409,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: AnimatedTextKit(
                         animatedTexts: [
                           TypewriterAnimatedText(
-                            'No notes yet.\nTap the + button to add one!',
+                            l10n.emptyNotesMessage,
                             textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Theme.of(context).colorScheme.onSurfaceVariant
                             ),
@@ -440,7 +444,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             child: AnimatedTextKit(
                               animatedTexts: [
                                 TypewriterAnimatedText(
-                                  'No notes found matching your search.',
+                                  l10n.noNotesFoundMessage,
                                   textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     color: Theme.of(context).colorScheme.onSurfaceVariant
                                   ),

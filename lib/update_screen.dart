@@ -2,37 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'components/update_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:notes_app/l10n/app_localizations.dart';
 
 enum UpdateStatus { idle, checking, available, downloading, preparingInstall, error, installed }
 
 class UpdateScreen extends StatefulWidget {
-  final String heroTag;
-
   const UpdateScreen({super.key, required this.heroTag});
+
+  final String heroTag;
 
   @override
   State<UpdateScreen> createState() => _UpdateScreenState();
 }
 
 class _UpdateScreenState extends State<UpdateScreen> {
+  String? _assetName;
+  String _currentVersion = '';
+  double _downloadProgress = 0.0;
+  String _errorMessage = '';
+  String _latestVersion = '';
   final _log = Logger('UpdateScreen');
   UpdateStatus _status = UpdateStatus.idle;
-  String _currentVersion = '';
-  String _latestVersion = '';
   String? _updateUrl;
-  String? _assetName;
-  String _errorMessage = '';
-  double _downloadProgress = 0.0;
 
   @override
   void initState() {
     super.initState();
     _log.fine("initState called");
-    _performUpdateCheck();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _performUpdateCheck();
+      }
+    });
   }
+
+  AppLocalizations get l10n => AppLocalizations.of(context);
 
   Future<void> _performUpdateCheck() async {
     _log.info("Performing update check...");
+    if (!mounted) return;
     setState(() {
       _status = UpdateStatus.checking;
       _errorMessage = '';
@@ -49,14 +57,14 @@ class _UpdateScreenState extends State<UpdateScreen> {
       if (updateInfo.isUpdateAvailable) {
         setState(() {
           _status = UpdateStatus.available;
-          _latestVersion = updateInfo.latestVersion ?? 'N/A';
+          _latestVersion = updateInfo.latestVersion ?? l10n.versionNotAvailable;
           _updateUrl = updateInfo.updateUrl;
           _assetName = updateInfo.assetName;
         });
       } else {
         setState(() {
           _status = UpdateStatus.idle;
-          _errorMessage = updateInfo.errorMessage ?? 'No new update available.';
+          _errorMessage = updateInfo.errorMessage ?? l10n.updateErrorNoNewUpdate;
           _latestVersion = updateInfo.latestVersion ?? _currentVersion;
         });
       }
@@ -65,7 +73,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
       if (mounted) {
         setState(() {
           _status = UpdateStatus.error;
-          _errorMessage = 'An unexpected error occurred during check.';
+          _errorMessage = l10n.updateErrorUnexpected;
         });
       }
     }
@@ -74,17 +82,19 @@ class _UpdateScreenState extends State<UpdateScreen> {
   Future<void> _startDownloadAndInstall() async {
     if (_updateUrl == null || _assetName == null) {
       _log.severe("Download requested but URL or filename is missing.");
+      if (!mounted) return;
       setState(() {
         _status = UpdateStatus.error;
-        _errorMessage = "Update information is incomplete.";
+        _errorMessage = l10n.updateErrorIncompleteInfo;
       });
       return;
     }
 
     _log.info("Starting download & install process...");
+    if (!mounted) return;
     setState(() {
       _status = UpdateStatus.downloading;
-      _downloadProgress = -1.0;
+      _downloadProgress = -1.0; 
       _errorMessage = '';
     });
 
@@ -118,13 +128,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
         _log.warning("Failed to initiate installation prompt.");
         setState(() {
           _status = UpdateStatus.error;
-          _errorMessage = "Could not start installation. Check permissions.";
+          _errorMessage = l10n.updateErrorCouldNotStartInstall;
         });
       }
     } else {
       setState(() {
         _status = UpdateStatus.error;
-        _errorMessage = "Download failed. Check connection and permissions.";
+        _errorMessage = l10n.updateErrorDownloadFailed;
       });
     }
   }
@@ -148,7 +158,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text("Checking for updates...", style: statusTextStyle, textAlign: TextAlign.center),
+            Text(l10n.updateStatusChecking, style: statusTextStyle, textAlign: TextAlign.center),
           ],
         );
 
@@ -158,14 +168,14 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             const Icon(Icons.system_update_alt, size: 60, color: Colors.green),
             const SizedBox(height: 16),
-            Text("Update Available!", style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
+            Text(l10n.updateStatusAvailableTitle, style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
             const SizedBox(height: 8),
-            Text("Current version: $_currentVersion", textAlign: TextAlign.center),
-            Text("New version: $_latestVersion", textAlign: TextAlign.center),
+            Text(l10n.updateStatusCurrentVersion(_currentVersion), textAlign: TextAlign.center),
+            Text(l10n.updateStatusNewVersion(_latestVersion), textAlign: TextAlign.center),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               icon: const Icon(Icons.download_for_offline_outlined),
-              label: const Text("Download & Install", textAlign: TextAlign.center),
+              label: Text(l10n.updateDownloadInstallButton, textAlign: TextAlign.center),
               onPressed: _startDownloadAndInstall,
             ),
           ],
@@ -175,7 +185,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Downloading update ($_latestVersion)...", style: statusTextStyle, textAlign: TextAlign.center),
+            Text(l10n.updateStatusDownloading(_latestVersion), style: statusTextStyle, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
@@ -186,7 +196,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
             ),
             const SizedBox(height: 8),
             if (_downloadProgress >= 0)
-              Text("${(_downloadProgress * 100).toStringAsFixed(0)}%"),
+              Text(l10n.updateProgressPercent((_downloadProgress * 100).toStringAsFixed(0))),
           ],
         );
 
@@ -194,7 +204,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Starting install...", style: statusTextStyle, textAlign: TextAlign.center),
+            Text(l10n.updateStatusStartingInstall, style: statusTextStyle, textAlign: TextAlign.center),
             SizedBox(height: 16),
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
@@ -212,7 +222,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             Icon(Icons.error_outline, size: 60, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
-            Text("Update Failed", style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
+            Text(l10n.updateStatusFailedTitle, style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
@@ -221,25 +231,26 @@ class _UpdateScreenState extends State<UpdateScreen> {
             const SizedBox(height: 24),
             TextButton.icon(
               icon: const Icon(Icons.refresh),
-              label: const Text("Retry Check", textAlign: TextAlign.center),
+              label: Text(l10n.updateTryAgainButton, textAlign: TextAlign.center),
               onPressed: _performUpdateCheck,
             ),
           ],
         );
 
       case UpdateStatus.idle:
+        final bool isJustNoUpdateMessage = _errorMessage == l10n.updateErrorNoNewUpdate;
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.check_circle_outline, size: 60, color: Colors.blue),
             const SizedBox(height: 16),
-            Text("You're up to date!", style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
+            Text(l10n.updateStatusUpToDateTitle, style: Theme.of(context).textTheme.headlineSmall, textAlign: TextAlign.center),
             const SizedBox(height: 8),
-            Text("Current version: $_currentVersion", textAlign: TextAlign.center),
+            Text(l10n.updateStatusCurrentVersion(_currentVersion), textAlign: TextAlign.center),
             if (_latestVersion != _currentVersion && _latestVersion.isNotEmpty)
-              Text("(Latest available: $_latestVersion)", textAlign: TextAlign.center),
+              Text(l10n.updateStatusLatestAvailable(_latestVersion), textAlign: TextAlign.center),
             const SizedBox(height: 8),
-            if(_errorMessage.isNotEmpty && !_errorMessage.contains("No new update available"))
+            if(_errorMessage.isNotEmpty && !isJustNoUpdateMessage)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: Text(_errorMessage, textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).colorScheme.error)),
@@ -247,7 +258,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
             const SizedBox(height: 24),
             TextButton.icon(
               icon: const Icon(Icons.refresh),
-              label: const Text("Check Again", textAlign: TextAlign.center),
+              label: Text(l10n.updateCheckAgainButton, textAlign: TextAlign.center),
               onPressed: _performUpdateCheck,
             ),
           ],
@@ -259,7 +270,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
           children: [
             Icon(Icons.check_circle, size: 60, color: Colors.green),
             SizedBox(height: 16),
-            Text("Install dialog shown", style: statusTextStyle, textAlign: TextAlign.center),
+            Text(l10n.updateStatusInstalled, style: statusTextStyle, textAlign: TextAlign.center),
           ],
         );
     }
@@ -270,7 +281,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
     _log.finer("Building UpdateScreen widget with status: $_status");
     return Scaffold(
       appBar: AppBar(
-        title: const Text("App Update"),
+        title: Text(l10n.updateScreenTitle),
       ),
       body: Hero(
         tag: widget.heroTag,

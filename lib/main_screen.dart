@@ -9,6 +9,7 @@ import 'home_screen.dart';
 import 'settings_screen.dart';
 import 'providers/providers.dart';
 import 'models/note_model.dart';
+import 'package:notes_app/l10n/app_localizations.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -18,11 +19,11 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class _MainScreenState extends ConsumerState<MainScreen> {
+  static const Duration _kTransitionDuration = Duration(milliseconds: 400);
+
+  bool _isNavBarVisible = true;
   final _log = Logger('MainScreenState');
   int _selectedIndex = 0;
-  bool _isNavBarVisible = true;
-
-  static const Duration _kTransitionDuration = Duration(milliseconds: 400);
 
   @override
   void initState() {
@@ -105,6 +106,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   @override
   Widget build(BuildContext context) {
     _log.finer("Building MainScreen widget");
+    final l10n = AppLocalizations.of(context);
     final navBarOffset = _isNavBarVisible ? Offset.zero : const Offset(0.0, 1.1);
     final notesAsync = ref.watch(notesProvider);
 
@@ -144,7 +146,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           _log.severe("Error loading notes", error, stackTrace);
           return Center(
             child: Text(
-              'Error loading notes:\n$error',
+              l10n.errorLoadingNotes(error.toString()),
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
@@ -154,7 +156,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       floatingActionButton: _selectedIndex == 0
         ? FloatingActionButton(
             onPressed: _navigateToAddNote,
-            tooltip: 'Add Note',
+            tooltip: l10n.addNoteFabTooltip,
             child: const Icon(Icons.add),
           )
         : null,
@@ -163,16 +165,16 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         offset: navBarOffset,
         curve: Curves.easeInOut, // Match page transition curve
         child: NavigationBar(
-          destinations: const <NavigationDestination>[
+          destinations: <NavigationDestination>[
             NavigationDestination(
               selectedIcon: Icon(Icons.home),
               icon: Icon(Icons.home_outlined),
-              label: 'Home',
+              label: l10n.homeNavigationLabel,
             ),
             NavigationDestination(
               selectedIcon: Icon(Icons.settings),
               icon: Icon(Icons.settings_outlined),
-              label: 'Settings',
+              label: l10n.settingsNavigationLabel,
             ),
           ],
           selectedIndex: _selectedIndex,

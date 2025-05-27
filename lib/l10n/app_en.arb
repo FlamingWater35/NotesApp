@@ -3,5 +3,145 @@
     "appTitle": "Notes",
     "@appTitle": {
         "description": "The title of the application"
-    }
+    },
+
+    "addNoteScreenTitle": "Add New Note",
+    "saveNoteTooltip": "Save Note",
+    "cannotSaveNoteWithoutTitle": "Cannot save a note without a title.",
+    "discardChangesDialogTitle": "Discard changes?",
+    "discardChangesDialogContent": "If you go back now, your changes will be lost.",
+    "cancelButtonLabel": "Cancel",
+    "discardButtonLabel": "Discard",
+    "quillPlaceholder": "Start writing your notes...",
+    "titleHint": "Title",
+    "untitledNote": "Untitled Note",
+
+    "editNoteScreenTitle": "Edit Note",
+    "errorCouldNotLoadNoteData": "Error: Could not load note data.",
+    "errorSavingNote": "Error saving note: {errorDetails}",
+    "@errorSavingNote": {
+        "description": "Error message shown when saving a note fails.",
+        "placeholders": {
+            "errorDetails": {
+                "type": "String",
+                "example": "Database connection failed"
+            }
+        }
+    },
+    "errorAppBarTitle": "Error",
+    "failedToLoadNote": "Failed to load note.",
+    "saveChangesTooltip": "Save Changes",
+
+    "deleteNoteTooltip": "Delete Note",
+    "deleteNoteDialogTitle": "Delete Note?",
+    "deleteNoteDialogContent": "Are you sure you want to delete \"{noteTitle}\"? This action cannot be undone.",
+    "@deleteNoteDialogContent": {
+        "description": "Confirmation message for deleting a note.",
+        "placeholders": {
+            "noteTitle": {
+                "type": "String",
+                "example": "My Shopping List"
+            }
+        }
+    },
+    "deleteButtonLabel": "Delete",
+    "noteDeletedSnackbar": "Note \"{noteTitle}\" deleted.",
+    "@noteDeletedSnackbar": {
+        "description": "Snackbar message after a note is deleted.",
+        "placeholders": {
+            "noteTitle": {
+                "type": "String",
+                "example": "My Shopping List"
+            }
+        }
+    },
+    "sortPropertyDate": "Date",
+    "sortPropertyTitle": "Title",
+    "sortPropertyLastModified": "Last Modified",
+    "sortPropertyCreatedAt": "Created At",
+    "searchNotesHint": "Search notes...",
+    "clearSearchTooltip": "Clear Search",
+    "sortByLabel": "Sort by: ",
+    "sortAscendingTooltip": "Ascending (A-Z, Oldest first)",
+    "sortDescendingTooltip": "Descending (Z-A, Newest first)",
+    "emptyNotesMessage": "No notes yet.\nTap the + button to add one!",
+    "noNotesFoundMessage": "No notes found matching your search.",
+
+    "errorLoadingNotes": "Error loading notes:\n{errorDetails}",
+    "@errorLoadingNotes": {
+        "description": "Error message shown when loading notes fails.",
+        "placeholders": {
+            "errorDetails": {
+                "type": "String",
+                "example": "Network timeout"
+            }
+        }
+    },
+    "addNoteFabTooltip": "Add Note",
+    "homeNavigationLabel": "Home",
+    "settingsNavigationLabel": "Settings",
+
+    "settingsScreenTitle": "Settings",
+    "appVersionLoading": "Loading...",
+    "appVersion": "Version {version} ({buildNumber})",
+    "@appVersion": {
+        "description": "Application version display string.",
+        "placeholders": {
+            "version": { "type": "String", "example": "1.0.0" },
+            "buildNumber": { "type": "String", "example": "1" }
+        }
+    },
+    "errorLoadingVersion": "Error loading version",
+    "backupSuccessful": "Backup successful!",
+    "backupFailed": "Backup failed or cancelled (no notes added?).",
+    "restoreSuccessful": "Restore successful!",
+    "restoreFailed": "Restore failed or cancelled (invalid file format?)",
+    "appearanceSectionTitle": "Appearance",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "dataManagementSectionTitle": "Data Management",
+    "backupNotesTitle": "Backup Notes",
+    "backupNotesSubtitle": "Save notes to a file",
+    "restoreNotesTitle": "Restore Notes",
+    "restoreNotesSubtitle": "Load notes from a backup file",
+    "applicationSectionTitle": "Application",
+    "checkForUpdatesTitle": "Check for Updates",
+
+    "updateScreenTitle": "App Update",
+    "updateStatusChecking": "Checking for updates...",
+    "updateStatusAvailableTitle": "Update Available!",
+    "updateStatusCurrentVersion": "Current version: {version}",
+    "@updateStatusCurrentVersion": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateStatusNewVersion": "New version: {version}",
+    "@updateStatusNewVersion": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateDownloadInstallButton": "Download & Install",
+    "updateStatusDownloading": "Downloading update ({version})...",
+    "@updateStatusDownloading": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateProgressPercent": "{progress}%",
+    "@updateProgressPercent": {
+        "placeholders": { "progress": { "type": "String" } }
+    },
+    "updateStatusStartingInstall": "Starting install...",
+    "updateStatusFailedTitle": "Update Failed",
+    "updateTryAgainButton": "Retry Check",
+    "updateStatusUpToDateTitle": "You're up to date!",
+    "updateStatusLatestAvailable": "(Latest available: {version})",
+    "@updateStatusLatestAvailable": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateCheckAgainButton": "Check Again",
+    "updateStatusInstalled": "Install dialog shown",
+    "updateErrorNoNewUpdate": "No new update available.",
+    "updateErrorUnexpected": "An unexpected error occurred during check.",
+    "updateErrorIncompleteInfo": "Update information is incomplete.",
+    "updateErrorCouldNotStartInstall": "Could not start installation. Check permissions.",
+    "updateErrorDownloadFailed": "Download failed. Check connection and permissions.",
+    "versionNotAvailable": "N/A"
 }

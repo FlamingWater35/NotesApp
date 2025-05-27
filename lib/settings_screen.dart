@@ -8,6 +8,7 @@ import 'components/restore_service.dart';
 import 'update_screen.dart';
 import '../providers/providers.dart';
 import '../models/note_model.dart';
+import 'package:notes_app/l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -17,9 +18,9 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  final _log = Logger('SettingsScreen');
-  String _appVersion = 'Loading...';
+  String _appVersion = '';
   bool _isBackupRestoreRunning = false;
+  final _log = Logger('SettingsScreen');
   final String _updateHeroTag = 'update-hero-tag';
 
   @override
@@ -30,19 +31,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _getAppVersion() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      setState(() {
+        _appVersion = l10n.appVersionLoading;
+      });
+    });
+
+
     try {
       final PackageInfo info = await PackageInfo.fromPlatform();
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() {
-          _appVersion = 'Version ${info.version} (${info.buildNumber})';
+          _appVersion = l10n.appVersion(info.version, info.buildNumber);
         });
         _log.info("App version loaded: $_appVersion");
       }
     } catch (e, stackTrace) {
       _log.severe("Error getting package info", e, stackTrace);
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() {
-          _appVersion = 'Error loading version';
+          _appVersion = l10n.errorLoadingVersion;
         });
       }
     }
@@ -52,6 +64,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (_isBackupRestoreRunning) return;
     setState(() => _isBackupRestoreRunning = true);
     _log.info("Backup button tapped");
+    final l10n = AppLocalizations.of(context);
 
     final notesAsync = ref.read(notesProvider);
     final List<Note> currentNotes = notesAsync.value ?? [];
@@ -61,7 +74,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(success ? 'Backup successful!' : 'Backup failed or cancelled (no notes added?).'),
+          content: Text(success ? l10n.backupSuccessful : l10n.backupFailed),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -73,6 +86,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (_isBackupRestoreRunning) return;
     setState(() => _isBackupRestoreRunning = true);
     _log.info("Restore button tapped");
+    final l10n = AppLocalizations.of(context);
 
     final List<Note>? restoredNotes = await RestoreService.restoreNotes();
 
@@ -82,18 +96,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         await ref.read(notesProvider.notifier).replaceAllNotes(restoredNotes);
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(  // TODO: Fix this useless bar not showing up
-            const SnackBar(
-              content: Text('Restore successful!'),
-              duration: Duration(seconds: 2),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.restoreSuccessful),
+              duration: const Duration(seconds: 2),
             ),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Restore failed or cancelled (invalid file format?)'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(l10n.restoreFailed),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -117,12 +131,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     _log.finer("Building SettingsScreen widget");
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final currentMode = ref.watch(themeProvider);
+
+    if (_appVersion.isEmpty && mounted) {
+      _appVersion = l10n.appVersionLoading;
+    }
+
 
     return Scaffold(
       appBar: AppBar(
@@ -130,7 +149,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         title: Padding(
           padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 8.0),
           child: Text(
-            'Settings',
+            l10n.settingsScreenTitle,
             style: theme.textTheme.headlineMedium,
           ),
         ),
@@ -144,26 +163,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Text('Appearance', style: theme.textTheme.titleSmall),
+                    child: Text(l10n.appearanceSectionTitle, style: theme.textTheme.titleSmall),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                     child: SegmentedButton<ThemeMode>(
                       selected: {currentMode},
-                      segments: const <ButtonSegment<ThemeMode>>[
+                      segments: <ButtonSegment<ThemeMode>>[
                         ButtonSegment<ThemeMode>(
                           value: ThemeMode.light,
-                          label: Text('Light'),
+                          label: Text(l10n.themeLight),
                           icon: Icon(Icons.light_mode_outlined),
                         ),
                         ButtonSegment<ThemeMode>(
                           value: ThemeMode.dark,
-                          label: Text('Dark'),
+                          label: Text(l10n.themeDark),
                           icon: Icon(Icons.dark_mode_outlined),
                         ),
                         ButtonSegment<ThemeMode>(
                           value: ThemeMode.system,
-                          label: Text('System'),
+                          label: Text(l10n.themeSystem),
                           icon: Icon(Icons.settings_suggest_outlined),
                         ),
                       ],
@@ -182,20 +201,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Text('Data Management', style: theme.textTheme.titleSmall),
+                    child: Text(l10n.dataManagementSectionTitle, style: theme.textTheme.titleSmall),
                   ),
                   ListTile(
                     leading: const Icon(Icons.backup_outlined),
-                    title: const Text('Backup Notes'),
-                    subtitle: const Text('Save notes to a file'),
+                    title: Text(l10n.backupNotesTitle),
+                    subtitle: Text(l10n.backupNotesSubtitle),
                     enabled: !_isBackupRestoreRunning,
                     onTap: _handleBackup,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                   ),
                   ListTile(
                     leading: const Icon(Icons.restore_page_outlined),
-                    title: const Text('Restore Notes'),
-                    subtitle: const Text('Load notes from a backup file'),
+                    title: Text(l10n.restoreNotesTitle),
+                    subtitle: Text(l10n.restoreNotesSubtitle),
                     enabled: !_isBackupRestoreRunning,
                     onTap: _handleRestore,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -204,7 +223,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Text('Application', style: theme.textTheme.titleSmall),
+                    child: Text(l10n.applicationSectionTitle, style: theme.textTheme.titleSmall),
                   ),
                   Hero(
                     tag: _updateHeroTag,
@@ -212,7 +231,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       type: MaterialType.transparency,
                       child: ListTile(
                         leading: const Icon(Icons.system_update_alt_outlined),
-                        title: const Text('Check for Updates'),
+                        title: Text(l10n.checkForUpdatesTitle),
                         onTap: _handleCheckForUpdates,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                       ),
@@ -225,7 +244,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                _appVersion,
+                _appVersion, // Already localized by _getAppVersion or initialized with loading state
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
