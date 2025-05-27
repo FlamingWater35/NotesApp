@@ -79,6 +79,10 @@
     "backupFailed": "备份失败或已取消（未添加笔记？）。",
     "restoreSuccessful": "恢复成功！",
     "restoreFailed": "恢复失败或已取消（文件格式无效？）。",
+
+    "languageSectionTitle": "语言",
+    "languageSystemDefault": "系统默认",
+
     "appearanceSectionTitle": "外观",
     "themeLight": "浅色",
     "themeDark": "深色",

@@ -154,6 +154,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restoreFailed => 'Restore failed or cancelled (invalid file format?)';
 
   @override
+  String get languageSectionTitle => 'Language';
+
+  @override
+  String get languageSystemDefault => 'System Default';
+
+  @override
   String get appearanceSectionTitle => 'Appearance';
 
   @override

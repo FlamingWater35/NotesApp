@@ -22,7 +22,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String _appVersion = '';
   bool _isBackupRestoreRunning = false;
   final _log = Logger('SettingsScreen');
-  final String _updateHeroTag = 'update-hero-tag';
 
   @override
   void initState() {
@@ -142,12 +141,133 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  String _getLanguageName(Locale locale, AppLocalizations l10n) {
+    switch (locale.languageCode) {
+      case 'ar':
+        return 'العربية';
+      case 'en':
+        return 'English';
+      case 'es':
+        return 'Español';
+      case 'fi':
+        return 'Suomi';
+      case 'fr':
+        return 'Français';
+      case 'hi':
+        return 'हिन्दी';
+      case 'id':
+        return 'Bahasa Indonesia';
+      case 'ja':
+        return '日本語';
+      case 'pt':
+        return 'Português';
+      case 'ru':
+        return 'Русский';
+      case 'zh':
+        return '简体中文';
+      default:
+        return locale.languageCode.toUpperCase();
+    }
+  }
+
+  void _showLanguageSelectionSheet(BuildContext context, Locale currentLocale, AppLocalizations l10n, WidgetRef ref) {
+    final supportedLocales = AppLocalizations.supportedLocales;
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.6,
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (BuildContext bottomSheetContext) {
+        return Consumer(
+          builder: (context, sheetRef, child) {
+            final currentLocaleInSheet = sheetRef.watch(localeProvider);
+
+            void handleLocaleSelection(Locale? newLocale) {
+              if (newLocale != null && newLocale != currentLocaleInSheet) {
+                _log.info("Language selected in sheet: ${newLocale.languageCode}");
+                ref.read(localeProvider.notifier).setLocale(newLocale);
+                Navigator.pop(bottomSheetContext);
+              }
+            }
+
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: Text(
+                        l10n.languageSectionTitle,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Divider(height: 1),
+                    const SizedBox(height: 12),
+
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            children: supportedLocales.map((locale) {
+                              final languageName = _getLanguageName(locale, l10n);
+                              final bool isSelected = locale == currentLocaleInSheet;
+
+                              return ListTile(
+                                title: Text(languageName),
+                                leading: Radio<Locale>(
+                                  value: locale,
+                                  groupValue: currentLocaleInSheet,
+                                  onChanged: handleLocaleSelection,
+                                  activeColor: theme.colorScheme.primary,
+                                  visualDensity: VisualDensity.compact,
+                                ),
+                                selected: isSelected,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                visualDensity: VisualDensity.compact,
+                                onTap: () => handleLocaleSelection(locale),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _log.finer("Building SettingsScreen widget");
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final currentMode = ref.watch(themeProvider);
+    final currentLocale = ref.watch(localeProvider);
 
     if (_appVersion.isEmpty && mounted) {
       _appVersion = l10n.appVersionLoading;
@@ -172,6 +292,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text(l10n.languageSectionTitle, style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                    child: ListTile(
+                      leading: Icon(Icons.language_outlined, color: theme.colorScheme.secondary),
+                      title: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(l10n.languageSectionTitle)
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          _getLanguageName(currentLocale, l10n),
+                          style: TextStyle(color: theme.textTheme.bodySmall?.color?.withAlpha(200)),
+                        ),
+                      ),
+                      trailing: const Icon(Icons.arrow_drop_down),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      onTap: () {
+                        _log.info("Language setting tapped - showing selection sheet");
+                        _showLanguageSelectionSheet(context, currentLocale, l10n, ref);
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        side: BorderSide(color: theme.dividerColor, width: 0.5)
+                      ),
+                      horizontalTitleGap: 8.0,
+                      tileColor: theme.colorScheme.surfaceContainerHighest.withAlpha(64),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Divider(indent: 16, endIndent: 16, height: 24),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Text(l10n.appearanceSectionTitle, style: theme.textTheme.titleSmall),
@@ -236,17 +392,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Text(l10n.applicationSectionTitle, style: theme.textTheme.titleSmall),
                   ),
-                  Hero(
-                    tag: _updateHeroTag,
-                    child: Material(
-                      type: MaterialType.transparency,
-                      child: ListTile(
-                        leading: const Icon(Icons.system_update_alt_outlined),
-                        title: Text(l10n.checkForUpdatesTitle),
-                        onTap: _handleCheckForUpdates,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      ),
-                    ),
+                  ListTile(
+                    leading: const Icon(Icons.system_update_alt_outlined),
+                    title: Text(l10n.checkForUpdatesTitle),
+                    onTap: _handleCheckForUpdates,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                   ),
                 ],
               ),

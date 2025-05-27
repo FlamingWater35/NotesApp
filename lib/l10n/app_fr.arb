@@ -79,6 +79,10 @@
     "backupFailed": "Échec de la sauvegarde ou annulée (aucune note ajoutée ?).",
     "restoreSuccessful": "Restauration réussie !",
     "restoreFailed": "Échec de la restauration ou annulée (format de fichier invalide ?).",
+
+    "languageSectionTitle": "Langue",
+    "languageSystemDefault": "Système par Défaut",
+
     "appearanceSectionTitle": "Apparence",
     "themeLight": "Clair",
     "themeDark": "Sombre",

@@ -66,10 +66,14 @@ class MyApp extends ConsumerWidget {
     }
 
     return MaterialApp(
+      title: 'Notes',
+      /* For title localization
       onGenerateTitle: (context) {
-        return AppLocalizations.of(context).appTitle;
-      },
-      locale: null, // ref.watch(localeProvider),
+        final localizations = AppLocalizations.of(context);
+        return localizations.appTitle;
+      }, 
+      */
+      locale: ref.watch(localeProvider),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

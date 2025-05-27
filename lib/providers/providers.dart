@@ -152,3 +152,41 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
     }
   }
 }
+
+final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
+  return LocaleNotifier();
+});
+
+class LocaleNotifier extends StateNotifier<Locale> {
+  LocaleNotifier() : super(const Locale('en')) {
+    _loadSavedLocale();
+  }
+
+  static const String _localeKey = 'selected_locale';
+
+  final _log = Logger('LocaleNotifier');
+
+  Future<void> setLocale(Locale locale) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_localeKey, locale.languageCode);
+      state = locale;
+    } catch (e) {
+      _log.severe('Error saving locale: $e');
+    }
+  }
+
+  Future<void> _loadSavedLocale() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final languageCode = prefs.getString(_localeKey);
+      
+      if (languageCode != null && languageCode.isNotEmpty) {
+        state = Locale(languageCode);
+      }
+    } catch (e) {
+      state = const Locale('en');
+      _log.severe("Fallback to default locale");
+    }
+  }
+}

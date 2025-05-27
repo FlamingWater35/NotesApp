@@ -369,6 +369,18 @@ abstract class AppLocalizations {
   /// **'Restore failed or cancelled (invalid file format?)'**
   String get restoreFailed;
 
+  /// Section title for language settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get languageSectionTitle;
+
+  /// Label for the option to use the system's default language.
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get languageSystemDefault;
+
   /// Section title for appearance settings (e.g., theme).
   ///
   /// In en, this message translates to:

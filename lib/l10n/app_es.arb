@@ -79,6 +79,10 @@
     "backupFailed": "Copia de seguridad fallida o cancelada (¿no se añadieron notas?).",
     "restoreSuccessful": "¡Restauración exitosa!",
     "restoreFailed": "Restauración fallida o cancelada (¿formato de archivo inválido?).",
+
+    "languageSectionTitle": "Idioma",
+    "languageSystemDefault": "Predeterminado del Sistema",
+
     "appearanceSectionTitle": "Apariencia",
     "themeLight": "Claro",
     "themeDark": "Oscuro",

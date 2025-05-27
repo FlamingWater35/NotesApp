@@ -217,6 +217,16 @@
     "@restoreFailed": {
         "description": "Snackbar message indicating that restoring notes failed or was cancelled."
     },
+
+    "languageSectionTitle": "Language",
+    "@languageSectionTitle": {
+        "description": "Section title for language settings."
+    },
+    "languageSystemDefault": "System Default",
+    "@languageSystemDefault": {
+        "description": "Label for the option to use the system's default language."
+    },
+
     "appearanceSectionTitle": "Appearance",
     "@appearanceSectionTitle": {
         "description": "Section title for appearance settings (e.g., theme)."

@@ -154,6 +154,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get restoreFailed => '恢复失败或已取消（文件格式无效？）。';
 
   @override
+  String get languageSectionTitle => '语言';
+
+  @override
+  String get languageSystemDefault => '系统默认';
+
+  @override
   String get appearanceSectionTitle => '外观';
 
   @override
