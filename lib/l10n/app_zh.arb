@@ -1,0 +1,129 @@
+{
+    "@@locale": "zh",
+    "appTitle": "笔记",
+    "addNoteScreenTitle": "添加新笔记",
+    "saveNoteTooltip": "保存笔记",
+    "cannotSaveNoteWithoutTitle": "无法保存无标题笔记。",
+    "discardChangesDialogTitle": "放弃更改？",
+    "discardChangesDialogContent": "如果现在返回，您的更改将丢失。",
+    "cancelButtonLabel": "取消",
+    "discardButtonLabel": "放弃",
+    "quillPlaceholder": "开始写笔记...",
+    "titleHint": "标题",
+    "untitledNote": "无标题笔记",
+    "editNoteScreenTitle": "编辑笔记",
+    "errorCouldNotLoadNoteData": "错误：无法加载笔记数据。",
+    "errorSavingNote": "保存笔记时出错：{errorDetails}",
+    "@errorSavingNote": {
+        "placeholders": {
+            "errorDetails": {
+                "type": "String"
+            }
+        }
+    },
+    "errorAppBarTitle": "错误",
+    "failedToLoadNote": "加载笔记失败。",
+    "saveChangesTooltip": "保存更改",
+    "deleteNoteTooltip": "删除笔记",
+    "deleteNoteDialogTitle": "删除笔记？",
+    "deleteNoteDialogContent": "您确定要删除“{noteTitle}”吗？此操作无法撤销。",
+    "@deleteNoteDialogContent": {
+        "placeholders": {
+            "noteTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteButtonLabel": "删除",
+    "noteDeletedSnackbar": "笔记“{noteTitle}”已删除。",
+    "@noteDeletedSnackbar": {
+        "placeholders": {
+            "noteTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "sortPropertyDate": "日期",
+    "sortPropertyTitle": "标题",
+    "sortPropertyLastModified": "最后修改",
+    "sortPropertyCreatedAt": "创建时间",
+    "searchNotesHint": "搜索笔记...",
+    "clearSearchTooltip": "清除搜索",
+    "sortByLabel": "排序：",
+    "sortAscendingTooltip": "升序 (A-Z, 最旧的在前)",
+    "sortDescendingTooltip": "降序 (Z-A, 最新的在前)",
+    "emptyNotesMessage": "还没有笔记。\n点击 + 按钮添加一个！",
+    "noNotesFoundMessage": "未找到与您的搜索匹配的笔记。",
+    "errorLoadingNotes": "加载笔记时出错：\n{errorDetails}",
+    "@errorLoadingNotes": {
+        "placeholders": {
+            "errorDetails": {
+                "type": "String"
+            }
+        }
+    },
+    "addNoteFabTooltip": "添加笔记",
+    "homeNavigationLabel": "主页",
+    "settingsNavigationLabel": "设置",
+    "settingsScreenTitle": "设置",
+    "appVersionLoading": "加载中...",
+    "appVersion": "版本 {version} ({buildNumber})",
+    "@appVersion": {
+        "placeholders": {
+            "version": { "type": "String" },
+            "buildNumber": { "type": "String" }
+        }
+    },
+    "errorLoadingVersion": "加载版本信息失败",
+    "backupSuccessful": "备份成功！",
+    "backupFailed": "备份失败或已取消（未添加笔记？）。",
+    "restoreSuccessful": "恢复成功！",
+    "restoreFailed": "恢复失败或已取消（文件格式无效？）。",
+    "appearanceSectionTitle": "外观",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "themeSystem": "系统",
+    "dataManagementSectionTitle": "数据管理",
+    "backupNotesTitle": "备份笔记",
+    "backupNotesSubtitle": "将笔记保存到文件",
+    "restoreNotesTitle": "恢复笔记",
+    "restoreNotesSubtitle": "从备份文件加载笔记",
+    "applicationSectionTitle": "应用程序",
+    "checkForUpdatesTitle": "检查更新",
+    "updateScreenTitle": "应用更新",
+    "updateStatusChecking": "正在检查更新...",
+    "updateStatusAvailableTitle": "有可用更新！",
+    "updateStatusCurrentVersion": "当前版本：{version}",
+    "@updateStatusCurrentVersion": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateStatusNewVersion": "新版本：{version}",
+    "@updateStatusNewVersion": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateDownloadInstallButton": "下载并安装",
+    "updateStatusDownloading": "正在下载更新 ({version})...",
+    "@updateStatusDownloading": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateProgressPercent": "{progress}%",
+    "@updateProgressPercent": {
+        "placeholders": { "progress": { "type": "String" } }
+    },
+    "updateStatusStartingInstall": "正在开始安装...",
+    "updateStatusFailedTitle": "更新失败",
+    "updateTryAgainButton": "重试检查",
+    "updateStatusUpToDateTitle": "您已是最新版本！",
+    "updateStatusLatestAvailable": "(最新可用：{version})",
+    "@updateStatusLatestAvailable": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateCheckAgainButton": "再次检查",
+    "updateStatusInstalled": "已显示安装对话框",
+    "updateErrorNoNewUpdate": "没有可用的新更新。",
+    "updateErrorUnexpected": "检查过程中发生意外错误。",
+    "updateErrorIncompleteInfo": "更新信息不完整。",
+    "updateErrorCouldNotStartInstall": "无法开始安装。请检查权限。",
+    "updateErrorDownloadFailed": "下载失败。请检查网络连接和权限。",
+    "versionNotAvailable": "不可用"
+}

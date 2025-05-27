@@ -6,6 +6,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_fr.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -90,7 +93,10 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
-    Locale('en')
+    Locale('en'),
+    Locale('es'),
+    Locale('fr'),
+    Locale('zh')
   ];
 
   /// The title of the application
@@ -99,73 +105,73 @@ abstract class AppLocalizations {
   /// **'Notes'**
   String get appTitle;
 
-  /// No description provided for @addNoteScreenTitle.
+  /// Title for the screen where users add a new note.
   ///
   /// In en, this message translates to:
   /// **'Add New Note'**
   String get addNoteScreenTitle;
 
-  /// No description provided for @saveNoteTooltip.
+  /// Tooltip for the button that saves a new note.
   ///
   /// In en, this message translates to:
   /// **'Save Note'**
   String get saveNoteTooltip;
 
-  /// No description provided for @cannotSaveNoteWithoutTitle.
+  /// Error message shown when a user tries to save a note without providing a title.
   ///
   /// In en, this message translates to:
   /// **'Cannot save a note without a title.'**
   String get cannotSaveNoteWithoutTitle;
 
-  /// No description provided for @discardChangesDialogTitle.
+  /// Title for the dialog asking the user if they want to discard unsaved changes.
   ///
   /// In en, this message translates to:
   /// **'Discard changes?'**
   String get discardChangesDialogTitle;
 
-  /// No description provided for @discardChangesDialogContent.
+  /// Content/body of the dialog asking the user if they want to discard unsaved changes.
   ///
   /// In en, this message translates to:
   /// **'If you go back now, your changes will be lost.'**
   String get discardChangesDialogContent;
 
-  /// No description provided for @cancelButtonLabel.
+  /// Label for a button that cancels an action or dismisses a dialog.
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancelButtonLabel;
 
-  /// No description provided for @discardButtonLabel.
+  /// Label for a button that discards changes.
   ///
   /// In en, this message translates to:
   /// **'Discard'**
   String get discardButtonLabel;
 
-  /// No description provided for @quillPlaceholder.
+  /// Placeholder text for the rich text editor where users write their note content.
   ///
   /// In en, this message translates to:
   /// **'Start writing your notes...'**
   String get quillPlaceholder;
 
-  /// No description provided for @titleHint.
+  /// Hint text for the text field where users enter the note title.
   ///
   /// In en, this message translates to:
   /// **'Title'**
   String get titleHint;
 
-  /// No description provided for @untitledNote.
+  /// Default title for a note if the user doesn't provide one, or for display purposes when a title is missing.
   ///
   /// In en, this message translates to:
   /// **'Untitled Note'**
   String get untitledNote;
 
-  /// No description provided for @editNoteScreenTitle.
+  /// Title for the screen where users edit an existing note.
   ///
   /// In en, this message translates to:
   /// **'Edit Note'**
   String get editNoteScreenTitle;
 
-  /// No description provided for @errorCouldNotLoadNoteData.
+  /// Error message shown when the application fails to load the data for a note to be edited.
   ///
   /// In en, this message translates to:
   /// **'Error: Could not load note data.'**
@@ -177,31 +183,31 @@ abstract class AppLocalizations {
   /// **'Error saving note: {errorDetails}'**
   String errorSavingNote(String errorDetails);
 
-  /// No description provided for @errorAppBarTitle.
+  /// Generic title for an app bar on a screen displaying an error.
   ///
   /// In en, this message translates to:
   /// **'Error'**
   String get errorAppBarTitle;
 
-  /// No description provided for @failedToLoadNote.
+  /// Message indicating that the application failed to load a specific note.
   ///
   /// In en, this message translates to:
   /// **'Failed to load note.'**
   String get failedToLoadNote;
 
-  /// No description provided for @saveChangesTooltip.
+  /// Tooltip for the button that saves changes to an existing note.
   ///
   /// In en, this message translates to:
   /// **'Save Changes'**
   String get saveChangesTooltip;
 
-  /// No description provided for @deleteNoteTooltip.
+  /// Tooltip for the button that deletes a note.
   ///
   /// In en, this message translates to:
   /// **'Delete Note'**
   String get deleteNoteTooltip;
 
-  /// No description provided for @deleteNoteDialogTitle.
+  /// Title for the confirmation dialog when deleting a note.
   ///
   /// In en, this message translates to:
   /// **'Delete Note?'**
@@ -213,115 +219,115 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to delete \"{noteTitle}\"? This action cannot be undone.'**
   String deleteNoteDialogContent(String noteTitle);
 
-  /// No description provided for @deleteButtonLabel.
+  /// Label for a button that confirms deletion.
   ///
   /// In en, this message translates to:
   /// **'Delete'**
   String get deleteButtonLabel;
 
-  /// Snackbar message after a note is deleted.
+  /// Snackbar message shown after a note is successfully deleted.
   ///
   /// In en, this message translates to:
   /// **'Note \"{noteTitle}\" deleted.'**
   String noteDeletedSnackbar(String noteTitle);
 
-  /// No description provided for @sortPropertyDate.
+  /// Label for sorting notes by their custom date.
   ///
   /// In en, this message translates to:
   /// **'Date'**
   String get sortPropertyDate;
 
-  /// No description provided for @sortPropertyTitle.
+  /// Label for sorting notes by their title.
   ///
   /// In en, this message translates to:
   /// **'Title'**
   String get sortPropertyTitle;
 
-  /// No description provided for @sortPropertyLastModified.
+  /// Label for sorting notes by their last modified timestamp.
   ///
   /// In en, this message translates to:
   /// **'Last Modified'**
   String get sortPropertyLastModified;
 
-  /// No description provided for @sortPropertyCreatedAt.
+  /// Label for sorting notes by their creation timestamp.
   ///
   /// In en, this message translates to:
   /// **'Created At'**
   String get sortPropertyCreatedAt;
 
-  /// No description provided for @searchNotesHint.
+  /// Hint text for the search bar used to find notes.
   ///
   /// In en, this message translates to:
   /// **'Search notes...'**
   String get searchNotesHint;
 
-  /// No description provided for @clearSearchTooltip.
+  /// Tooltip for the button that clears the search query.
   ///
   /// In en, this message translates to:
   /// **'Clear Search'**
   String get clearSearchTooltip;
 
-  /// No description provided for @sortByLabel.
+  /// Label preceding the current sort criteria display.
   ///
   /// In en, this message translates to:
   /// **'Sort by: '**
   String get sortByLabel;
 
-  /// No description provided for @sortAscendingTooltip.
+  /// Tooltip explaining the ascending sort order.
   ///
   /// In en, this message translates to:
   /// **'Ascending (A-Z, Oldest first)'**
   String get sortAscendingTooltip;
 
-  /// No description provided for @sortDescendingTooltip.
+  /// Tooltip explaining the descending sort order.
   ///
   /// In en, this message translates to:
   /// **'Descending (Z-A, Newest first)'**
   String get sortDescendingTooltip;
 
-  /// No description provided for @emptyNotesMessage.
+  /// Message displayed on the home screen when there are no notes and no search query.
   ///
   /// In en, this message translates to:
   /// **'No notes yet.\nTap the + button to add one!'**
   String get emptyNotesMessage;
 
-  /// No description provided for @noNotesFoundMessage.
+  /// Message displayed on the home screen when a search yields no results.
   ///
   /// In en, this message translates to:
   /// **'No notes found matching your search.'**
   String get noNotesFoundMessage;
 
-  /// Error message shown when loading notes fails.
+  /// Error message shown when loading the list of notes fails.
   ///
   /// In en, this message translates to:
   /// **'Error loading notes:\n{errorDetails}'**
   String errorLoadingNotes(String errorDetails);
 
-  /// No description provided for @addNoteFabTooltip.
+  /// Tooltip for the floating action button used to add a new note.
   ///
   /// In en, this message translates to:
   /// **'Add Note'**
   String get addNoteFabTooltip;
 
-  /// No description provided for @homeNavigationLabel.
+  /// Label for the 'Home' tab in the bottom navigation bar.
   ///
   /// In en, this message translates to:
   /// **'Home'**
   String get homeNavigationLabel;
 
-  /// No description provided for @settingsNavigationLabel.
+  /// Label for the 'Settings' tab in the bottom navigation bar.
   ///
   /// In en, this message translates to:
   /// **'Settings'**
   String get settingsNavigationLabel;
 
-  /// No description provided for @settingsScreenTitle.
+  /// Title for the settings screen.
   ///
   /// In en, this message translates to:
   /// **'Settings'**
   String get settingsScreenTitle;
 
-  /// No description provided for @appVersionLoading.
+  /// Text displayed while the application version is being fetched.
   ///
   /// In en, this message translates to:
   /// **'Loading...'**
@@ -333,223 +339,223 @@ abstract class AppLocalizations {
   /// **'Version {version} ({buildNumber})'**
   String appVersion(String version, String buildNumber);
 
-  /// No description provided for @errorLoadingVersion.
+  /// Error message displayed if fetching the app version fails.
   ///
   /// In en, this message translates to:
   /// **'Error loading version'**
   String get errorLoadingVersion;
 
-  /// No description provided for @backupSuccessful.
+  /// Snackbar message indicating that the notes backup was successful.
   ///
   /// In en, this message translates to:
   /// **'Backup successful!'**
   String get backupSuccessful;
 
-  /// No description provided for @backupFailed.
+  /// Snackbar message indicating that the notes backup failed or was cancelled.
   ///
   /// In en, this message translates to:
   /// **'Backup failed or cancelled (no notes added?).'**
   String get backupFailed;
 
-  /// No description provided for @restoreSuccessful.
+  /// Snackbar message indicating that restoring notes from a backup was successful.
   ///
   /// In en, this message translates to:
   /// **'Restore successful!'**
   String get restoreSuccessful;
 
-  /// No description provided for @restoreFailed.
+  /// Snackbar message indicating that restoring notes failed or was cancelled.
   ///
   /// In en, this message translates to:
   /// **'Restore failed or cancelled (invalid file format?)'**
   String get restoreFailed;
 
-  /// No description provided for @appearanceSectionTitle.
+  /// Section title for appearance settings (e.g., theme).
   ///
   /// In en, this message translates to:
   /// **'Appearance'**
   String get appearanceSectionTitle;
 
-  /// No description provided for @themeLight.
+  /// Label for the light theme option.
   ///
   /// In en, this message translates to:
   /// **'Light'**
   String get themeLight;
 
-  /// No description provided for @themeDark.
+  /// Label for the dark theme option.
   ///
   /// In en, this message translates to:
   /// **'Dark'**
   String get themeDark;
 
-  /// No description provided for @themeSystem.
+  /// Label for the system theme option (follow OS settings).
   ///
   /// In en, this message translates to:
   /// **'System'**
   String get themeSystem;
 
-  /// No description provided for @dataManagementSectionTitle.
+  /// Section title for data management settings (e.g., backup, restore).
   ///
   /// In en, this message translates to:
   /// **'Data Management'**
   String get dataManagementSectionTitle;
 
-  /// No description provided for @backupNotesTitle.
+  /// Title for the 'Backup Notes' list tile in settings.
   ///
   /// In en, this message translates to:
   /// **'Backup Notes'**
   String get backupNotesTitle;
 
-  /// No description provided for @backupNotesSubtitle.
+  /// Subtitle/description for the 'Backup Notes' list tile.
   ///
   /// In en, this message translates to:
   /// **'Save notes to a file'**
   String get backupNotesSubtitle;
 
-  /// No description provided for @restoreNotesTitle.
+  /// Title for the 'Restore Notes' list tile in settings.
   ///
   /// In en, this message translates to:
   /// **'Restore Notes'**
   String get restoreNotesTitle;
 
-  /// No description provided for @restoreNotesSubtitle.
+  /// Subtitle/description for the 'Restore Notes' list tile.
   ///
   /// In en, this message translates to:
   /// **'Load notes from a backup file'**
   String get restoreNotesSubtitle;
 
-  /// No description provided for @applicationSectionTitle.
+  /// Section title for application-related settings (e.g., updates).
   ///
   /// In en, this message translates to:
   /// **'Application'**
   String get applicationSectionTitle;
 
-  /// No description provided for @checkForUpdatesTitle.
+  /// Title for the 'Check for Updates' list tile in settings.
   ///
   /// In en, this message translates to:
   /// **'Check for Updates'**
   String get checkForUpdatesTitle;
 
-  /// No description provided for @updateScreenTitle.
+  /// Title for the application update screen.
   ///
   /// In en, this message translates to:
   /// **'App Update'**
   String get updateScreenTitle;
 
-  /// No description provided for @updateStatusChecking.
+  /// Status message indicating that the app is currently checking for updates.
   ///
   /// In en, this message translates to:
   /// **'Checking for updates...'**
   String get updateStatusChecking;
 
-  /// No description provided for @updateStatusAvailableTitle.
+  /// Title indicating that a new update is available.
   ///
   /// In en, this message translates to:
   /// **'Update Available!'**
   String get updateStatusAvailableTitle;
 
-  /// No description provided for @updateStatusCurrentVersion.
+  /// Displays the current installed version of the application.
   ///
   /// In en, this message translates to:
   /// **'Current version: {version}'**
   String updateStatusCurrentVersion(String version);
 
-  /// No description provided for @updateStatusNewVersion.
+  /// Displays the version number of the available update.
   ///
   /// In en, this message translates to:
   /// **'New version: {version}'**
   String updateStatusNewVersion(String version);
 
-  /// No description provided for @updateDownloadInstallButton.
+  /// Label for the button to download and install an available update.
   ///
   /// In en, this message translates to:
   /// **'Download & Install'**
   String get updateDownloadInstallButton;
 
-  /// No description provided for @updateStatusDownloading.
+  /// Status message indicating that an update is being downloaded.
   ///
   /// In en, this message translates to:
   /// **'Downloading update ({version})...'**
   String updateStatusDownloading(String version);
 
-  /// No description provided for @updateProgressPercent.
+  /// Displays the download progress as a percentage.
   ///
   /// In en, this message translates to:
   /// **'{progress}%'**
   String updateProgressPercent(String progress);
 
-  /// No description provided for @updateStatusStartingInstall.
+  /// Status message indicating that the installation process is about to begin.
   ///
   /// In en, this message translates to:
   /// **'Starting install...'**
   String get updateStatusStartingInstall;
 
-  /// No description provided for @updateStatusFailedTitle.
+  /// Title indicating that the update process has failed.
   ///
   /// In en, this message translates to:
   /// **'Update Failed'**
   String get updateStatusFailedTitle;
 
-  /// No description provided for @updateTryAgainButton.
+  /// Label for a button to retry checking for updates after a failure.
   ///
   /// In en, this message translates to:
   /// **'Retry Check'**
   String get updateTryAgainButton;
 
-  /// No description provided for @updateStatusUpToDateTitle.
+  /// Message indicating that the application is currently up to date.
   ///
   /// In en, this message translates to:
   /// **'You\'re up to date!'**
   String get updateStatusUpToDateTitle;
 
-  /// No description provided for @updateStatusLatestAvailable.
+  /// Additional information showing the latest version known, even if it's the current one.
   ///
   /// In en, this message translates to:
   /// **'(Latest available: {version})'**
   String updateStatusLatestAvailable(String version);
 
-  /// No description provided for @updateCheckAgainButton.
+  /// Label for a button to manually check for updates again.
   ///
   /// In en, this message translates to:
   /// **'Check Again'**
   String get updateCheckAgainButton;
 
-  /// No description provided for @updateStatusInstalled.
+  /// Status message indicating that the OS installation prompt for the update has been shown (app likely to restart).
   ///
   /// In en, this message translates to:
   /// **'Install dialog shown'**
   String get updateStatusInstalled;
 
-  /// No description provided for @updateErrorNoNewUpdate.
+  /// Message shown when check completes and no new update is found.
   ///
   /// In en, this message translates to:
   /// **'No new update available.'**
   String get updateErrorNoNewUpdate;
 
-  /// No description provided for @updateErrorUnexpected.
+  /// Generic error message for unexpected issues during the update check.
   ///
   /// In en, this message translates to:
   /// **'An unexpected error occurred during check.'**
   String get updateErrorUnexpected;
 
-  /// No description provided for @updateErrorIncompleteInfo.
+  /// Error message if essential update information (URL, filename) is missing.
   ///
   /// In en, this message translates to:
   /// **'Update information is incomplete.'**
   String get updateErrorIncompleteInfo;
 
-  /// No description provided for @updateErrorCouldNotStartInstall.
+  /// Error message if the app fails to initiate the OS installation prompt.
   ///
   /// In en, this message translates to:
   /// **'Could not start installation. Check permissions.'**
   String get updateErrorCouldNotStartInstall;
 
-  /// No description provided for @updateErrorDownloadFailed.
+  /// Error message if the update download fails.
   ///
   /// In en, this message translates to:
   /// **'Download failed. Check connection and permissions.'**
   String get updateErrorDownloadFailed;
 
-  /// No description provided for @versionNotAvailable.
+  /// Placeholder for when a version number is not available or applicable.
   ///
   /// In en, this message translates to:
   /// **'N/A'**
@@ -565,7 +571,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'es', 'fr', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -577,6 +583,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'en': return AppLocalizationsEn();
+    case 'es': return AppLocalizationsEs();
+    case 'fr': return AppLocalizationsFr();
+    case 'zh': return AppLocalizationsZh();
   }
 
   throw FlutterError(

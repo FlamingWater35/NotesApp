@@ -1,0 +1,129 @@
+{
+    "@@locale": "es",
+    "appTitle": "Notas",
+    "addNoteScreenTitle": "Añadir Nueva Nota",
+    "saveNoteTooltip": "Guardar Nota",
+    "cannotSaveNoteWithoutTitle": "No se puede guardar una nota sin título.",
+    "discardChangesDialogTitle": "¿Descartar cambios?",
+    "discardChangesDialogContent": "Si retrocedes ahora, tus cambios se perderán.",
+    "cancelButtonLabel": "Cancelar",
+    "discardButtonLabel": "Descartar",
+    "quillPlaceholder": "Comienza a escribir tus notas...",
+    "titleHint": "Título",
+    "untitledNote": "Nota sin Título",
+    "editNoteScreenTitle": "Editar Nota",
+    "errorCouldNotLoadNoteData": "Error: No se pudieron cargar los datos de la nota.",
+    "errorSavingNote": "Error al guardar la nota: {errorDetails}",
+    "@errorSavingNote": {
+        "placeholders": {
+            "errorDetails": {
+                "type": "String"
+            }
+        }
+    },
+    "errorAppBarTitle": "Error",
+    "failedToLoadNote": "Error al cargar la nota.",
+    "saveChangesTooltip": "Guardar Cambios",
+    "deleteNoteTooltip": "Eliminar Nota",
+    "deleteNoteDialogTitle": "¿Eliminar Nota?",
+    "deleteNoteDialogContent": "¿Estás seguro de que quieres eliminar \"{noteTitle}\"? Esta acción no se puede deshacer.",
+    "@deleteNoteDialogContent": {
+        "placeholders": {
+            "noteTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteButtonLabel": "Eliminar",
+    "noteDeletedSnackbar": "Nota \"{noteTitle}\" eliminada.",
+    "@noteDeletedSnackbar": {
+        "placeholders": {
+            "noteTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "sortPropertyDate": "Fecha",
+    "sortPropertyTitle": "Título",
+    "sortPropertyLastModified": "Última Modificación",
+    "sortPropertyCreatedAt": "Fecha de Creación",
+    "searchNotesHint": "Buscar notas...",
+    "clearSearchTooltip": "Limpiar Búsqueda",
+    "sortByLabel": "Ordenar por: ",
+    "sortAscendingTooltip": "Ascendente (A-Z, Más antiguas primero)",
+    "sortDescendingTooltip": "Descendente (Z-A, Más nuevas primero)",
+    "emptyNotesMessage": "Aún no hay notas.\n¡Toca el botón + para añadir una!",
+    "noNotesFoundMessage": "No se encontraron notas que coincidan con tu búsqueda.",
+    "errorLoadingNotes": "Error al cargar las notas:\n{errorDetails}",
+    "@errorLoadingNotes": {
+        "placeholders": {
+            "errorDetails": {
+                "type": "String"
+            }
+        }
+    },
+    "addNoteFabTooltip": "Añadir Nota",
+    "homeNavigationLabel": "Inicio",
+    "settingsNavigationLabel": "Ajustes",
+    "settingsScreenTitle": "Ajustes",
+    "appVersionLoading": "Cargando...",
+    "appVersion": "Versión {version} ({buildNumber})",
+    "@appVersion": {
+        "placeholders": {
+            "version": { "type": "String" },
+            "buildNumber": { "type": "String" }
+        }
+    },
+    "errorLoadingVersion": "Error al cargar la versión",
+    "backupSuccessful": "¡Copia de seguridad exitosa!",
+    "backupFailed": "Copia de seguridad fallida o cancelada (¿no se añadieron notas?).",
+    "restoreSuccessful": "¡Restauración exitosa!",
+    "restoreFailed": "Restauración fallida o cancelada (¿formato de archivo inválido?).",
+    "appearanceSectionTitle": "Apariencia",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Sistema",
+    "dataManagementSectionTitle": "Gestión de Datos",
+    "backupNotesTitle": "Copia de Seguridad de Notas",
+    "backupNotesSubtitle": "Guardar notas en un archivo",
+    "restoreNotesTitle": "Restaurar Notas",
+    "restoreNotesSubtitle": "Cargar notas desde un archivo de copia de seguridad",
+    "applicationSectionTitle": "Aplicación",
+    "checkForUpdatesTitle": "Buscar Actualizaciones",
+    "updateScreenTitle": "Actualización de la Aplicación",
+    "updateStatusChecking": "Buscando actualizaciones...",
+    "updateStatusAvailableTitle": "¡Actualización Disponible!",
+    "updateStatusCurrentVersion": "Versión actual: {version}",
+    "@updateStatusCurrentVersion": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateStatusNewVersion": "Nueva versión: {version}",
+    "@updateStatusNewVersion": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateDownloadInstallButton": "Descargar e Instalar",
+    "updateStatusDownloading": "Descargando actualización ({version})...",
+    "@updateStatusDownloading": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateProgressPercent": "{progress}%",
+    "@updateProgressPercent": {
+        "placeholders": { "progress": { "type": "String" } }
+    },
+    "updateStatusStartingInstall": "Iniciando instalación...",
+    "updateStatusFailedTitle": "Actualización Fallida",
+    "updateTryAgainButton": "Reintentar Búsqueda",
+    "updateStatusUpToDateTitle": "¡Estás al día!",
+    "updateStatusLatestAvailable": "(Última disponible: {version})",
+    "@updateStatusLatestAvailable": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateCheckAgainButton": "Buscar de Nuevo",
+    "updateStatusInstalled": "Diálogo de instalación mostrado",
+    "updateErrorNoNewUpdate": "No hay nuevas actualizaciones disponibles.",
+    "updateErrorUnexpected": "Ocurrió un error inesperado durante la búsqueda.",
+    "updateErrorIncompleteInfo": "La información de la actualización está incompleta.",
+    "updateErrorCouldNotStartInstall": "No se pudo iniciar la instalación. Verifica los permisos.",
+    "updateErrorDownloadFailed": "Descarga fallida. Verifica la conexión y los permisos.",
+    "versionNotAvailable": "N/D"
+}

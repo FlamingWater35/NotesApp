@@ -1,0 +1,129 @@
+{
+    "@@locale": "fr",
+    "appTitle": "Notes",
+    "addNoteScreenTitle": "Ajouter une Nouvelle Note",
+    "saveNoteTooltip": "Enregistrer la Note",
+    "cannotSaveNoteWithoutTitle": "Impossible d'enregistrer une note sans titre.",
+    "discardChangesDialogTitle": "Annuler les modifications ?",
+    "discardChangesDialogContent": "Si vous revenez en arrière maintenant, vos modifications seront perdues.",
+    "cancelButtonLabel": "Annuler",
+    "discardButtonLabel": "Ignorer",
+    "quillPlaceholder": "Commencez à écrire vos notes...",
+    "titleHint": "Titre",
+    "untitledNote": "Note Sans Titre",
+    "editNoteScreenTitle": "Modifier la Note",
+    "errorCouldNotLoadNoteData": "Erreur : Impossible de charger les données de la note.",
+    "errorSavingNote": "Erreur lors de l'enregistrement de la note : {errorDetails}",
+    "@errorSavingNote": {
+        "placeholders": {
+            "errorDetails": {
+                "type": "String"
+            }
+        }
+    },
+    "errorAppBarTitle": "Erreur",
+    "failedToLoadNote": "Échec du chargement de la note.",
+    "saveChangesTooltip": "Enregistrer les Modifications",
+    "deleteNoteTooltip": "Supprimer la Note",
+    "deleteNoteDialogTitle": "Supprimer la Note ?",
+    "deleteNoteDialogContent": "Êtes-vous sûr de vouloir supprimer \"{noteTitle}\" ? Cette action est irréversible.",
+    "@deleteNoteDialogContent": {
+        "placeholders": {
+            "noteTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteButtonLabel": "Supprimer",
+    "noteDeletedSnackbar": "Note \"{noteTitle}\" supprimée.",
+    "@noteDeletedSnackbar": {
+        "placeholders": {
+            "noteTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "sortPropertyDate": "Date",
+    "sortPropertyTitle": "Titre",
+    "sortPropertyLastModified": "Dernière Modification",
+    "sortPropertyCreatedAt": "Date de Création",
+    "searchNotesHint": "Rechercher des notes...",
+    "clearSearchTooltip": "Effacer la Recherche",
+    "sortByLabel": "Trier par : ",
+    "sortAscendingTooltip": "Croissant (A-Z, Plus anciennes d'abord)",
+    "sortDescendingTooltip": "Décroissant (Z-A, Plus récentes d'abord)",
+    "emptyNotesMessage": "Aucune note pour l'instant.\nAppuyez sur le bouton + pour en ajouter une !",
+    "noNotesFoundMessage": "Aucune note trouvée correspondant à votre recherche.",
+    "errorLoadingNotes": "Erreur lors du chargement des notes :\n{errorDetails}",
+    "@errorLoadingNotes": {
+        "placeholders": {
+            "errorDetails": {
+                "type": "String"
+            }
+        }
+    },
+    "addNoteFabTooltip": "Ajouter une Note",
+    "homeNavigationLabel": "Accueil",
+    "settingsNavigationLabel": "Paramètres",
+    "settingsScreenTitle": "Paramètres",
+    "appVersionLoading": "Chargement...",
+    "appVersion": "Version {version} ({buildNumber})",
+    "@appVersion": {
+        "placeholders": {
+            "version": { "type": "String" },
+            "buildNumber": { "type": "String" }
+        }
+    },
+    "errorLoadingVersion": "Erreur de chargement de la version",
+    "backupSuccessful": "Sauvegarde réussie !",
+    "backupFailed": "Échec de la sauvegarde ou annulée (aucune note ajoutée ?).",
+    "restoreSuccessful": "Restauration réussie !",
+    "restoreFailed": "Échec de la restauration ou annulée (format de fichier invalide ?).",
+    "appearanceSectionTitle": "Apparence",
+    "themeLight": "Clair",
+    "themeDark": "Sombre",
+    "themeSystem": "Système",
+    "dataManagementSectionTitle": "Gestion des Données",
+    "backupNotesTitle": "Sauvegarder les Notes",
+    "backupNotesSubtitle": "Enregistrer les notes dans un fichier",
+    "restoreNotesTitle": "Restaurer les Notes",
+    "restoreNotesSubtitle": "Charger les notes depuis un fichier de sauvegarde",
+    "applicationSectionTitle": "Application",
+    "checkForUpdatesTitle": "Vérifier les Mises à Jour",
+    "updateScreenTitle": "Mise à Jour de l'Application",
+    "updateStatusChecking": "Vérification des mises à jour...",
+    "updateStatusAvailableTitle": "Mise à Jour Disponible !",
+    "updateStatusCurrentVersion": "Version actuelle : {version}",
+    "@updateStatusCurrentVersion": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateStatusNewVersion": "Nouvelle version : {version}",
+    "@updateStatusNewVersion": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateDownloadInstallButton": "Télécharger et Installer",
+    "updateStatusDownloading": "Téléchargement de la mise à jour ({version})...",
+    "@updateStatusDownloading": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateProgressPercent": "{progress}%",
+    "@updateProgressPercent": {
+        "placeholders": { "progress": { "type": "String" } }
+    },
+    "updateStatusStartingInstall": "Démarrage de l'installation...",
+    "updateStatusFailedTitle": "Échec de la Mise à Jour",
+    "updateTryAgainButton": "Réessayer la Vérification",
+    "updateStatusUpToDateTitle": "Vous êtes à jour !",
+    "updateStatusLatestAvailable": "(Dernière disponible : {version})",
+    "@updateStatusLatestAvailable": {
+        "placeholders": { "version": { "type": "String" } }
+    },
+    "updateCheckAgainButton": "Vérifier à Nouveau",
+    "updateStatusInstalled": "Dialogue d'installation affiché",
+    "updateErrorNoNewUpdate": "Aucune nouvelle mise à jour disponible.",
+    "updateErrorUnexpected": "Une erreur inattendue s'est produite lors de la vérification.",
+    "updateErrorIncompleteInfo": "Les informations de mise à jour sont incomplètes.",
+    "updateErrorCouldNotStartInstall": "Impossible de démarrer l'installation. Vérifiez les autorisations.",
+    "updateErrorDownloadFailed": "Échec du téléchargement. Vérifiez la connexion et les autorisations.",
+    "versionNotAvailable": "N/D"
+}

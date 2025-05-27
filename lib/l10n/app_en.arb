@@ -6,142 +6,349 @@
     },
 
     "addNoteScreenTitle": "Add New Note",
+    "@addNoteScreenTitle": {
+        "description": "Title for the screen where users add a new note."
+    },
     "saveNoteTooltip": "Save Note",
+    "@saveNoteTooltip": {
+        "description": "Tooltip for the button that saves a new note."
+    },
     "cannotSaveNoteWithoutTitle": "Cannot save a note without a title.",
+    "@cannotSaveNoteWithoutTitle": {
+        "description": "Error message shown when a user tries to save a note without providing a title."
+    },
     "discardChangesDialogTitle": "Discard changes?",
+    "@discardChangesDialogTitle": {
+        "description": "Title for the dialog asking the user if they want to discard unsaved changes."
+    },
     "discardChangesDialogContent": "If you go back now, your changes will be lost.",
+    "@discardChangesDialogContent": {
+        "description": "Content/body of the dialog asking the user if they want to discard unsaved changes."
+    },
     "cancelButtonLabel": "Cancel",
+    "@cancelButtonLabel": {
+        "description": "Label for a button that cancels an action or dismisses a dialog."
+    },
     "discardButtonLabel": "Discard",
+    "@discardButtonLabel": {
+        "description": "Label for a button that discards changes."
+    },
     "quillPlaceholder": "Start writing your notes...",
+    "@quillPlaceholder": {
+        "description": "Placeholder text for the rich text editor where users write their note content."
+    },
     "titleHint": "Title",
+    "@titleHint": {
+        "description": "Hint text for the text field where users enter the note title."
+    },
     "untitledNote": "Untitled Note",
+    "@untitledNote": {
+        "description": "Default title for a note if the user doesn't provide one, or for display purposes when a title is missing."
+    },
 
     "editNoteScreenTitle": "Edit Note",
+    "@editNoteScreenTitle": {
+        "description": "Title for the screen where users edit an existing note."
+    },
     "errorCouldNotLoadNoteData": "Error: Could not load note data.",
+    "@errorCouldNotLoadNoteData": {
+        "description": "Error message shown when the application fails to load the data for a note to be edited."
+    },
     "errorSavingNote": "Error saving note: {errorDetails}",
     "@errorSavingNote": {
         "description": "Error message shown when saving a note fails.",
         "placeholders": {
             "errorDetails": {
                 "type": "String",
-                "example": "Database connection failed"
+                "example": "Database connection failed",
+                "description": "Specific details about the error that occurred."
             }
         }
     },
     "errorAppBarTitle": "Error",
+    "@errorAppBarTitle": {
+        "description": "Generic title for an app bar on a screen displaying an error."
+    },
     "failedToLoadNote": "Failed to load note.",
+    "@failedToLoadNote": {
+        "description": "Message indicating that the application failed to load a specific note."
+    },
     "saveChangesTooltip": "Save Changes",
+    "@saveChangesTooltip": {
+        "description": "Tooltip for the button that saves changes to an existing note."
+    },
 
     "deleteNoteTooltip": "Delete Note",
+    "@deleteNoteTooltip": {
+        "description": "Tooltip for the button that deletes a note."
+    },
     "deleteNoteDialogTitle": "Delete Note?",
+    "@deleteNoteDialogTitle": {
+        "description": "Title for the confirmation dialog when deleting a note."
+    },
     "deleteNoteDialogContent": "Are you sure you want to delete \"{noteTitle}\"? This action cannot be undone.",
     "@deleteNoteDialogContent": {
         "description": "Confirmation message for deleting a note.",
         "placeholders": {
             "noteTitle": {
                 "type": "String",
-                "example": "My Shopping List"
+                "example": "My Shopping List",
+                "description": "The title of the note to be deleted."
             }
         }
     },
     "deleteButtonLabel": "Delete",
+    "@deleteButtonLabel": {
+        "description": "Label for a button that confirms deletion."
+    },
     "noteDeletedSnackbar": "Note \"{noteTitle}\" deleted.",
     "@noteDeletedSnackbar": {
-        "description": "Snackbar message after a note is deleted.",
+        "description": "Snackbar message shown after a note is successfully deleted.",
         "placeholders": {
             "noteTitle": {
                 "type": "String",
-                "example": "My Shopping List"
+                "example": "My Shopping List",
+                "description": "The title of the note that was deleted."
             }
         }
     },
     "sortPropertyDate": "Date",
+    "@sortPropertyDate": {
+        "description": "Label for sorting notes by their custom date."
+    },
     "sortPropertyTitle": "Title",
+    "@sortPropertyTitle": {
+        "description": "Label for sorting notes by their title."
+    },
     "sortPropertyLastModified": "Last Modified",
+    "@sortPropertyLastModified": {
+        "description": "Label for sorting notes by their last modified timestamp."
+    },
     "sortPropertyCreatedAt": "Created At",
+    "@sortPropertyCreatedAt": {
+        "description": "Label for sorting notes by their creation timestamp."
+    },
     "searchNotesHint": "Search notes...",
+    "@searchNotesHint": {
+        "description": "Hint text for the search bar used to find notes."
+    },
     "clearSearchTooltip": "Clear Search",
+    "@clearSearchTooltip": {
+        "description": "Tooltip for the button that clears the search query."
+    },
     "sortByLabel": "Sort by: ",
+    "@sortByLabel": {
+        "description": "Label preceding the current sort criteria display."
+    },
     "sortAscendingTooltip": "Ascending (A-Z, Oldest first)",
+    "@sortAscendingTooltip": {
+        "description": "Tooltip explaining the ascending sort order."
+    },
     "sortDescendingTooltip": "Descending (Z-A, Newest first)",
+    "@sortDescendingTooltip": {
+        "description": "Tooltip explaining the descending sort order."
+    },
     "emptyNotesMessage": "No notes yet.\nTap the + button to add one!",
+    "@emptyNotesMessage": {
+        "description": "Message displayed on the home screen when there are no notes and no search query."
+    },
     "noNotesFoundMessage": "No notes found matching your search.",
+    "@noNotesFoundMessage": {
+        "description": "Message displayed on the home screen when a search yields no results."
+    },
 
     "errorLoadingNotes": "Error loading notes:\n{errorDetails}",
     "@errorLoadingNotes": {
-        "description": "Error message shown when loading notes fails.",
+        "description": "Error message shown when loading the list of notes fails.",
         "placeholders": {
             "errorDetails": {
                 "type": "String",
-                "example": "Network timeout"
+                "example": "Network timeout",
+                "description": "Specific details about the error that occurred while loading notes."
             }
         }
     },
     "addNoteFabTooltip": "Add Note",
+    "@addNoteFabTooltip": {
+        "description": "Tooltip for the floating action button used to add a new note."
+    },
     "homeNavigationLabel": "Home",
+    "@homeNavigationLabel": {
+        "description": "Label for the 'Home' tab in the bottom navigation bar."
+    },
     "settingsNavigationLabel": "Settings",
+    "@settingsNavigationLabel": {
+        "description": "Label for the 'Settings' tab in the bottom navigation bar."
+    },
 
     "settingsScreenTitle": "Settings",
+    "@settingsScreenTitle": {
+        "description": "Title for the settings screen."
+    },
     "appVersionLoading": "Loading...",
+    "@appVersionLoading": {
+        "description": "Text displayed while the application version is being fetched."
+    },
     "appVersion": "Version {version} ({buildNumber})",
     "@appVersion": {
         "description": "Application version display string.",
         "placeholders": {
-            "version": { "type": "String", "example": "1.0.0" },
-            "buildNumber": { "type": "String", "example": "1" }
+            "version": { "type": "String", "example": "1.0.0", "description": "The semantic version number (e.g., 1.0.0)." },
+            "buildNumber": { "type": "String", "example": "1", "description": "The build number of the application." }
         }
     },
     "errorLoadingVersion": "Error loading version",
+    "@errorLoadingVersion": {
+        "description": "Error message displayed if fetching the app version fails."
+    },
     "backupSuccessful": "Backup successful!",
+    "@backupSuccessful": {
+        "description": "Snackbar message indicating that the notes backup was successful."
+    },
     "backupFailed": "Backup failed or cancelled (no notes added?).",
+    "@backupFailed": {
+        "description": "Snackbar message indicating that the notes backup failed or was cancelled."
+    },
     "restoreSuccessful": "Restore successful!",
+    "@restoreSuccessful": {
+        "description": "Snackbar message indicating that restoring notes from a backup was successful."
+    },
     "restoreFailed": "Restore failed or cancelled (invalid file format?)",
+    "@restoreFailed": {
+        "description": "Snackbar message indicating that restoring notes failed or was cancelled."
+    },
     "appearanceSectionTitle": "Appearance",
+    "@appearanceSectionTitle": {
+        "description": "Section title for appearance settings (e.g., theme)."
+    },
     "themeLight": "Light",
+    "@themeLight": {
+        "description": "Label for the light theme option."
+    },
     "themeDark": "Dark",
+    "@themeDark": {
+        "description": "Label for the dark theme option."
+    },
     "themeSystem": "System",
+    "@themeSystem": {
+        "description": "Label for the system theme option (follow OS settings)."
+    },
     "dataManagementSectionTitle": "Data Management",
+    "@dataManagementSectionTitle": {
+        "description": "Section title for data management settings (e.g., backup, restore)."
+    },
     "backupNotesTitle": "Backup Notes",
+    "@backupNotesTitle": {
+        "description": "Title for the 'Backup Notes' list tile in settings."
+    },
     "backupNotesSubtitle": "Save notes to a file",
+    "@backupNotesSubtitle": {
+        "description": "Subtitle/description for the 'Backup Notes' list tile."
+    },
     "restoreNotesTitle": "Restore Notes",
+    "@restoreNotesTitle": {
+        "description": "Title for the 'Restore Notes' list tile in settings."
+    },
     "restoreNotesSubtitle": "Load notes from a backup file",
+    "@restoreNotesSubtitle": {
+        "description": "Subtitle/description for the 'Restore Notes' list tile."
+    },
     "applicationSectionTitle": "Application",
+    "@applicationSectionTitle": {
+        "description": "Section title for application-related settings (e.g., updates)."
+    },
     "checkForUpdatesTitle": "Check for Updates",
+    "@checkForUpdatesTitle": {
+        "description": "Title for the 'Check for Updates' list tile in settings."
+    },
 
     "updateScreenTitle": "App Update",
+    "@updateScreenTitle": {
+        "description": "Title for the application update screen."
+    },
     "updateStatusChecking": "Checking for updates...",
+    "@updateStatusChecking": {
+        "description": "Status message indicating that the app is currently checking for updates."
+    },
     "updateStatusAvailableTitle": "Update Available!",
+    "@updateStatusAvailableTitle": {
+        "description": "Title indicating that a new update is available."
+    },
     "updateStatusCurrentVersion": "Current version: {version}",
     "@updateStatusCurrentVersion": {
-        "placeholders": { "version": { "type": "String" } }
+        "description": "Displays the current installed version of the application.",
+        "placeholders": { "version": { "type": "String", "description": "The current app version number." } }
     },
     "updateStatusNewVersion": "New version: {version}",
     "@updateStatusNewVersion": {
-        "placeholders": { "version": { "type": "String" } }
+        "description": "Displays the version number of the available update.",
+        "placeholders": { "version": { "type": "String", "description": "The new app version number." } }
     },
     "updateDownloadInstallButton": "Download & Install",
+    "@updateDownloadInstallButton": {
+        "description": "Label for the button to download and install an available update."
+    },
     "updateStatusDownloading": "Downloading update ({version})...",
     "@updateStatusDownloading": {
-        "placeholders": { "version": { "type": "String" } }
+        "description": "Status message indicating that an update is being downloaded.",
+        "placeholders": { "version": { "type": "String", "description": "The version number being downloaded." } }
     },
     "updateProgressPercent": "{progress}%",
     "@updateProgressPercent": {
-        "placeholders": { "progress": { "type": "String" } }
+        "description": "Displays the download progress as a percentage.",
+        "placeholders": { "progress": { "type": "String", "description": "The download progress percentage (e.g., '50')." } }
     },
     "updateStatusStartingInstall": "Starting install...",
+    "@updateStatusStartingInstall": {
+        "description": "Status message indicating that the installation process is about to begin."
+    },
     "updateStatusFailedTitle": "Update Failed",
+    "@updateStatusFailedTitle": {
+        "description": "Title indicating that the update process has failed."
+    },
     "updateTryAgainButton": "Retry Check",
+    "@updateTryAgainButton": {
+        "description": "Label for a button to retry checking for updates after a failure."
+    },
     "updateStatusUpToDateTitle": "You're up to date!",
+    "@updateStatusUpToDateTitle": {
+        "description": "Message indicating that the application is currently up to date."
+    },
     "updateStatusLatestAvailable": "(Latest available: {version})",
     "@updateStatusLatestAvailable": {
-        "placeholders": { "version": { "type": "String" } }
+        "description": "Additional information showing the latest version known, even if it's the current one.",
+        "placeholders": { "version": { "type": "String", "description": "The latest known app version number." } }
     },
     "updateCheckAgainButton": "Check Again",
+    "@updateCheckAgainButton": {
+        "description": "Label for a button to manually check for updates again."
+    },
     "updateStatusInstalled": "Install dialog shown",
+    "@updateStatusInstalled": {
+        "description": "Status message indicating that the OS installation prompt for the update has been shown (app likely to restart)."
+    },
     "updateErrorNoNewUpdate": "No new update available.",
+    "@updateErrorNoNewUpdate": {
+        "description": "Message shown when check completes and no new update is found."
+    },
     "updateErrorUnexpected": "An unexpected error occurred during check.",
+    "@updateErrorUnexpected": {
+        "description": "Generic error message for unexpected issues during the update check."
+    },
     "updateErrorIncompleteInfo": "Update information is incomplete.",
+    "@updateErrorIncompleteInfo": {
+        "description": "Error message if essential update information (URL, filename) is missing."
+    },
     "updateErrorCouldNotStartInstall": "Could not start installation. Check permissions.",
+    "@updateErrorCouldNotStartInstall": {
+        "description": "Error message if the app fails to initiate the OS installation prompt."
+    },
     "updateErrorDownloadFailed": "Download failed. Check connection and permissions.",
-    "versionNotAvailable": "N/A"
+    "@updateErrorDownloadFailed": {
+        "description": "Error message if the update download fails."
+    },
+    "versionNotAvailable": "N/A",
+    "@versionNotAvailable": {
+        "description": "Placeholder for when a version number is not available or applicable."
+    }
 }
