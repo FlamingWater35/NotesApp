@@ -3,13 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
 class Note {
-  final String id;
-  final String title;
-  final String content;
-  final DateTime date;
-  final DateTime createdAt;
-  final DateTime lastModified;
-
   Note({
     required this.id,
     required this.title,
@@ -18,6 +11,32 @@ class Note {
     required this.createdAt,
     required this.lastModified,
   });
+
+  factory Note.fromMap(Map<String, dynamic> map) {
+    return Note(
+      id: map['id'] as String,
+      title: map['title'] as String? ?? '',
+      content: map['content'] as String? ?? '',
+      date: DateTime.tryParse(map['date'] as String? ?? '') ?? DateTime.now(),
+      createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),
+      lastModified: DateTime.tryParse(map['lastModified'] as String? ?? '') ?? DateTime.now(),
+    );
+  }
+
+  final String content;
+  final DateTime createdAt;
+  final DateTime date;
+  final String id;
+  final DateTime lastModified;
+  final String title;
+
+  @override
+  bool operator ==(Object other) =>
+    identical(this, other) ||
+    other is Note && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 
   Document get contentDocument {
     if (content.isEmpty) {
@@ -37,17 +56,6 @@ class Note {
   String get plainTextContent {
     final doc = contentDocument;
     return doc.toPlainText().trim();
-  }
-
-  factory Note.fromMap(Map<String, dynamic> map) {
-    return Note(
-      id: map['id'] as String,
-      title: map['title'] as String? ?? '',
-      content: map['content'] as String? ?? '',
-      date: DateTime.tryParse(map['date'] as String? ?? '') ?? DateTime.now(),
-      createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),
-      lastModified: DateTime.tryParse(map['lastModified'] as String? ?? '') ?? DateTime.now(),
-    );
   }
 
   Map<String, dynamic> toMap() {
@@ -80,12 +88,4 @@ class Note {
   }
 
   String get heroTag => 'noteHero_$id';
-
-  @override
-  bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is Note && runtimeType == other.runtimeType && id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
 }

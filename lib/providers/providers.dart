@@ -17,13 +17,6 @@ final notesProvider = AsyncNotifierProvider<NotesNotifier, List<Note>>(() {
 });
 
 class NotesNotifier extends AsyncNotifier<List<Note>> {
-  @override
-  Future<List<Note>> build() async {
-    _log.info("NotesNotifier: build() called - fetching initial notes.");
-    final dbHelper = ref.read(databaseProvider);
-    return await dbHelper.getAllNotes();
-  }
-
   Future<void> addNote(Note note) async {
     _log.fine("NotesNotifier: addNote called for ID ${note.id}");
     state = const AsyncLoading();
@@ -98,6 +91,13 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
       return null;
     }
   }
+
+  @override
+  Future<List<Note>> build() async {
+    _log.info("NotesNotifier: build() called - fetching initial notes.");
+    final dbHelper = ref.read(databaseProvider);
+    return await dbHelper.getAllNotes();
+  }
 }
 
 const String _themePrefsKey = 'app_theme_mode';
@@ -107,11 +107,25 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) {
 });
 
 class ThemeNotifier extends StateNotifier<ThemeMode> {
-  final Future<SharedPreferences> _prefsFuture;
-  SharedPreferences? _prefs;
-
   ThemeNotifier(this._prefsFuture) : super(ThemeMode.system) {
     _loadThemePreference();
+  }
+
+  SharedPreferences? _prefs;
+  final Future<SharedPreferences> _prefsFuture;
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    if (state != mode) {
+      state = mode;
+      _log.info("Setting theme mode to: $mode");
+      try {
+        _prefs ??= await _prefsFuture;
+        await _prefs?.setString(_themePrefsKey, mode.name);
+        _log.info("Saved theme preference: $mode");
+      } catch (e, stackTrace) {
+        _log.severe("Error saving theme preference", e, stackTrace);
+      }
+    }
   }
 
   Future<void> _loadThemePreference() async {
@@ -135,20 +149,6 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
       }
     } catch (e, stackTrace) {
       _log.severe("Error loading theme preference", e, stackTrace);
-    }
-  }
-
-  Future<void> setThemeMode(ThemeMode mode) async {
-    if (state != mode) {
-      state = mode;
-      _log.info("Setting theme mode to: $mode");
-      try {
-        _prefs ??= await _prefsFuture;
-        await _prefs?.setString(_themePrefsKey, mode.name);
-        _log.info("Saved theme preference: $mode");
-      } catch (e, stackTrace) {
-        _log.severe("Error saving theme preference", e, stackTrace);
-      }
     }
   }
 }

@@ -4,54 +4,22 @@ import 'package:logging/logging.dart';
 import '../models/note_model.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
+
   DatabaseHelper._internal();
 
   static Database? _database;
-  final _log = Logger('DatabaseHelper');
-
   static const String _dbName = 'notes_database.db';
-  static const String _tableName = 'notes';
   static const int _dbVersion = 1;
+  static final DatabaseHelper _instance = DatabaseHelper._internal();
+  static const String _tableName = 'notes';
+
+  final _log = Logger('DatabaseHelper');
 
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
-  }
-
-  Future<Database> _initDatabase() async {
-    _log.info("Initializing database...");
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, _dbName);
-
-    try {
-      return await openDatabase(
-        path,
-        version: _dbVersion,
-        onCreate: _onCreate,
-        // onUpgrade: _onUpgrade, // If schema changes later
-      );
-    } catch (e, stackTrace) {
-      _log.severe("Error initializing database", e, stackTrace);
-      rethrow; // Rethrow to signal failure
-    }
-  }
-
-  Future<void> _onCreate(Database db, int version) async {
-    _log.info("Creating database table '$_tableName'...");
-    await db.execute('''
-      CREATE TABLE $_tableName (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        date TEXT NOT NULL,
-        createdAt TEXT NOT NULL,
-        lastModified TEXT NOT NULL
-      )
-    ''');
-    _log.info("Database table '$_tableName' created.");
   }
 
   // Operations
@@ -152,5 +120,38 @@ class DatabaseHelper {
     await db.close();
     _database = null;
     _log.info("Database closed.");
+  }
+
+  Future<Database> _initDatabase() async {
+    _log.info("Initializing database...");
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, _dbName);
+
+    try {
+      return await openDatabase(
+        path,
+        version: _dbVersion,
+        onCreate: _onCreate,
+        // onUpgrade: _onUpgrade, // If schema changes later
+      );
+    } catch (e, stackTrace) {
+      _log.severe("Error initializing database", e, stackTrace);
+      rethrow; // Rethrow to signal failure
+    }
+  }
+
+  Future<void> _onCreate(Database db, int version) async {
+    _log.info("Creating database table '$_tableName'...");
+    await db.execute('''
+      CREATE TABLE $_tableName (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        date TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        lastModified TEXT NOT NULL
+      )
+    ''');
+    _log.info("Database table '$_tableName' created.");
   }
 }

@@ -11,12 +11,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class UpdateInfo {
-  final bool isUpdateAvailable;
-  final String? latestVersion;
-  final String? updateUrl;
-  final String? assetName;
-  final String? errorMessage;
-
   UpdateInfo({
     required this.isUpdateAvailable,
     this.latestVersion,
@@ -24,13 +18,18 @@ class UpdateInfo {
     this.assetName,
     this.errorMessage,
   });
+
+  final String? assetName;
+  final String? errorMessage;
+  final bool isUpdateAvailable;
+  final String? latestVersion;
+  final String? updateUrl;
 }
 
 class UpdateService {
-  static final _log = Logger('UpdateService');
-
   static const String _githubOwner = 'FlamingWater35';
   static const String _githubRepo = 'NotesApp';
+  static final _log = Logger('UpdateService');
   static const String _updateFilePrefsKey = 'downloaded_update_path';
 
   static Future<UpdateInfo> checkForUpdate() async {
@@ -111,19 +110,6 @@ class UpdateService {
       return UpdateInfo(isUpdateAvailable: false, errorMessage: "An error occurred: ${e.toString()}");
     }
   }
-
-  static bool _isVersionLower(String v1, String v2) {
-    return v1.compareTo(v2) < 0;
-  }
-
-  static String? _getPrimaryAbi(List<String> supportedAbis) {
-    if (supportedAbis.contains('arm64-v8a')) return 'arm64-v8a';
-    if (supportedAbis.contains('x86_64')) return 'x86_64';
-    if (supportedAbis.contains('armeabi-v7a')) return 'armeabi-v7a';
-    if (supportedAbis.contains('x86')) return 'x86';
-    return supportedAbis.isNotEmpty ? supportedAbis.first : null; // Fallback
-  }
-
 
   static Future<String?> downloadUpdate(String url, String fileName, Function(double) onProgress) async {
     _log.info("Starting download: $url");
@@ -235,5 +221,17 @@ class UpdateService {
     } else {
       _log.fine("No leftover update file path found in preferences.");
     }
+  }
+
+  static bool _isVersionLower(String v1, String v2) {
+    return v1.compareTo(v2) < 0;
+  }
+
+  static String? _getPrimaryAbi(List<String> supportedAbis) {
+    if (supportedAbis.contains('arm64-v8a')) return 'arm64-v8a';
+    if (supportedAbis.contains('x86_64')) return 'x86_64';
+    if (supportedAbis.contains('armeabi-v7a')) return 'armeabi-v7a';
+    if (supportedAbis.contains('x86')) return 'x86';
+    return supportedAbis.isNotEmpty ? supportedAbis.first : null; // Fallback
   }
 }
