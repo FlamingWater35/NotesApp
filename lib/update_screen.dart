@@ -7,9 +7,7 @@ import 'package:notes_app/l10n/app_localizations.dart';
 enum UpdateStatus { idle, checking, available, downloading, preparingInstall, error, installed }
 
 class UpdateScreen extends StatefulWidget {
-  const UpdateScreen({super.key, required this.heroTag});
-
-  final String heroTag;
+  const UpdateScreen({super.key});
 
   @override
   State<UpdateScreen> createState() => _UpdateScreenState();
@@ -279,21 +277,20 @@ class _UpdateScreenState extends State<UpdateScreen> {
   @override
   Widget build(BuildContext context) {
     _log.finer("Building UpdateScreen widget with status: $_status");
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.updateScreenTitle),
       ),
-      body: Hero(
-        tag: widget.heroTag,
-        child: Material(
-          type: MaterialType.transparency,
-          child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: _buildContent(),
-              ),
-             ),
+      body: Material(
+        type: MaterialType.transparency,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: _buildContent(),
+            ),
           ),
         ),
       ),

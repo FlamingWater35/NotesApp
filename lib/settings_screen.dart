@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -123,10 +124,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   void _handleCheckForUpdates() {
     _log.info("Check for Updates button tapped - Navigating");
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UpdateScreen(heroTag: _updateHeroTag),
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return const UpdateScreen();
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return SharedAxisTransition(
+            animation: animation,
+            secondaryAnimation: secondaryAnimation,
+            transitionType: SharedAxisTransitionType.horizontal,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 400),
       ),
     );
   }
