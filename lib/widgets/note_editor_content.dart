@@ -67,7 +67,7 @@ class NoteEditorContentWidget extends StatelessWidget {
               child: Scrollbar(
                 controller: cardScrollController,
                 interactive: true,
-                thickness: 4.0,
+                thickness: 6.0,
                 radius: const Radius.circular(4.0),
                 child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints viewportConstraints) {

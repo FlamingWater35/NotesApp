@@ -121,6 +121,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
         controller: widget.controller,
         options: QuillToolbarSelectHeaderStyleDropdownButtonOptions(
           iconSize: QuillToolbarWidget.defaultToolbarIconSize,
+          textStyle: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
       QuillToolbarToggleStyleButton(
@@ -264,7 +265,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
 
     Widget mainCompactToolbar = SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 10.0),
       child: Row(
         children: <Widget>[
           QuillToolbarHistoryButton(controller: widget.controller, isUndo: true, options: QuillToolbarHistoryButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),

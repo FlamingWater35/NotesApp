@@ -42,7 +42,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       });
     });
 
-
     try {
       final PackageInfo info = await PackageInfo.fromPlatform();
       if (mounted) {
@@ -431,7 +430,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                _appVersion, 
+                _appVersion,
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
