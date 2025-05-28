@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import '../components/update_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:notes_app/l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 
 enum UpdateStatus { idle, checking, available, downloading, preparingInstall, error, installed }
 

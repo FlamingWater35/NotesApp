@@ -9,7 +9,7 @@ import 'screens/home_screen.dart';
 import 'screens/settings_screen.dart';
 import 'providers/providers.dart';
 import 'models/note_model.dart';
-import 'package:notes_app/l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
