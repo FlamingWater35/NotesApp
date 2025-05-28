@@ -42,12 +42,45 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   }
 
   Widget _buildExpandableSectionContainer(BuildContext context, List<Widget> children) {
+    const double outerHorizontalMargin = 8.0;
+    const double innerHorizontalPaddingForContent = 12.0;
+    const double innerVerticalPaddingForContent = 8.0;
+    const double spaceBetweenButtons = 2.0;
+
     return Container(
-      color: Theme.of(context).canvasColor.withAlpha(64),
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: children.map((e) => Padding(padding: const EdgeInsets.symmetric(horizontal: 2.0), child: e)).toList(),
+      margin: const EdgeInsets.symmetric(
+        horizontal: outerHorizontalMargin,
+        vertical: 4.0,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).secondaryHeaderColor.withAlpha(60),
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final double viewportWidthForPaddedContent = constraints.maxWidth - (innerHorizontalPaddingForContent * 2);
+
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(
+              horizontal: innerHorizontalPaddingForContent,
+              vertical: innerVerticalPaddingForContent,
+            ),
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: viewportWidthForPaddedContent > 0 ? viewportWidthForPaddedContent : 0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: children.map((e) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: spaceBetweenButtons),
+                  child: e,
+                )).toList(),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
