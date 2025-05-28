@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,8 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  static const Duration _settingAnimationDuration = Duration(milliseconds: 300);
+
   String _appVersion = '';
   bool _isBackupRestoreRunning = false;
   final _log = Logger('SettingsScreen');
@@ -297,7 +300,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _appVersion = l10n.appVersionLoading;
     }
 
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -347,7 +349,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       horizontalTitleGap: 8.0,
                       tileColor: theme.colorScheme.surfaceContainerHighest.withAlpha(64),
-                    ),
+                    ).animate().fadeIn(duration: _settingAnimationDuration),
                   ),
                   const SizedBox(height: 8),
                   const Divider(indent: 16, endIndent: 16, height: 24),
@@ -386,7 +388,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       },
                       showSelectedIcon: false,
                       style: SegmentedButton.styleFrom(),
-                    ),
+                    ).animate().fadeIn(duration: _settingAnimationDuration),
                   ),
                   const Divider(indent: 16, endIndent: 16, height: 24),
 
@@ -401,7 +403,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     enabled: !_isBackupRestoreRunning,
                     onTap: _handleBackup,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  ),
+                  ).animate().fadeIn(duration: _settingAnimationDuration).flipV(duration: _settingAnimationDuration),
                   ListTile(
                     leading: const Icon(Icons.restore_page_outlined),
                     title: Text(l10n.restoreNotesTitle),
@@ -409,7 +411,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     enabled: !_isBackupRestoreRunning,
                     onTap: _handleRestore,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  ),
+                  ).animate().fadeIn(duration: _settingAnimationDuration).flipV(duration: _settingAnimationDuration),
                   const Divider(indent: 16, endIndent: 16, height: 24),
 
                   Padding(
@@ -421,7 +423,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: Text(l10n.checkForUpdatesTitle),
                     onTap: _handleCheckForUpdates,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  ),
+                  ).animate().fadeIn(duration: _settingAnimationDuration).slideX(duration: _settingAnimationDuration),
                 ],
               ),
             ),
