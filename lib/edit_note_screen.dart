@@ -383,6 +383,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                                               padding: const EdgeInsets.symmetric(vertical: 12.0),
                                               child: Row(
                                                 children: [
+                                                  const SizedBox(width: 6),
                                                   const Icon(Icons.calendar_today_outlined, size: 20),
                                                   const SizedBox(width: 12),
                                                   Expanded(
@@ -392,6 +393,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                                                     ),
                                                   ),
                                                   Icon(Icons.arrow_drop_down, color: Colors.grey.withAlpha(_isSaving ? 128 : 255)),
+                                                  const SizedBox(width: 6),
                                                 ],
                                               ),
                                             ),
@@ -407,7 +409,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(128)),
+                                            border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(150)),
                                             borderRadius: BorderRadius.circular(6),
                                           ),
                                           child: Padding(

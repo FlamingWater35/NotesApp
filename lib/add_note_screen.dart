@@ -17,6 +17,7 @@ class AddNoteScreen extends ConsumerStatefulWidget {
 }
 
 class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
+  final ScrollController _cardScrollController = ScrollController();
   final FocusNode _editorFocusNode = FocusNode();
   final ScrollController _editorScrollController = ScrollController();
   late DateTime _initialDate;
@@ -36,6 +37,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
     _editorFocusNode.dispose();
     _editorScrollController.dispose();
+    _cardScrollController.dispose();
     super.dispose();
   }
 
@@ -179,10 +181,11 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       controller: _quillController,
       config: QuillEditorConfig(
         placeholder: l10n.quillPlaceholder,
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         autoFocus: false,
-        scrollable: true,
-        minHeight: MediaQuery.of(context).size.height * 0.3,
+        scrollable: false,
+        expands: false,
+        minHeight: MediaQuery.of(context).size.height * 0.2,
         // Custom styles
         // customStyles: DefaultStyles( ... ),
         onLaunchUrl: (url) async {
@@ -220,85 +223,134 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
           ],
         ),
         
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Card(
-              elevation: 0,
-              margin: EdgeInsets.zero,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ListView(
-                  children: <Widget>[
-                    // Title TextField
-                    TextField(
-                      controller: _titleController,
-                      decoration: InputDecoration(
-                        // labelText: l10n.titleHint,
-                        hintText: l10n.titleHint,
-                        border: InputBorder.none,
-                        filled: false,
-                      ),
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                      textCapitalization: TextCapitalization.sentences,
-                    ),
-                    const SizedBox(height: 8.0),
-
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => _selectDate(context),
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.calendar_today_outlined, size: 20),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    displayDate,
-                                    style: Theme.of(context).textTheme.titleMedium,
+        body: Material(
+          type: MaterialType.transparency,
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+              child: Card(
+                elevation: 0,
+                margin: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: Scrollbar(
+                    controller: _cardScrollController,
+                    interactive: true,
+                    thickness: 4.0,
+                    radius: const Radius.circular(4.0),
+                    child: LayoutBuilder( 
+                      builder: (BuildContext context, BoxConstraints viewportConstraints) {
+                        return SingleChildScrollView(
+                          controller: _cardScrollController,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: viewportConstraints.maxHeight,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                                  child: TextField(
+                                    controller: _titleController,
+                                    decoration: InputDecoration(
+                                      hintText: l10n.titleHint,
+                                      border: InputBorder.none,
+                                    ),
+                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                                    textCapitalization: TextCapitalization.sentences,
+                                    maxLines: null,
                                   ),
-                                ],
-                              ),
-                              const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                            ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () => _selectDate(context),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                        child: Row(
+                                          children: [
+                                            const SizedBox(width: 6),
+                                            const Icon(Icons.calendar_today_outlined, size: 20),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Text(
+                                                displayDate,
+                                                style: Theme.of(context).textTheme.titleMedium,
+                                              ),
+                                            ),
+                                            Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                            const SizedBox(width: 6),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Divider(height: 1),
+                                ),
+                                const SizedBox(height: 16.0),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(150)),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(1.5, 3.0, 1.5, 3.0),
+                                      child: quillEditor,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: MediaQuery.of(context).padding.bottom + 30.0),
+                              ],
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                    const Divider(height: 1),
-                    const SizedBox(height: 8.0),
-
-                    QuillSimpleToolbar(
-                      controller: _quillController,
-                      config: QuillSimpleToolbarConfig(
-                        showAlignmentButtons: true,
-                        showLink: false,
-                        showQuote: false,
-                        showStrikeThrough: false,
-                        showCodeBlock: false,
-                        showInlineCode: false,
-                        // buttonOptions: QuillSimpleToolbarButtonOptions()
-                      ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        bottomNavigationBar: Material(
+          elevation: 4.0,
+          color: Theme.of(context).bottomAppBarTheme.color ?? Theme.of(context).colorScheme.surface,
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : 2.0, top: 2.0),
+              child: QuillSimpleToolbar(
+                controller: _quillController,
+                config: QuillSimpleToolbarConfig(
+                  multiRowsDisplay: false,
+                  toolbarSize: 48.0,
+                  toolbarIconAlignment: WrapAlignment.spaceAround,
+                  showAlignmentButtons: true,
+                  showLink: false,
+                  showQuote: false,
+                  showStrikeThrough: false,
+                  showCodeBlock: false,
+                  showInlineCode: false,
+                  buttonOptions: QuillSimpleToolbarButtonOptions(
+                    base: QuillToolbarBaseButtonOptions(
+                      iconSize: 22,
+                      // globalIconColor: Theme.of(context).colorScheme.onSurface,
                     ),
-                    const Divider(height: 1),
-                    const SizedBox(height: 12.0),
-
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Theme.of(context).colorScheme.primary),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(10.0, 3.0, 10.0, 3.0), 
-                        child: quillEditor,
-                      ),
-                    ),               
-                  ],
+                  ),
                 ),
               ),
             ),
