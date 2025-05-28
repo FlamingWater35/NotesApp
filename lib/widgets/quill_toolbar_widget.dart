@@ -53,11 +53,30 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
 
   Widget _buildCommonOptionsToolbar(BuildContext context) {
     return _buildExpandableSectionContainer(context, [
-      QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.bold, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-      QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.italic, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-      QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.underline, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-      QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.strikeThrough, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-      QuillToolbarClearFormatButton(controller: widget.controller, options: QuillToolbarClearFormatButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
+      QuillToolbarToggleStyleButton(
+        controller: widget.controller,
+        attribute: Attribute.bold,
+        options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize),
+      ),
+      QuillToolbarToggleStyleButton(
+        controller: widget.controller,
+        attribute: Attribute.italic,
+        options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize),
+      ),
+      QuillToolbarToggleStyleButton(
+        controller: widget.controller,
+        attribute: Attribute.underline,
+        options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize),
+      ),
+      QuillToolbarToggleStyleButton(
+        controller: widget.controller,
+        attribute: Attribute.strikeThrough,
+        options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize),
+      ),
+      QuillToolbarClearFormatButton(
+        controller: widget.controller,
+        options: QuillToolbarClearFormatButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize),
+      ),
     ]);
   }
 
