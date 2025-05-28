@@ -280,6 +280,144 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       ),
     );
 
+    Widget noteEditorArea = Hero(
+      tag: widget.heroTag,
+      child: Material(
+        type: MaterialType.transparency,
+        child: SafeArea(
+          top: true,
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+            child: Card(
+              elevation: 0,
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: Scrollbar(
+                  controller: _cardScrollController,
+                  interactive: true,
+                  thickness: 4.0,
+                  radius: const Radius.circular(4.0),
+                  child: LayoutBuilder(
+                    builder: (BuildContext context, BoxConstraints viewportConstraints) {
+                      return SingleChildScrollView(
+                        controller: _cardScrollController,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: viewportConstraints.maxHeight,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                                child: TextField(
+                                  controller: _titleController,
+                                  enabled: !_isSaving,
+                                  decoration: InputDecoration(
+                                    hintText: l10n.titleHint,
+                                    border: InputBorder.none,
+                                  ),
+                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                                  textCapitalization: TextCapitalization.sentences,
+                                  maxLines: null,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: _isSaving ? null : () => _selectDate(context),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                      child: Row(
+                                        children: [
+                                          const SizedBox(width: 6),
+                                          const Icon(Icons.calendar_today_outlined, size: 20),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              displayDate,
+                                              style: Theme.of(context).textTheme.titleMedium,
+                                            ),
+                                          ),
+                                          Icon(Icons.arrow_drop_down, color: Colors.grey.withAlpha(_isSaving ? 128 : 255)),
+                                          const SizedBox(width: 6),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Divider(height: 1),
+                              ),
+                              const SizedBox(height: 16.0),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(150)),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(1.5, 3.0, 1.5, 3.0),
+                                    child: quillEditor,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20.0),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Widget quillToolbar = Material(
+      elevation: 4.0,
+      color: Theme.of(context).bottomAppBarTheme.color ?? Theme.of(context).colorScheme.surface,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2.0), 
+          child: QuillSimpleToolbar(
+            controller: _quillController,
+            config: QuillSimpleToolbarConfig(
+              multiRowsDisplay: false,
+              toolbarSize: 48.0,
+              toolbarIconAlignment: WrapAlignment.spaceAround,
+              showAlignmentButtons: true,
+              showLink: false,
+              showQuote: false,
+              showStrikeThrough: false,
+              showCodeBlock: false,
+              showInlineCode: false,
+              buttonOptions: QuillSimpleToolbarButtonOptions(
+                base: QuillToolbarBaseButtonOptions(
+                  iconSize: 22,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
     return PopScope(
       canPop: !_isDirty || _isSaving,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
@@ -293,7 +431,6 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
           navigator.pop();
         }
       },
-
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.editNoteScreenTitle),
@@ -320,152 +457,21 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
               ),
           ],
         ),
-
         body: IgnorePointer(
           ignoring: _isSaving,
           child: Opacity(
             opacity: _isSaving ? 0.5 : 1.0,
-            child: Hero(
-              tag: widget.heroTag,
-              child: Material(
-                type: MaterialType.transparency,
-                child: SafeArea(
-                  top: true,
-                  bottom: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-                    child: Card(
-                      elevation: 0,
-                      margin: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: Scrollbar(
-                          controller: _cardScrollController,
-                          interactive: true,
-                          thickness: 4.0,
-                          radius: const Radius.circular(4.0),
-                          child: LayoutBuilder( 
-                            builder: (BuildContext context, BoxConstraints viewportConstraints) {
-                              return SingleChildScrollView(
-                                controller: _cardScrollController,
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    minHeight: viewportConstraints.maxHeight,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-                                        child: TextField(
-                                          controller: _titleController,
-                                          enabled: !_isSaving,
-                                          decoration: InputDecoration(
-                                            hintText: l10n.titleHint,
-                                            border: InputBorder.none,
-                                          ),
-                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                                          textCapitalization: TextCapitalization.sentences,
-                                          maxLines: null,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                        child: Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                            onTap: _isSaving ? null : () => _selectDate(context),
-                                            borderRadius: BorderRadius.circular(8.0),
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                              child: Row(
-                                                children: [
-                                                  const SizedBox(width: 6),
-                                                  const Icon(Icons.calendar_today_outlined, size: 20),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child: Text(
-                                                      displayDate,
-                                                      style: Theme.of(context).textTheme.titleMedium,
-                                                    ),
-                                                  ),
-                                                  Icon(Icons.arrow_drop_down, color: Colors.grey.withAlpha(_isSaving ? 128 : 255)),
-                                                  const SizedBox(width: 6),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                        child: Divider(height: 1),
-                                      ),
-                                      const SizedBox(height: 16.0),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(150)),
-                                            borderRadius: BorderRadius.circular(6),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(1.5, 3.0, 1.5, 3.0),
-                                            child: quillEditor,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: MediaQuery.of(context).padding.bottom + 30.0),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: noteEditorArea,
                 ),
-              ),
+                if (!_isLoading && _originalNote != null)
+                  quillToolbar,
+              ],
             ),
           ),
         ),
-        bottomNavigationBar: (_isLoading || _originalNote == null)
-          ? null
-          : Material(
-              elevation: 4.0,
-              color: Theme.of(context).bottomAppBarTheme.color ?? Theme.of(context).colorScheme.surface,
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : 2.0, top: 2.0),
-                  child: QuillSimpleToolbar(
-                    controller: _quillController,
-                    config: QuillSimpleToolbarConfig(
-                      multiRowsDisplay: false,
-                      toolbarSize: 48.0,
-                      toolbarIconAlignment: WrapAlignment.spaceAround,
-                      showAlignmentButtons: true,
-                      showLink: false,
-                      showQuote: false,
-                      showStrikeThrough: false,
-                      showCodeBlock: false,
-                      showInlineCode: false,
-                      buttonOptions: QuillSimpleToolbarButtonOptions(
-                        base: QuillToolbarBaseButtonOptions(
-                          iconSize: 22,
-                          // globalIconColor: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
       ),
     );
   }

@@ -388,7 +388,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       },
                       showSelectedIcon: false,
                       style: SegmentedButton.styleFrom(),
-                    ).animate().fadeIn(duration: _settingAnimationDuration),
+                    ),
                   ),
                   const Divider(indent: 16, endIndent: 16, height: 24),
 
