@@ -9,6 +9,15 @@ import '../providers/providers.dart';
 import '../models/note_model.dart';
 import 'package:notes_app/l10n/app_localizations.dart';
 
+enum _ToolbarSection {
+  none,
+  textOptions,
+  headerStyle,
+  listStyle,
+  alignment,
+  indentation,
+}
+
 class AddNoteScreen extends ConsumerStatefulWidget {
   const AddNoteScreen({super.key});
 
@@ -17,6 +26,9 @@ class AddNoteScreen extends ConsumerStatefulWidget {
 }
 
 class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
+  static final double _toolbarIconSize = 20;
+
+  _ToolbarSection _activeToolbarSection = _ToolbarSection.none;
   final ScrollController _cardScrollController = ScrollController();
   final FocusNode _editorFocusNode = FocusNode();
   final ScrollController _editorScrollController = ScrollController();
@@ -59,6 +71,16 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
     _titleController.addListener(_checkIfDirty);
     _quillController.addListener(_checkIfDirty);
+  }
+
+  void _toggleActiveToolbarSection(_ToolbarSection section) {
+    setState(() {
+      if (_activeToolbarSection == section) {
+        _activeToolbarSection = _ToolbarSection.none;
+      } else {
+        _activeToolbarSection = section;
+      }
+    });
   }
 
   void _checkIfDirty() {
@@ -195,6 +217,347 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       ),
     );
 
+    Widget noteEditorArea = Material(
+      type: MaterialType.transparency,
+      child: SafeArea(
+        top: true,
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: Scrollbar(
+                controller: _cardScrollController,
+                interactive: true,
+                thickness: 4.0,
+                radius: const Radius.circular(4.0),
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints viewportConstraints) {
+                    return SingleChildScrollView(
+                      controller: _cardScrollController,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: viewportConstraints.maxHeight,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                              child: TextField(
+                                controller: _titleController,
+                                decoration: InputDecoration(
+                                  hintText: l10n.titleHint,
+                                  border: InputBorder.none,
+                                ),
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                                textCapitalization: TextCapitalization.sentences,
+                                maxLines: null,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () => _selectDate(context),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                    child: Row(
+                                      children: [
+                                        const SizedBox(width: 6),
+                                        const Icon(Icons.calendar_today_outlined, size: 20),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            displayDate,
+                                            style: Theme.of(context).textTheme.titleMedium,
+                                          ),
+                                        ),
+                                        Icon(Icons.arrow_drop_down, color: Colors.grey),
+                                        const SizedBox(width: 6),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Divider(height: 1),
+                            ),
+                            const SizedBox(height: 16.0),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(150)),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(1.5, 3.0, 1.5, 3.0),
+                                  child: quillEditor,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20.0),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Widget buildExpandableSectionContainer(List<Widget> children) {
+      return Container(
+        color: Theme.of(context).canvasColor.withAlpha(64),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: children.map((e) => Padding(padding: const EdgeInsets.symmetric(horizontal: 2.0), child: e)).toList(),
+        ),
+      );
+    }
+
+    Widget buildTextOptionsToolbar() {
+      return buildExpandableSectionContainer([
+        QuillToolbarFontFamilyButton(
+          controller: _quillController,
+          options: QuillToolbarFontFamilyButtonOptions(
+            attribute: Attribute.font,
+            iconSize: _toolbarIconSize,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        QuillToolbarFontSizeButton(
+          controller: _quillController,
+          options: QuillToolbarFontSizeButtonOptions(
+            iconSize: _toolbarIconSize,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        QuillToolbarColorButton(
+          controller: _quillController,
+          isBackground: false,
+          options: QuillToolbarColorButtonOptions(
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarColorButton(
+          controller: _quillController,
+          isBackground: true,
+          options: QuillToolbarColorButtonOptions(
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+      ]);
+    }
+
+    Widget buildHeaderStyleToolbar() {
+      return buildExpandableSectionContainer([
+        QuillToolbarSelectHeaderStyleDropdownButton(
+          controller: _quillController,
+          options: QuillToolbarSelectHeaderStyleDropdownButtonOptions(
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarToggleStyleButton(
+          controller: _quillController,
+          attribute: Attribute.blockQuote,
+          options: QuillToolbarToggleStyleButtonOptions(
+            iconData: Icons.format_quote,
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarToggleStyleButton(
+          controller: _quillController,
+          attribute: Attribute.codeBlock,
+          options: QuillToolbarToggleStyleButtonOptions(
+            iconData: Icons.code,
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+      ]);
+    }
+
+    Widget buildListStyleToolbar() {
+      return buildExpandableSectionContainer([
+        QuillToolbarToggleStyleButton(
+          controller: _quillController,
+          attribute: Attribute.ul,
+          options: QuillToolbarToggleStyleButtonOptions(
+            iconData: Icons.format_list_bulleted,
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarToggleStyleButton(
+          controller: _quillController,
+          attribute: Attribute.ol,
+          options: QuillToolbarToggleStyleButtonOptions(
+            iconData: Icons.format_list_numbered,
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarToggleCheckListButton(
+          controller: _quillController,
+          options: QuillToolbarToggleCheckListButtonOptions(
+            iconData: Icons.check_box,
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+      ]);
+    }
+
+    Widget buildAlignmentToolbar() {
+      return buildExpandableSectionContainer([
+        QuillToolbarToggleStyleButton(
+          controller: _quillController,
+          attribute: Attribute.leftAlignment,
+          options: QuillToolbarToggleStyleButtonOptions(
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarToggleStyleButton(
+          controller: _quillController,
+          attribute: Attribute.centerAlignment,
+          options: QuillToolbarToggleStyleButtonOptions(
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarToggleStyleButton(
+          controller: _quillController,
+          attribute: Attribute.rightAlignment,
+          options: QuillToolbarToggleStyleButtonOptions(
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarToggleStyleButton(
+          controller: _quillController,
+          attribute: Attribute.justifyAlignment,
+          options: QuillToolbarToggleStyleButtonOptions(
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+      ]);
+    }
+
+    Widget buildIndentationToolbar() {
+      return buildExpandableSectionContainer([
+        QuillToolbarIndentButton(
+          controller: _quillController,
+          isIncrease: false,
+          options: QuillToolbarIndentButtonOptions(
+            iconData: Icons.format_indent_decrease,
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+        QuillToolbarIndentButton(
+          controller: _quillController,
+          isIncrease: true,
+          options: QuillToolbarIndentButtonOptions(
+            iconData: Icons.format_indent_increase,
+            iconSize: _toolbarIconSize,
+          ),
+        ),
+      ]);
+    }
+
+    Widget buildMainToolbarToggleButton(_ToolbarSection section, IconData icon, IconData activeIcon) {
+      bool isActive = _activeToolbarSection == section;
+      return IconButton(
+        icon: Icon(isActive ? activeIcon : icon, size: _toolbarIconSize),
+        iconSize: _toolbarIconSize,
+        color: isActive ? Theme.of(context).colorScheme.primary : null,
+        onPressed: () => _toggleActiveToolbarSection(section),
+      );
+    }
+
+    Widget currentExpandedToolbar;
+      switch (_activeToolbarSection) {
+        case _ToolbarSection.textOptions:
+          currentExpandedToolbar = buildTextOptionsToolbar();
+          break;
+        case _ToolbarSection.headerStyle:
+          currentExpandedToolbar = buildHeaderStyleToolbar();
+          break;
+        case _ToolbarSection.listStyle:
+          currentExpandedToolbar = buildListStyleToolbar();
+          break;
+        case _ToolbarSection.alignment:
+          currentExpandedToolbar = buildAlignmentToolbar();
+          break;
+        case _ToolbarSection.indentation:
+          currentExpandedToolbar = buildIndentationToolbar();
+          break;
+        case _ToolbarSection.none:
+          currentExpandedToolbar = const SizedBox.shrink();
+      }
+
+    Widget mainCompactToolbar = SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        children: [
+          QuillToolbarHistoryButton(controller: _quillController, isUndo: true, options: QuillToolbarHistoryButtonOptions(iconSize: _toolbarIconSize)),
+          QuillToolbarHistoryButton(controller: _quillController, isUndo: false, options: QuillToolbarHistoryButtonOptions(iconSize: _toolbarIconSize)),
+          const VerticalDivider(indent: 6, endIndent: 6),
+          QuillToolbarToggleStyleButton(controller: _quillController, attribute: Attribute.bold, options: QuillToolbarToggleStyleButtonOptions(iconSize: _toolbarIconSize)),
+          QuillToolbarToggleStyleButton(controller: _quillController, attribute: Attribute.italic, options: QuillToolbarToggleStyleButtonOptions(iconSize: _toolbarIconSize)),
+          QuillToolbarToggleStyleButton(controller: _quillController, attribute: Attribute.underline, options: QuillToolbarToggleStyleButtonOptions(iconSize: _toolbarIconSize)),
+          QuillToolbarToggleStyleButton(controller: _quillController, attribute: Attribute.strikeThrough, options: QuillToolbarToggleStyleButtonOptions(iconSize: _toolbarIconSize)),
+          QuillToolbarClearFormatButton(controller: _quillController, options: QuillToolbarClearFormatButtonOptions(iconSize: _toolbarIconSize)),
+          const VerticalDivider(indent: 6, endIndent: 6),
+          buildMainToolbarToggleButton(_ToolbarSection.textOptions, Icons.font_download, Icons.font_download_off),
+          buildMainToolbarToggleButton(_ToolbarSection.headerStyle, Icons.text_fields, Icons.text_format),
+          buildMainToolbarToggleButton(_ToolbarSection.listStyle, Icons.list, Icons.format_list_bulleted_outlined),
+          buildMainToolbarToggleButton(_ToolbarSection.alignment, Icons.format_align_center, Icons.format_clear),
+          buildMainToolbarToggleButton(_ToolbarSection.indentation, Icons.format_indent_increase, Icons.wrap_text),
+          const VerticalDivider(indent: 6, endIndent: 6),
+          QuillToolbarLinkStyleButton(controller: _quillController, options: QuillToolbarLinkStyleButtonOptions(iconSize: _toolbarIconSize)),
+          // QuillToolbarImageButton(controller: _quillController, iconSize: _toolbarIconSize, tooltip: l10n.insertImageTooltip),
+          // QuillToolbarVideoButton(controller: _quillController, iconSize: _toolbarIconSize, tooltip: l10n.insertVideoTooltip),
+        ].map((e) => Padding(padding: const EdgeInsets.symmetric(horizontal: 1.0), child: e)).toList(),
+      ),
+    );
+
+    Widget quillToolbarWidget = Material(
+      elevation: 4.0,
+      color: Theme.of(context).bottomAppBarTheme.color ?? Theme.of(context).colorScheme.surface,
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: -1.0,
+                  child: child,
+                );
+              },
+              child: currentExpandedToolbar,
+            ),
+            mainCompactToolbar,
+          ],
+        ),
+      ),
+    );
+
     return PopScope(
       canPop: !_isDirty,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
@@ -222,138 +585,13 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
           ],
         ),
         
-        body: Material(
-          type: MaterialType.transparency,
-          child: SafeArea(
-            top: true,
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-              child: Card(
-                elevation: 0,
-                margin: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12.0),
-                  child: Scrollbar(
-                    controller: _cardScrollController,
-                    interactive: true,
-                    thickness: 4.0,
-                    radius: const Radius.circular(4.0),
-                    child: LayoutBuilder( 
-                      builder: (BuildContext context, BoxConstraints viewportConstraints) {
-                        return SingleChildScrollView(
-                          controller: _cardScrollController,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minHeight: viewportConstraints.maxHeight,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-                                  child: TextField(
-                                    controller: _titleController,
-                                    decoration: InputDecoration(
-                                      hintText: l10n.titleHint,
-                                      border: InputBorder.none,
-                                    ),
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                                    textCapitalization: TextCapitalization.sentences,
-                                    maxLines: null,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () => _selectDate(context),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                        child: Row(
-                                          children: [
-                                            const SizedBox(width: 6),
-                                            const Icon(Icons.calendar_today_outlined, size: 20),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Text(
-                                                displayDate,
-                                                style: Theme.of(context).textTheme.titleMedium,
-                                              ),
-                                            ),
-                                            Icon(Icons.arrow_drop_down, color: Colors.grey),
-                                            const SizedBox(width: 6),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                  child: Divider(height: 1),
-                                ),
-                                const SizedBox(height: 16.0),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(150)),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(1.5, 3.0, 1.5, 3.0),
-                                      child: quillEditor,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: MediaQuery.of(context).padding.bottom + 30.0),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
+        body: Column(
+          children: [
+            Expanded(
+              child: noteEditorArea,
             ),
-          ),
-        ),
-        bottomNavigationBar: Material(
-          elevation: 4.0,
-          color: Theme.of(context).bottomAppBarTheme.color ?? Theme.of(context).colorScheme.surface,
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom > 0 ? 0 : 2.0, top: 2.0),
-              child: QuillSimpleToolbar(
-                controller: _quillController,
-                config: QuillSimpleToolbarConfig(
-                  multiRowsDisplay: false,
-                  toolbarSize: 48.0,
-                  toolbarIconAlignment: WrapAlignment.spaceAround,
-                  showAlignmentButtons: true,
-                  showLink: false,
-                  showQuote: false,
-                  showStrikeThrough: false,
-                  showCodeBlock: false,
-                  showInlineCode: false,
-                  buttonOptions: QuillSimpleToolbarButtonOptions(
-                    base: QuillToolbarBaseButtonOptions(
-                      iconSize: 22,
-                      // globalIconColor: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+            quillToolbarWidget,
+          ],
         ),
       ),
     );
