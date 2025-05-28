@@ -24,6 +24,7 @@ class EditNoteScreen extends ConsumerStatefulWidget {
 }
 
 class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
+  final ScrollController _cardScrollController = ScrollController();
   final FocusNode _editorFocusNode = FocusNode();
   final ScrollController _editorScrollController = ScrollController();
   bool _isDirty = false;
@@ -46,6 +47,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     _quillController.dispose();
     _editorFocusNode.dispose();
     _editorScrollController.dispose();
+    _cardScrollController.dispose();
     super.dispose();
   }
 
@@ -266,9 +268,9 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
         placeholder: l10n.quillPlaceholder,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         autoFocus: false,
-        scrollable: true,
+        scrollable: false,
         expands: false,
-        minHeight: MediaQuery.of(context).size.height * 0.3,
+        minHeight: MediaQuery.of(context).size.height * 0.2,
         // Custom styles
         // customStyles: DefaultStyles( ... ),
         onLaunchUrl: (url) async {
@@ -340,69 +342,87 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12.0),
-                        child: ListView(
-                          padding: EdgeInsets.zero,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-                              child: TextField(
-                                controller: _titleController,
-                                enabled: !_isSaving,
-                                decoration: InputDecoration(
-                                  hintText: l10n.titleHint,
-                                  border: InputBorder.none,
-                                ),
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                                textCapitalization: TextCapitalization.sentences,
-                                maxLines: null,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: _isSaving ? null : () => _selectDate(context),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                    child: Row(
-                                      children: [
-                                        const Icon(Icons.calendar_today_outlined, size: 20),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: Text(
-                                            displayDate,
-                                            style: Theme.of(context).textTheme.titleMedium,
+                        child: Scrollbar(
+                          controller: _cardScrollController,
+                          interactive: true,
+                          thickness: 4.0,
+                          radius: const Radius.circular(4.0),
+                          child: LayoutBuilder( 
+                            builder: (BuildContext context, BoxConstraints viewportConstraints) {
+                              return SingleChildScrollView(
+                                controller: _cardScrollController,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minHeight: viewportConstraints.maxHeight,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                                        child: TextField(
+                                          controller: _titleController,
+                                          enabled: !_isSaving,
+                                          decoration: InputDecoration(
+                                            hintText: l10n.titleHint,
+                                            border: InputBorder.none,
+                                          ),
+                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                                          textCapitalization: TextCapitalization.sentences,
+                                          maxLines: null,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                        child: Material(
+                                          color: Colors.transparent,
+                                          child: InkWell(
+                                            onTap: _isSaving ? null : () => _selectDate(context),
+                                            borderRadius: BorderRadius.circular(8.0),
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(Icons.calendar_today_outlined, size: 20),
+                                                  const SizedBox(width: 12),
+                                                  Expanded(
+                                                    child: Text(
+                                                      displayDate,
+                                                      style: Theme.of(context).textTheme.titleMedium,
+                                                    ),
+                                                  ),
+                                                  Icon(Icons.arrow_drop_down, color: Colors.grey.withAlpha(_isSaving ? 128 : 255)),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                        Icon(Icons.arrow_drop_down, color: Colors.grey.withAlpha(_isSaving ? 128 : 255)),
-                                      ],
-                                    ),
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                        child: Divider(height: 1),
+                                      ),
+                                      const SizedBox(height: 16.0),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(128)),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(1.5, 3.0, 1.5, 3.0),
+                                            child: quillEditor,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: MediaQuery.of(context).padding.bottom + 30.0),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Divider(height: 1),
-                            ),
-                            const SizedBox(height: 16.0),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Theme.of(context).colorScheme.primary),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(1.5, 3.0, 1.5, 3.0), 
-                                  child: quillEditor,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-                          ],
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
