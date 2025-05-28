@@ -195,7 +195,6 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       ),
     );
 
-
     return PopScope(
       canPop: !_isDirty,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {

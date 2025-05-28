@@ -111,7 +111,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final notesAsync = ref.watch(notesProvider);
 
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Prevent resize on keyboard
       body: notesAsync.when(
         data: (notes) {
           _log.finer("Notes data received: ${notes.length} notes.");
