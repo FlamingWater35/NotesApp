@@ -3,6 +3,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 
 enum ToolbarSection {
   none,
+  commonOptions,
   textOptions,
   headerStyle,
   listStyle,
@@ -48,6 +49,16 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
         children: children.map((e) => Padding(padding: const EdgeInsets.symmetric(horizontal: 2.0), child: e)).toList(),
       ),
     );
+  }
+
+  Widget _buildCommonOptionsToolbar(BuildContext context) {
+    return _buildExpandableSectionContainer(context, [
+      QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.bold, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
+      QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.italic, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
+      QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.underline, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
+      QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.strikeThrough, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
+      QuillToolbarClearFormatButton(controller: widget.controller, options: QuillToolbarClearFormatButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
+    ]);
   }
 
   Widget _buildTextOptionsToolbar(BuildContext context) {
@@ -140,7 +151,6 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   }
 
   Widget _buildAlignmentToolbar(BuildContext context) {
-    // ... (Copy logic)
     return _buildExpandableSectionContainer(context, [
       QuillToolbarToggleStyleButton(
         controller: widget.controller,
@@ -208,6 +218,9 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   Widget build(BuildContext context) {
     Widget currentExpandedToolbar;
     switch (_activeToolbarSection) {
+      case ToolbarSection.commonOptions:
+        currentExpandedToolbar = _buildCommonOptionsToolbar(context);
+        break;
       case ToolbarSection.textOptions:
         currentExpandedToolbar = _buildTextOptionsToolbar(context);
         break;
@@ -235,16 +248,11 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
           QuillToolbarHistoryButton(controller: widget.controller, isUndo: true, options: QuillToolbarHistoryButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
           QuillToolbarHistoryButton(controller: widget.controller, isUndo: false, options: QuillToolbarHistoryButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
           const VerticalDivider(indent: 6, endIndent: 6),
-          QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.bold, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-          QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.italic, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-          QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.underline, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-          QuillToolbarToggleStyleButton(controller: widget.controller, attribute: Attribute.strikeThrough, options: QuillToolbarToggleStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-          QuillToolbarClearFormatButton(controller: widget.controller, options: QuillToolbarClearFormatButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
-          const VerticalDivider(indent: 6, endIndent: 6),
-          _buildMainToolbarToggleButton(context, ToolbarSection.textOptions, Icons.font_download, Icons.font_download_off),
-          _buildMainToolbarToggleButton(context, ToolbarSection.headerStyle, Icons.text_fields, Icons.text_format),
+          _buildMainToolbarToggleButton(context, ToolbarSection.commonOptions, Icons.font_download, Icons.font_download_off),
+          _buildMainToolbarToggleButton(context, ToolbarSection.textOptions, Icons.text_format, Icons.format_clear),
+          _buildMainToolbarToggleButton(context, ToolbarSection.headerStyle, Icons.text_fields, Icons.format_clear),
           _buildMainToolbarToggleButton(context, ToolbarSection.listStyle, Icons.list, Icons.format_list_bulleted_outlined),
-          _buildMainToolbarToggleButton(context, ToolbarSection.alignment, Icons.format_align_center, Icons.format_clear),
+          _buildMainToolbarToggleButton(context, ToolbarSection.alignment, Icons.format_align_center, Icons.reset_tv),
           _buildMainToolbarToggleButton(context, ToolbarSection.indentation, Icons.format_indent_increase, Icons.wrap_text),
           const VerticalDivider(indent: 6, endIndent: 6),
           QuillToolbarLinkStyleButton(controller: widget.controller, options: QuillToolbarLinkStyleButtonOptions(iconSize: QuillToolbarWidget.defaultToolbarIconSize)),
