@@ -349,7 +349,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       horizontalTitleGap: 8.0,
                       tileColor: theme.colorScheme.surfaceContainerHighest.withAlpha(64),
-                    ).animate().fadeIn(duration: _settingAnimationDuration),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   const Divider(indent: 16, endIndent: 16, height: 24),
