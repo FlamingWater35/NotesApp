@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:animated_list_plus/animated_list_plus.dart';
 
-import '../models/note_model.dart';
-import '../providers/providers.dart';
+import '../../models/note_model.dart';
+import '../../providers/providers.dart';
 import 'package:notes_app/l10n/app_localizations.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {

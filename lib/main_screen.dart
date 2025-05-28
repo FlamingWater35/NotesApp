@@ -3,10 +3,10 @@ import 'package:logging/logging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animations/animations.dart';
 
-import 'add_note_screen.dart';
-import 'edit_note_screen.dart';
-import 'home_screen.dart';
-import 'settings_screen.dart';
+import 'screens/add_note_screen.dart';
+import 'screens/edit_note_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/settings_screen.dart';
 import 'providers/providers.dart';
 import 'models/note_model.dart';
 import 'package:notes_app/l10n/app_localizations.dart';

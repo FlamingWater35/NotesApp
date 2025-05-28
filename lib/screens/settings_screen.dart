@@ -5,11 +5,11 @@ import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'components/backup_service.dart';
-import 'components/restore_service.dart';
+import '../components/backup_service.dart';
+import '../components/restore_service.dart';
 import 'update_screen.dart';
-import '../providers/providers.dart';
-import '../models/note_model.dart';
+import '../../providers/providers.dart';
+import '../../models/note_model.dart';
 import 'package:notes_app/l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
