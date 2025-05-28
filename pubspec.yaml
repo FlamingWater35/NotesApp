@@ -1,10 +1,10 @@
 name: notes_app
-description: "A Material 3 notes app made using Flutter."
+description: "A Material 3 note keeping app made with Flutter."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # Read more about Android versioning at https://developer.android.com/studio/publish/versioning
 # Read more about iOS versioning at https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.1.3+1
+version: 1.1.4+1
 
 environment:
   sdk: ^3.7.2
