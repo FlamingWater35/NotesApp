@@ -27,9 +27,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _log = Logger('SettingsScreen');
 
   @override
-  void initState() {
-    super.initState();
-    _log.fine("initState called");
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _getAppVersion();
   }
 
@@ -431,7 +430,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 _appVersion,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ),
