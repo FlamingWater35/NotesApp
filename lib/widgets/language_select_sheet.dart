@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+
 import '../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../utils/localization_utils.dart';

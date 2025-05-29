@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/backup_service.dart';
 import '../components/restore_service.dart';
-import '../utils/localization_utils.dart';
-import '../widgets/language_select_sheet.dart';
+import '../widgets/settings/language_widget.dart';
+import '../widgets/settings/thememode_widget.dart';
 import 'update_screen.dart';
 import '../../providers/providers.dart';
 import '../../models/note_model.dart';
@@ -188,52 +188,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.language_outlined,
-                        color: theme.colorScheme.secondary,
-                      ),
-                      title: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(l10n.languageSectionTitle),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          getLanguageName(currentLocale, l10n),
-                          style: TextStyle(
-                            color: theme.textTheme.bodySmall?.color?.withAlpha(
-                              200,
-                            ),
-                          ),
-                        ),
-                      ),
-                      trailing: const Icon(Icons.arrow_drop_down),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                      ),
-                      onTap: () {
-                        _log.info(
-                          "Language setting tapped - showing selection sheet",
-                        );
-                        showLanguageSelectionSheet(
-                          context,
-                          currentLocale,
-                          l10n,
-                          ref,
-                          _log,
-                        );
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        side: BorderSide(color: theme.dividerColor, width: 0.5),
-                      ),
-                      horizontalTitleGap: 8.0,
-                      tileColor: theme.colorScheme.surfaceContainerHighest
-                          .withAlpha(64),
-                    ),
+                  languageOptions(
+                    theme,
+                    l10n,
+                    currentLocale,
+                    context,
+                    ref,
+                    _log,
                   ),
                   const SizedBox(height: 8),
                   const Divider(indent: 16, endIndent: 16, height: 24),
@@ -248,45 +209,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       style: theme.textTheme.titleSmall,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 4.0,
-                    ),
-                    child: SegmentedButton<ThemeMode>(
-                      selected: {currentMode},
-                      segments: <ButtonSegment<ThemeMode>>[
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.light,
-                          label: Text(l10n.themeLight),
-                          icon: Icon(Icons.light_mode_outlined),
-                        ),
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.dark,
-                          label: Text(l10n.themeDark),
-                          icon: Icon(Icons.dark_mode_outlined),
-                        ),
-                        ButtonSegment<ThemeMode>(
-                          value: ThemeMode.system,
-                          label: Text(l10n.themeSystem),
-                          icon: Icon(Icons.settings_suggest_outlined),
-                        ),
-                      ],
-
-                      onSelectionChanged: (Set<ThemeMode> newSelection) {
-                        if (newSelection.isNotEmpty) {
-                          _log.info(
-                            "Theme mode changed to: ${newSelection.first}",
-                          );
-                          ref
-                              .read(themeProvider.notifier)
-                              .setThemeMode(newSelection.first);
-                        }
-                      },
-                      showSelectedIcon: false,
-                      style: SegmentedButton.styleFrom(),
-                    ),
-                  ),
+                  themeModeOptions(currentMode, l10n, _log, ref),
                   const Divider(indent: 16, endIndent: 16, height: 24),
 
                   Padding(
