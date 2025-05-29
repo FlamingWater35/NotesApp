@@ -118,7 +118,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       setState(() => _isBackupRestoreRunning = false);
       _log.fine("Called final setState in _handleRestore.");
     } else {
-      _log.warning("Skipped final setState in _handleRestore because widget was unmounted.");
+      _log.warning(
+        "Skipped final setState in _handleRestore because widget was unmounted.",
+      );
     }
   }
 
@@ -174,7 +176,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  void _showLanguageSelectionSheet(BuildContext context, Locale? currentLocale, AppLocalizations l10n, WidgetRef ref) {
+  void _showLanguageSelectionSheet(
+    BuildContext context,
+    Locale? currentLocale,
+    AppLocalizations l10n,
+    WidgetRef ref,
+  ) {
     final supportedLocales = AppLocalizations.supportedLocales;
     final theme = Theme.of(context);
 
@@ -193,11 +200,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             final Locale? currentLocaleInSheet = sheetRef.watch(localeProvider);
 
             void handleLocaleSelection(Locale? newLocale) {
-              _log.info("Language selected in sheet: ${newLocale?.languageCode ?? 'System Default'}");
+              _log.info(
+                "Language selected in sheet: ${newLocale?.languageCode ?? 'System Default'}",
+              );
               ref.read(localeProvider.notifier).setLocale(newLocale);
               Navigator.pop(bottomSheetContext);
             }
-            
+
             var languageOptions = <Widget>[];
 
             languageOptions.add(
@@ -214,7 +223,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 visualDensity: VisualDensity.compact,
                 onTap: () => handleLocaleSelection(null),
-              )
+              ),
             );
 
             languageOptions.addAll(
@@ -236,17 +245,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   visualDensity: VisualDensity.compact,
                   onTap: () => handleLocaleSelection(locale),
                 );
-              }).toList()
+              }).toList(),
             );
 
             return SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16.0,
+                  horizontal: 8.0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
                       child: Text(
                         l10n.languageSectionTitle,
                         style: theme.textTheme.titleLarge?.copyWith(
@@ -280,7 +295,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ),
             );
-          }
+          },
         );
       },
     );
@@ -317,47 +332,81 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Text(l10n.languageSectionTitle, style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: Text(
+                      l10n.languageSectionTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
                     child: ListTile(
-                      leading: Icon(Icons.language_outlined, color: theme.colorScheme.secondary),
+                      leading: Icon(
+                        Icons.language_outlined,
+                        color: theme.colorScheme.secondary,
+                      ),
                       title: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(l10n.languageSectionTitle)
+                        child: Text(l10n.languageSectionTitle),
                       ),
                       subtitle: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Text(
                           _getLanguageName(currentLocale, l10n),
-                          style: TextStyle(color: theme.textTheme.bodySmall?.color?.withAlpha(200)),
+                          style: TextStyle(
+                            color: theme.textTheme.bodySmall?.color?.withAlpha(
+                              200,
+                            ),
+                          ),
                         ),
                       ),
                       trailing: const Icon(Icons.arrow_drop_down),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                      ),
                       onTap: () {
-                        _log.info("Language setting tapped - showing selection sheet");
-                        _showLanguageSelectionSheet(context, currentLocale, l10n, ref);
+                        _log.info(
+                          "Language setting tapped - showing selection sheet",
+                        );
+                        _showLanguageSelectionSheet(
+                          context,
+                          currentLocale,
+                          l10n,
+                          ref,
+                        );
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        side: BorderSide(color: theme.dividerColor, width: 0.5)
+                        side: BorderSide(color: theme.dividerColor, width: 0.5),
                       ),
                       horizontalTitleGap: 8.0,
-                      tileColor: theme.colorScheme.surfaceContainerHighest.withAlpha(64),
+                      tileColor: theme.colorScheme.surfaceContainerHighest
+                          .withAlpha(64),
                     ),
                   ),
                   const SizedBox(height: 8),
                   const Divider(indent: 16, endIndent: 16, height: 24),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Text(l10n.appearanceSectionTitle, style: theme.textTheme.titleSmall),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: Text(
+                      l10n.appearanceSectionTitle,
+                      style: theme.textTheme.titleSmall,
+                    ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 4.0,
+                    ),
                     child: SegmentedButton<ThemeMode>(
                       selected: {currentMode},
                       segments: <ButtonSegment<ThemeMode>>[
@@ -380,8 +429,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                       onSelectionChanged: (Set<ThemeMode> newSelection) {
                         if (newSelection.isNotEmpty) {
-                          _log.info("Theme mode changed to: ${newSelection.first}");
-                          ref.read(themeProvider.notifier).setThemeMode(newSelection.first);
+                          _log.info(
+                            "Theme mode changed to: ${newSelection.first}",
+                          );
+                          ref
+                              .read(themeProvider.notifier)
+                              .setThemeMode(newSelection.first);
                         }
                       },
                       showSelectedIcon: false,
@@ -391,37 +444,64 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   const Divider(indent: 16, endIndent: 16, height: 24),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Text(l10n.dataManagementSectionTitle, style: theme.textTheme.titleSmall),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: Text(
+                      l10n.dataManagementSectionTitle,
+                      style: theme.textTheme.titleSmall,
+                    ),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.backup_outlined),
-                    title: Text(l10n.backupNotesTitle),
-                    subtitle: Text(l10n.backupNotesSubtitle),
-                    enabled: !_isBackupRestoreRunning,
-                    onTap: _handleBackup,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  ).animate().fadeIn(duration: _settingAnimationDuration).flipV(duration: _settingAnimationDuration),
+                        leading: const Icon(Icons.backup_outlined),
+                        title: Text(l10n.backupNotesTitle),
+                        subtitle: Text(l10n.backupNotesSubtitle),
+                        enabled: !_isBackupRestoreRunning,
+                        onTap: _handleBackup,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(duration: _settingAnimationDuration)
+                      .flipV(duration: _settingAnimationDuration),
                   ListTile(
-                    leading: const Icon(Icons.restore_page_outlined),
-                    title: Text(l10n.restoreNotesTitle),
-                    subtitle: Text(l10n.restoreNotesSubtitle),
-                    enabled: !_isBackupRestoreRunning,
-                    onTap: _handleRestore,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  ).animate().fadeIn(duration: _settingAnimationDuration).flipV(duration: _settingAnimationDuration),
+                        leading: const Icon(Icons.restore_page_outlined),
+                        title: Text(l10n.restoreNotesTitle),
+                        subtitle: Text(l10n.restoreNotesSubtitle),
+                        enabled: !_isBackupRestoreRunning,
+                        onTap: _handleRestore,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(duration: _settingAnimationDuration)
+                      .flipV(duration: _settingAnimationDuration),
                   const Divider(indent: 16, endIndent: 16, height: 24),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Text(l10n.applicationSectionTitle, style: theme.textTheme.titleSmall),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: Text(
+                      l10n.applicationSectionTitle,
+                      style: theme.textTheme.titleSmall,
+                    ),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.system_update_alt_outlined),
-                    title: Text(l10n.checkForUpdatesTitle),
-                    onTap: _handleCheckForUpdates,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  ).animate().fadeIn(duration: _settingAnimationDuration).slideX(duration: _settingAnimationDuration),
+                        leading: const Icon(Icons.system_update_alt_outlined),
+                        title: Text(l10n.checkForUpdatesTitle),
+                        onTap: _handleCheckForUpdates,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(duration: _settingAnimationDuration)
+                      .slideX(duration: _settingAnimationDuration),
                 ],
               ),
             ),
@@ -437,6 +517,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ],
         ),
       ),
-    );  
+    );
   }
 }

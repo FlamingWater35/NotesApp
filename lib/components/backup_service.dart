@@ -16,11 +16,13 @@ class BackupService {
     }
 
     try {
-      final List<Map<String, dynamic>> notesJsonList = notes.map((note) => note.toMap()).toList();
+      final List<Map<String, dynamic>> notesJsonList =
+          notes.map((note) => note.toMap()).toList();
       final String jsonString = jsonEncode(notesJsonList);
       final Uint8List fileBytes = utf8.encode(jsonString);
 
-      final String suggestedFileName = 'notes_backup_${DateTime.now().toIso8601String().split('T')[0]}.json';
+      final String suggestedFileName =
+          'notes_backup_${DateTime.now().toIso8601String().split('T')[0]}.json';
 
       final String? outputFile = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Notes Backup',
@@ -37,7 +39,6 @@ class BackupService {
 
       _log.info("Backup successful. Notes saved to: $outputFile");
       return true;
-
     } catch (e, stackTrace) {
       _log.severe("Error during backup process", e, stackTrace);
       return false;

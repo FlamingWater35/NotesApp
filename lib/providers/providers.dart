@@ -26,7 +26,7 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
       await dbHelper.insertNote(note);
       return await dbHelper.getAllNotes();
     });
-     _log.fine("NotesNotifier: addNote finished for ID ${note.id}");
+    _log.fine("NotesNotifier: addNote finished for ID ${note.id}");
   }
 
   Future<void> updateNote(Note note) async {
@@ -44,7 +44,7 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
       state = AsyncError(e, s);
       rethrow;
     } finally {
-     _log.fine("NotesNotifier: updateNote finished for ID ${note.id}");
+      _log.fine("NotesNotifier: updateNote finished for ID ${note.id}");
     }
   }
 
@@ -60,8 +60,10 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
     _log.fine("NotesNotifier: deleteNote finished for ID $id");
   }
 
-   Future<void> replaceAllNotes(List<Note> notes) async {
-    _log.info("NotesNotifier: replaceAllNotes called with ${notes.length} notes.");
+  Future<void> replaceAllNotes(List<Note> notes) async {
+    _log.info(
+      "NotesNotifier: replaceAllNotes called with ${notes.length} notes.",
+    );
     state = const AsyncLoading();
     final dbHelper = ref.read(databaseProvider);
 
@@ -77,7 +79,9 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
     final notes = state.value;
 
     if (notes == null) {
-      _log.warning("NotesNotifier: getNoteById called while state is not AsyncData or notes are null.");
+      _log.warning(
+        "NotesNotifier: getNoteById called while state is not AsyncData or notes are null.",
+      );
       return null;
     }
 
@@ -87,7 +91,11 @@ class NotesNotifier extends AsyncNotifier<List<Note>> {
       _log.warning("NotesNotifier: getNoteById failed to find ID $id");
       return null;
     } catch (e, stackTrace) {
-      _log.severe("NotesNotifier: Unexpected error in getNoteById for ID $id", e, stackTrace);
+      _log.severe(
+        "NotesNotifier: Unexpected error in getNoteById for ID $id",
+        e,
+        stackTrace,
+      );
       return null;
     }
   }
@@ -174,7 +182,9 @@ class LocaleNotifier extends StateNotifier<Locale?> {
         _log.info('Locale set to System Default and preference removed.');
       } else {
         await prefs.setString(_localeKey, newLocale.languageCode);
-        _log.info('Locale set to ${newLocale.languageCode} and preference saved.');
+        _log.info(
+          'Locale set to ${newLocale.languageCode} and preference saved.',
+        );
       }
       state = newLocale;
     } catch (e, stackTrace) {
@@ -186,16 +196,22 @@ class LocaleNotifier extends StateNotifier<Locale?> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final languageCode = prefs.getString(_localeKey);
-      
+
       if (languageCode != null && languageCode.isNotEmpty) {
         state = Locale(languageCode);
         _log.info('Loaded saved locale: $languageCode');
       } else {
         state = null;
-        _log.info('No saved locale found or saved as system default. Using system default.');
+        _log.info(
+          'No saved locale found or saved as system default. Using system default.',
+        );
       }
     } catch (e, stackTrace) {
-      _log.severe('Error loading saved locale, falling back to system default: $e', e, stackTrace);
+      _log.severe(
+        'Error loading saved locale, falling back to system default: $e',
+        e,
+        stackTrace,
+      );
       state = null;
     }
   }

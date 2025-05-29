@@ -70,7 +70,10 @@ class NoteEditorContentWidget extends StatelessWidget {
                 thickness: 6.0,
                 radius: const Radius.circular(4.0),
                 child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints viewportConstraints) {
+                  builder: (
+                    BuildContext context,
+                    BoxConstraints viewportConstraints,
+                  ) {
                     return SingleChildScrollView(
                       controller: cardScrollController,
                       child: ConstrainedBox(
@@ -81,7 +84,12 @@ class NoteEditorContentWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                              padding: const EdgeInsets.fromLTRB(
+                                16.0,
+                                16.0,
+                                16.0,
+                                8.0,
+                              ),
                               child: TextField(
                                 controller: titleController,
                                 enabled: isEditable,
@@ -89,32 +97,49 @@ class NoteEditorContentWidget extends StatelessWidget {
                                   hintText: l10n.titleHint,
                                   border: InputBorder.none,
                                 ),
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                                textCapitalization: TextCapitalization.sentences,
+                                style: Theme.of(context).textTheme.headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                                 maxLines: null,
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                              ),
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: isEditable ? onSelectDate : null,
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                    ),
                                     child: Row(
                                       children: [
                                         const SizedBox(width: 6),
-                                        const Icon(Icons.calendar_today_outlined, size: 20),
+                                        const Icon(
+                                          Icons.calendar_today_outlined,
+                                          size: 20,
+                                        ),
                                         const SizedBox(width: 12),
                                         Expanded(
                                           child: Text(
                                             displayDate,
-                                            style: Theme.of(context).textTheme.titleMedium,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.titleMedium,
                                           ),
                                         ),
-                                        Icon(Icons.arrow_drop_down, color: Colors.grey.withAlpha(isEditable ? 255 : 128)),
+                                        Icon(
+                                          Icons.arrow_drop_down,
+                                          color: Colors.grey.withAlpha(
+                                            isEditable ? 255 : 128,
+                                          ),
+                                        ),
                                         const SizedBox(width: 6),
                                       ],
                                     ),
@@ -128,14 +153,25 @@ class NoteEditorContentWidget extends StatelessWidget {
                             ),
                             const SizedBox(height: 16.0),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(150)),
+                                  border: Border.all(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary.withAlpha(150),
+                                  ),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(1.5, 3.0, 1.5, 3.0),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    1.5,
+                                    3.0,
+                                    1.5,
+                                    3.0,
+                                  ),
                                   child: quillEditor,
                                 ),
                               ),
@@ -153,7 +189,7 @@ class NoteEditorContentWidget extends StatelessWidget {
         ),
       ),
     );
-    
+
     if (heroTag != null) {
       return Hero(tag: heroTag!, child: editorAreaContent);
     }

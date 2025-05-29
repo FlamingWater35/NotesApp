@@ -39,7 +39,7 @@ class DatabaseHelper {
     }
   }
 
-   Future<void> insertMultipleNotes(List<Note> notes) async {
+  Future<void> insertMultipleNotes(List<Note> notes) async {
     _log.info("Inserting ${notes.length} notes...");
     final db = await database;
     final batch = db.batch();
@@ -92,11 +92,7 @@ class DatabaseHelper {
     _log.info("Deleting note ID: $id");
     final db = await database;
     try {
-      await db.delete(
-        _tableName,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
+      await db.delete(_tableName, where: 'id = ?', whereArgs: [id]);
       _log.fine("Note ID $id deleted successfully.");
     } catch (e, stackTrace) {
       _log.severe("Error deleting note ID: $id", e, stackTrace);
@@ -110,7 +106,7 @@ class DatabaseHelper {
       await db.delete(_tableName);
       _log.info("All notes deleted successfully.");
     } catch (e, stackTrace) {
-       _log.severe("Error deleting all notes", e, stackTrace);
+      _log.severe("Error deleting all notes", e, stackTrace);
     }
   }
 

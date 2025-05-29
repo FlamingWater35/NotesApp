@@ -43,7 +43,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           FocusScope.of(context).requestFocus(FocusNode());
-          _log.fine("Requested focus on a new empty node after tab switch frame.");
+          _log.fine(
+            "Requested focus on a new empty node after tab switch frame.",
+          );
         }
       });
     }
@@ -53,7 +55,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     _log.info("Navigating to Add Note screen");
     FocusScope.of(context).unfocus();
 
-    if(mounted) {
+    if (mounted) {
       setState(() => _isNavBarVisible = false);
     }
 
@@ -62,12 +64,16 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       // PageRouteBuilder doesn't seem to work with predictive back gesture yet, replace with this if needed
       // MaterialPageRoute(builder: (context) => const AddNoteScreen()),
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const AddNoteScreen(),
+        pageBuilder:
+            (context, animation, secondaryAnimation) => const AddNoteScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const Offset begin = Offset(1.0, 0.0);
           const Offset end = Offset.zero;
           const Curve curve = Curves.easeInOut;
-          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
           var offsetAnimation = animation.drive(tween);
           return SlideTransition(position: offsetAnimation, child: child);
         },
@@ -75,7 +81,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       ),
     );
 
-    if(mounted) {
+    if (mounted) {
       setState(() => _isNavBarVisible = true);
     }
   }
@@ -84,21 +90,22 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     _log.info("Navigating to Edit Note screen for ID: ${noteToEdit.id}");
     FocusScope.of(context).unfocus();
 
-    if(mounted) {
+    if (mounted) {
       setState(() => _isNavBarVisible = false);
     }
 
     await Navigator.push<void>(
       context,
       MaterialPageRoute(
-        builder: (context) => EditNoteScreen(
-          noteId: noteToEdit.id,
-          heroTag: noteToEdit.heroTag,
-        ),
+        builder:
+            (context) => EditNoteScreen(
+              noteId: noteToEdit.id,
+              heroTag: noteToEdit.heroTag,
+            ),
       ),
     );
 
-    if(mounted) {
+    if (mounted) {
       setState(() => _isNavBarVisible = true);
     }
   }
@@ -107,7 +114,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   Widget build(BuildContext context) {
     _log.finer("Building MainScreen widget");
     final l10n = AppLocalizations.of(context);
-    final navBarOffset = _isNavBarVisible ? Offset.zero : const Offset(0.0, 1.1);
+    final navBarOffset =
+        _isNavBarVisible ? Offset.zero : const Offset(0.0, 1.1);
     final notesAsync = ref.watch(notesProvider);
 
     return Scaffold(
@@ -115,10 +123,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         data: (notes) {
           _log.finer("Notes data received: ${notes.length} notes.");
           final List<Widget> widgetOptions = <Widget>[
-            HomeScreen(
-              notes: notes,
-              onNoteTap: _navigateToEditNote,
-            ),
+            HomeScreen(notes: notes, onNoteTap: _navigateToEditNote),
             const SettingsScreen(),
           ];
           return PageTransitionSwitcher(
@@ -152,13 +157,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           );
         },
       ),
-      floatingActionButton: _selectedIndex == 0
-        ? FloatingActionButton(
-            onPressed: _navigateToAddNote,
-            tooltip: l10n.addNoteFabTooltip,
-            child: const Icon(Icons.add),
-          )
-        : null,
+      floatingActionButton:
+          _selectedIndex == 0
+              ? FloatingActionButton(
+                onPressed: _navigateToAddNote,
+                tooltip: l10n.addNoteFabTooltip,
+                child: const Icon(Icons.add),
+              )
+              : null,
       bottomNavigationBar: AnimatedSlide(
         duration: _kTransitionDuration,
         offset: navBarOffset,

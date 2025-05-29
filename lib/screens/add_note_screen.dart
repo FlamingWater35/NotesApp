@@ -56,7 +56,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       config: QuillControllerConfig(
         clipboardConfig: QuillClipboardConfig(
           enableExternalRichPaste: true,
-          // onImagePaste: 
+          // onImagePaste:
         ),
       ),
     );
@@ -67,9 +67,10 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
   void _checkIfDirty() {
     final bool quillContentChanged = !_quillController.document.isEmpty();
-    final bool currentlyDirty = _titleController.text.isNotEmpty ||
-      quillContentChanged ||
-      _selectedDate != _initialDate;
+    final bool currentlyDirty =
+        _titleController.text.isNotEmpty ||
+        quillContentChanged ||
+        _selectedDate != _initialDate;
 
     if (currentlyDirty != _isDirty) {
       setState(() {
@@ -94,8 +95,12 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
       return;
     }
 
-    final String contentJson = jsonEncode(_quillController.document.toDelta().toJson());
-    final String uniqueId = DateTime.now().millisecondsSinceEpoch.toString() + UniqueKey().toString();
+    final String contentJson = jsonEncode(
+      _quillController.document.toDelta().toJson(),
+    );
+    final String uniqueId =
+        DateTime.now().millisecondsSinceEpoch.toString() +
+        UniqueKey().toString();
     final DateTime now = DateTime.now();
 
     final newNote = Note(
@@ -143,10 +148,13 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
     return PopScope(
       canPop: !_isDirty,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
-        _log.fine('Pop invoked on AddNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result');
+        _log.fine(
+          'Pop invoked on AddNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result',
+        );
         if (didPop) return;
 
-        final navigator = mounted ? Navigator.of(context, rootNavigator: true) : null;
+        final navigator =
+            mounted ? Navigator.of(context, rootNavigator: true) : null;
         final bool shouldDiscard = await showDiscardDialog(context);
 
         if (shouldDiscard && mounted && navigator != null) {
@@ -166,7 +174,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
             const SizedBox(width: 8),
           ],
         ),
-        
+
         body: Column(
           children: [
             Expanded(

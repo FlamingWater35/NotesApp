@@ -18,8 +18,12 @@ class Note {
       title: map['title'] as String? ?? '',
       content: map['content'] as String? ?? '',
       date: DateTime.tryParse(map['date'] as String? ?? '') ?? DateTime.now(),
-      createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ?? DateTime.now(),
-      lastModified: DateTime.tryParse(map['lastModified'] as String? ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse(map['createdAt'] as String? ?? '') ??
+          DateTime.now(),
+      lastModified:
+          DateTime.tryParse(map['lastModified'] as String? ?? '') ??
+          DateTime.now(),
     );
   }
 
@@ -32,8 +36,8 @@ class Note {
 
   @override
   bool operator ==(Object other) =>
-    identical(this, other) ||
-    other is Note && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is Note && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -46,7 +50,9 @@ class Note {
       final List<dynamic> deltaJson = jsonDecode(content);
       return Document.fromJson(deltaJson);
     } catch (e, stackTrace) {
-      debugPrint('Error decoding Quill JSON content for note ID $id: $e\n$stackTrace');
+      debugPrint(
+        'Error decoding Quill JSON content for note ID $id: $e\n$stackTrace',
+      );
       final doc = Document();
       doc.insert(0, content);
       return doc;

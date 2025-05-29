@@ -18,7 +18,9 @@ void main() {
 void _setupLogging() {
   Logger.root.level = Level.ALL; // Configure level as needed
   Logger.root.onRecord.listen((record) {
-    debugPrint('${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}');
+    debugPrint(
+      '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}',
+    );
     if (record.error != null) {
       debugPrint('Error: ${record.error}');
     }
@@ -51,9 +53,7 @@ class MyApp extends ConsumerWidget {
     SnackBarThemeData buildSnackBarTheme(ColorScheme colorScheme) {
       return SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         backgroundColor: colorScheme.inverseSurface,
         contentTextStyle: TextStyle(
           color: colorScheme.onInverseSurface,
@@ -89,10 +89,14 @@ class MyApp extends ConsumerWidget {
           brightness: Brightness.light,
         ),
         useMaterial3: true,
-        snackBarTheme: buildSnackBarTheme(ColorScheme.fromSeed(
-          seedColor: seedColor,
-          brightness: Brightness.dark, // For light theme, snackbar usually uses dark background
-        )),
+        snackBarTheme: buildSnackBarTheme(
+          ColorScheme.fromSeed(
+            seedColor: seedColor,
+            brightness:
+                Brightness
+                    .dark, // For light theme, snackbar usually uses dark background
+          ),
+        ),
         // pageTransitionsTheme: pageTransitionsTheme,
       ),
 
@@ -102,13 +106,17 @@ class MyApp extends ConsumerWidget {
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
-        snackBarTheme: buildSnackBarTheme(ColorScheme.fromSeed(
-          seedColor: seedColor,
-          brightness: Brightness.light, // For dark theme, snackbar usually uses light background
-        )),
+        snackBarTheme: buildSnackBarTheme(
+          ColorScheme.fromSeed(
+            seedColor: seedColor,
+            brightness:
+                Brightness
+                    .light, // For dark theme, snackbar usually uses light background
+          ),
+        ),
         // pageTransitionsTheme: pageTransitionsTheme,
       ),
-      
+
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
       home: const MainScreen(),

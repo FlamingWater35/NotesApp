@@ -40,22 +40,36 @@ class UpdateService {
       final String currentVersion = packageInfo.version;
       _log.fine("Current version: $currentVersion");
 
-      final Uri uri = Uri.parse('https://api.github.com/repos/$_githubOwner/$_githubRepo/releases/latest');
+      final Uri uri = Uri.parse(
+        'https://api.github.com/repos/$_githubOwner/$_githubRepo/releases/latest',
+      );
       final response = await http.get(uri);
 
       if (response.statusCode != 200) {
-        _log.warning("Failed to fetch release info: ${response.statusCode} ${response.body}");
-        return UpdateInfo(isUpdateAvailable: false, errorMessage: "Failed to fetch update info (${response.statusCode})");
+        _log.warning(
+          "Failed to fetch release info: ${response.statusCode} ${response.body}",
+        );
+        return UpdateInfo(
+          isUpdateAvailable: false,
+          errorMessage: "Failed to fetch update info (${response.statusCode})",
+        );
       }
 
       final Map<String, dynamic> releaseData = jsonDecode(response.body);
-      final String latestVersion = (releaseData['tag_name'] as String?)?.replaceFirst('v', '') ?? ''; // Remove leading 'v' if present
+      final String latestVersion =
+          (releaseData['tag_name'] as String?)?.replaceFirst('v', '') ??
+          ''; // Remove leading 'v' if present
       _log.info("Latest version found on GitHub: $latestVersion");
 
       // 3. Compare versions using simple string comparison, (in the future pub_semver for robustness)
-      if (latestVersion.isEmpty || latestVersion == currentVersion || _isVersionLower(latestVersion, currentVersion)) {
+      if (latestVersion.isEmpty ||
+          latestVersion == currentVersion ||
+          _isVersionLower(latestVersion, currentVersion)) {
         _log.info("No new update available.");
-        return UpdateInfo(isUpdateAvailable: false, latestVersion: latestVersion);
+        return UpdateInfo(
+          isUpdateAvailable: false,
+          latestVersion: latestVersion,
+        );
       }
 
       _log.info("Update available: $latestVersion");
@@ -67,17 +81,28 @@ class UpdateService {
         abi = _getPrimaryAbi(androidInfo.supportedAbis);
         _log.info("Device ABI detected: $abi");
       } else {
-        _log.warning("Update check/download only supported on Android for this implementation.");
-        return UpdateInfo(isUpdateAvailable: false, errorMessage: "Updates only supported on Android.");
+        _log.warning(
+          "Update check/download only supported on Android for this implementation.",
+        );
+        return UpdateInfo(
+          isUpdateAvailable: false,
+          errorMessage: "Updates only supported on Android.",
+        );
       }
 
       if (abi == null) {
-        return UpdateInfo(isUpdateAvailable: false, errorMessage: "Could not determine device architecture.");
+        return UpdateInfo(
+          isUpdateAvailable: false,
+          errorMessage: "Could not determine device architecture.",
+        );
       }
 
       final List<dynamic>? assets = releaseData['assets'] as List<dynamic>?;
       if (assets == null || assets.isEmpty) {
-        return UpdateInfo(isUpdateAvailable: false, errorMessage: "Latest release has no assets.");
+        return UpdateInfo(
+          isUpdateAvailable: false,
+          errorMessage: "Latest release has no assets.",
+        );
       }
 
       String? downloadUrl;
@@ -88,14 +113,19 @@ class UpdateService {
           if (name.endsWith('.apk') && name.contains(abi)) {
             downloadUrl = asset['browser_download_url'] as String?;
             assetName = name;
-            _log.info("Found matching asset: $assetName with URL: $downloadUrl");
+            _log.info(
+              "Found matching asset: $assetName with URL: $downloadUrl",
+            );
             break;
           }
         }
       }
 
       if (downloadUrl == null) {
-        return UpdateInfo(isUpdateAvailable: false, errorMessage: "No suitable APK found for architecture '$abi'.");
+        return UpdateInfo(
+          isUpdateAvailable: false,
+          errorMessage: "No suitable APK found for architecture '$abi'.",
+        );
       }
 
       return UpdateInfo(
@@ -104,14 +134,20 @@ class UpdateService {
         updateUrl: downloadUrl,
         assetName: assetName,
       );
-
     } catch (e, stackTrace) {
       _log.severe("Error checking for update", e, stackTrace);
-      return UpdateInfo(isUpdateAvailable: false, errorMessage: "An error occurred: ${e.toString()}");
+      return UpdateInfo(
+        isUpdateAvailable: false,
+        errorMessage: "An error occurred: ${e.toString()}",
+      );
     }
   }
 
-  static Future<String?> downloadUpdate(String url, String fileName, Function(double) onProgress) async {
+  static Future<String?> downloadUpdate(
+    String url,
+    String fileName,
+    Function(double) onProgress,
+  ) async {
     _log.info("Starting download: $url");
 
     try {
@@ -128,7 +164,9 @@ class UpdateService {
       final streamedResponse = await client.send(request);
 
       if (streamedResponse.statusCode != 200) {
-        _log.warning("Download failed: ${streamedResponse.statusCode} ${streamedResponse.reasonPhrase}");
+        _log.warning(
+          "Download failed: ${streamedResponse.statusCode} ${streamedResponse.reasonPhrase}",
+        );
         client.close();
         return null;
       }
@@ -162,7 +200,6 @@ class UpdateService {
       await prefs.setString(_updateFilePrefsKey, downloadPath);
 
       return downloadPath;
-
     } catch (e, stackTrace) {
       _log.severe("Error during download", e, stackTrace);
       return null;
@@ -185,9 +222,13 @@ class UpdateService {
         }
       }
 
-      final OpenResult result = await OpenFilex.open(filePath, type: "application/vnd.android.package-archive");
+      final OpenResult result = await OpenFilex.open(
+        filePath,
+        type: "application/vnd.android.package-archive",
+      );
 
-      if (result.type == ResultType.error || result.type == ResultType.permissionDenied) {
+      if (result.type == ResultType.error ||
+          result.type == ResultType.permissionDenied) {
         _log.severe("Failed to open APK for install: ${result.message}");
         return false;
       }

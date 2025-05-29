@@ -77,9 +77,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
         document: doc,
         selection: const TextSelection.collapsed(offset: 0),
         config: QuillControllerConfig(
-          clipboardConfig: QuillClipboardConfig(
-            enableExternalRichPaste: true,
-          ),
+          clipboardConfig: QuillClipboardConfig(enableExternalRichPaste: true),
         ),
       );
 
@@ -96,7 +94,10 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
         final l10n = AppLocalizations.of(context);
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorCouldNotLoadNoteData), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(l10n.errorCouldNotLoadNoteData),
+            backgroundColor: Colors.red,
+          ),
         );
         Navigator.of(context).pop();
       }
@@ -106,11 +107,15 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   void _checkIfDirty() {
     if (_originalNote == null) return;
 
-    final String currentContentJson = jsonEncode(_quillController.document.toDelta().toJson());
+    final String currentContentJson = jsonEncode(
+      _quillController.document.toDelta().toJson(),
+    );
     final bool contentChanged = currentContentJson != _originalContentJson;
 
-    final bool currentlyDirty = _titleController.text != _originalNote!.title ||
-      contentChanged || _selectedDate != _originalNote!.date;
+    final bool currentlyDirty =
+        _titleController.text != _originalNote!.title ||
+        contentChanged ||
+        _selectedDate != _originalNote!.date;
 
     if (currentlyDirty != _isDirty) {
       setState(() {
@@ -124,7 +129,9 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     _log.info("Attempting to update note ID: ${widget.noteId}");
     final l10n = AppLocalizations.of(context);
     if (_originalNote == null || _isSaving) {
-      _log.warning("Attempted to update note before it was loaded or while saving.");
+      _log.warning(
+        "Attempted to update note before it was loaded or while saving.",
+      );
       return;
     }
 
@@ -143,7 +150,9 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       _isSaving = true;
     });
 
-    final String contentJson = jsonEncode(_quillController.document.toDelta().toJson());
+    final String contentJson = jsonEncode(
+      _quillController.document.toDelta().toJson(),
+    );
     final DateTime newDate = _selectedDate ?? _originalNote!.date;
     final DateTime modifiedTime = DateTime.now();
 
@@ -199,7 +208,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
         _selectedDate = picked;
         _checkIfDirty();
       });
-       _log.fine("Date selected: $_selectedDate");
+      _log.fine("Date selected: $_selectedDate");
     }
   }
 
@@ -221,15 +230,20 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       );
     }
 
-    final displayDate = DateFormat.yMMMd().format(_selectedDate ?? _originalNote!.date);
+    final displayDate = DateFormat.yMMMd().format(
+      _selectedDate ?? _originalNote!.date,
+    );
 
     return PopScope(
       canPop: !_isDirty || _isSaving,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
-        _log.fine('Pop invoked on EditNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result');
+        _log.fine(
+          'Pop invoked on EditNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result',
+        );
         if (didPop || _isSaving) return;
 
-        final navigator = mounted ? Navigator.of(context, rootNavigator: true) : null;
+        final navigator =
+            mounted ? Navigator.of(context, rootNavigator: true) : null;
         final bool shouldDiscard = await showDiscardDialog(context);
 
         if (shouldDiscard && mounted && navigator != null) {
@@ -247,7 +261,10 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                   child: SizedBox(
                     width: 24,
                     height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               )

@@ -22,12 +22,15 @@ class RestoreService {
       }
 
       final String filePath = result.files.single.path!;
-      final String? fileExtension = result.files.single.extension?.toLowerCase();
+      final String? fileExtension =
+          result.files.single.extension?.toLowerCase();
 
       _log.info("User selected file: $filePath");
 
       if (fileExtension != 'json') {
-        _log.warning("Restore failed: Selected file is not a .json file (extension: $fileExtension).");
+        _log.warning(
+          "Restore failed: Selected file is not a .json file (extension: $fileExtension).",
+        );
         // Possibly show a specific user message here
         return null;
       }
@@ -47,30 +50,49 @@ class RestoreService {
       for (final item in decodedData) {
         if (item is Map<String, dynamic>) {
           try {
-            if (item['id'] != null && item['title'] != null && item['content'] != null &&
-                item['date'] != null && item['createdAt'] != null && item['lastModified'] != null) {
+            if (item['id'] != null &&
+                item['title'] != null &&
+                item['content'] != null &&
+                item['date'] != null &&
+                item['createdAt'] != null &&
+                item['lastModified'] != null) {
               restoredNotes.add(Note.fromMap(item));
             } else {
-              _log.warning("Skipping invalid note data during restore: Missing required fields. Data: $item");
+              _log.warning(
+                "Skipping invalid note data during restore: Missing required fields. Data: $item",
+              );
             }
           } catch (e, stackTrace) {
-            _log.warning("Error converting map to Note during restore. Skipping item. Data: $item", e, stackTrace);
+            _log.warning(
+              "Error converting map to Note during restore. Skipping item. Data: $item",
+              e,
+              stackTrace,
+            );
           }
         } else {
-          _log.warning("Skipping non-map item found in backup file during restore. Item: $item");
+          _log.warning(
+            "Skipping non-map item found in backup file during restore. Item: $item",
+          );
         }
       }
 
       if (restoredNotes.isEmpty && decodedData.isNotEmpty) {
-        _log.warning("Restore resulted in an empty list, possibly due to format errors in all entries.");
+        _log.warning(
+          "Restore resulted in an empty list, possibly due to format errors in all entries.",
+        );
         return null;
       }
 
-      _log.info("Restore successful! Read ${restoredNotes.length} notes from: $filePath");
+      _log.info(
+        "Restore successful! Read ${restoredNotes.length} notes from: $filePath",
+      );
       return restoredNotes;
-
     } on FileSystemException catch (e, stackTrace) {
-      _log.severe("File system error during restore: ${e.message}", e, stackTrace);
+      _log.severe(
+        "File system error during restore: ${e.message}",
+        e,
+        stackTrace,
+      );
       return null;
     } on FormatException catch (e, stackTrace) {
       _log.severe("JSON format error during restore", e, stackTrace);

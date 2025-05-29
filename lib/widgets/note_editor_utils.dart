@@ -9,7 +9,11 @@ Future<bool> showDiscardDialog(BuildContext context) async {
     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
     barrierColor: Colors.black54,
     transitionDuration: const Duration(milliseconds: 300),
-    pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
+    pageBuilder: (
+      BuildContext buildContext,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+    ) {
       return AlertDialog(
         title: Text(l10n.discardChangesDialogTitle),
         content: Text(l10n.discardChangesDialogContent),
@@ -28,12 +32,14 @@ Future<bool> showDiscardDialog(BuildContext context) async {
         ],
       );
     },
-    transitionBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+    transitionBuilder: (
+      BuildContext buildContext,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child,
+    ) {
       return ScaleTransition(
-        scale: CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutBack,
-        ),
+        scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
         child: child,
       );
     },
