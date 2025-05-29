@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/backup_service.dart';
 import '../components/restore_service.dart';
+import '../utils/localization_utils.dart';
 import 'update_screen.dart';
 import '../../providers/providers.dart';
 import '../../models/note_model.dart';
@@ -144,38 +145,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  String _getLanguageName(Locale? locale, AppLocalizations l10n) {
-    if (locale == null) {
-      return l10n.languageSystemDefault;
-    }
-    switch (locale.languageCode) {
-      case 'ar':
-        return 'العربية';
-      case 'en':
-        return 'English';
-      case 'es':
-        return 'Español';
-      case 'fi':
-        return 'Suomi';
-      case 'fr':
-        return 'Français';
-      case 'hi':
-        return 'हिन्दी';
-      case 'id':
-        return 'Bahasa Indonesia';
-      case 'ja':
-        return '日本語';
-      case 'pt':
-        return 'Português';
-      case 'ru':
-        return 'Русский';
-      case 'zh':
-        return '简体中文';
-      default:
-        return locale.languageCode.toUpperCase();
-    }
-  }
-
   void _showLanguageSelectionSheet(
     BuildContext context,
     Locale? currentLocale,
@@ -228,7 +197,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
             languageOptions.addAll(
               supportedLocales.map((locale) {
-                final languageName = _getLanguageName(locale, l10n);
+                final languageName = getLanguageName(locale, l10n);
                 final bool isSelected = locale == currentLocaleInSheet;
 
                 return ListTile(
@@ -357,7 +326,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       subtitle: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Text(
-                          _getLanguageName(currentLocale, l10n),
+                          getLanguageName(currentLocale, l10n),
                           style: TextStyle(
                             color: theme.textTheme.bodySmall?.color?.withAlpha(
                               200,

@@ -9,6 +9,7 @@ import 'package:animated_list_plus/animated_list_plus.dart';
 import '../../models/note_model.dart';
 import '../../providers/providers.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/note_utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key, required this.notes, required this.onNoteTap});
@@ -68,7 +69,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _updateDisplayedNotesAndEmptyMessage(List<Note> sourceNotes) {
-    final newList = _getFilteredAndSortedNotes(sourceNotes);
+    final newList = getFilteredAndSortedNotes(
+      sourceNotes,
+      _searchController,
+      _sortBy,
+      _sortAscending,
+    );
     if (mounted) {
       setState(() {
         _displayedNotes = newList;
@@ -96,8 +102,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _emptyListTimer = Timer(_animationDuration + _timerBuffer, () {
         if (mounted) {
           setState(() {
-            final currentFilteredList = _getFilteredAndSortedNotes(
+            final currentFilteredList = getFilteredAndSortedNotes(
               widget.notes,
+              _searchController,
+              _sortBy,
+              _sortAscending,
             );
             final currentSourceNotes = widget.notes;
             final currentIsEmptyResult = currentFilteredList.isEmpty;
@@ -126,45 +135,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _log.finer("List not empty or initially empty, hiding empty message.");
       }
     }
-  }
-
-  List<Note> _getFilteredAndSortedNotes(List<Note> currentNotes) {
-    final query = _searchController.text.toLowerCase().trim();
-    List<Note> filteredNotes;
-
-    if (query.isEmpty) {
-      filteredNotes = List.from(currentNotes);
-    } else {
-      filteredNotes =
-          currentNotes.where((note) {
-            final titleLower = note.title.toLowerCase();
-            final contentLower = note.plainTextContent.toLowerCase();
-            return titleLower.contains(query) || contentLower.contains(query);
-          }).toList();
-    }
-
-    filteredNotes.sort((a, b) {
-      int compareResult = 0;
-      switch (_sortBy) {
-        case SortProperty.date:
-          compareResult = a.date.compareTo(b.date);
-          break;
-        case SortProperty.title:
-          compareResult = a.title.toLowerCase().compareTo(
-            b.title.toLowerCase(),
-          );
-          break;
-        case SortProperty.lastModified:
-          compareResult = a.lastModified.compareTo(b.lastModified);
-          break;
-        case SortProperty.createdAt:
-          compareResult = a.createdAt.compareTo(b.createdAt);
-          break;
-      }
-      return _sortAscending ? compareResult : -compareResult;
-    });
-
-    return filteredNotes;
   }
 
   Widget _buildAnimatedItem(
@@ -336,20 +306,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  String _getSortPropertyText(BuildContext context, SortProperty property) {
-    final l10n = AppLocalizations.of(context);
-    switch (property) {
-      case SortProperty.date:
-        return l10n.sortPropertyDate;
-      case SortProperty.title:
-        return l10n.sortPropertyTitle;
-      case SortProperty.lastModified:
-        return l10n.sortPropertyLastModified;
-      case SortProperty.createdAt:
-        return l10n.sortPropertyCreatedAt;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     _log.finer(
@@ -443,7 +399,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            _getSortPropertyText(context, _sortBy),
+                            getSortPropertyText(context, _sortBy),
                             style: theme.textTheme.titleSmall?.copyWith(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w500,

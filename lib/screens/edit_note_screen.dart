@@ -10,7 +10,7 @@ import '../../models/note_model.dart';
 import '../l10n/app_localizations.dart';
 
 import '../widgets/note_editor_content.dart';
-import '../widgets/note_editor_utils.dart';
+import '../widgets/note_editor_dialogs.dart';
 import '../widgets/quill_toolbar_widget.dart';
 
 class EditNoteScreen extends ConsumerStatefulWidget {
