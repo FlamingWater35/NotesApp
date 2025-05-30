@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../l10n/app_localizations.dart';
 import '../models/note_model.dart';
 import '../screens/home_screen.dart';

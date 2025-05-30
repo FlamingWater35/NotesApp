@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+
 import '../l10n/app_localizations.dart';
 
 class NoteEditorContentWidget extends StatelessWidget {
