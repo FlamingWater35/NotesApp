@@ -7,10 +7,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/backup_service.dart';
 import '../components/restore_service.dart';
+import '../providers/locale_provider.dart';
+import '../providers/notes_provider.dart';
+import '../providers/theme_provider.dart';
 import '../widgets/settings/language_widget.dart';
 import '../widgets/settings/thememode_widget.dart';
 import 'update_screen.dart';
-import '../../providers/providers.dart';
 import '../../models/note_model.dart';
 import '../l10n/app_localizations.dart';
 

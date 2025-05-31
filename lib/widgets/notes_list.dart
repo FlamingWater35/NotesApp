@@ -7,7 +7,7 @@ import 'package:notes_app/screens/home_screen.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/note_model.dart';
-import '../providers/providers.dart';
+import '../providers/notes_provider.dart';
 
 ImplicitlyAnimatedList<Note> animatedNoteList(
   List<Note> displayedNotes,

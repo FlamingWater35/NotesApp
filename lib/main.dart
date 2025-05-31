@@ -7,11 +7,13 @@ import '../l10n/app_localizations.dart';
 
 import 'main_screen.dart';
 import 'components/update_service.dart';
-import 'providers/providers.dart';
+import 'providers/locale_provider.dart';
+import 'providers/theme_provider.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized(); // Might not be needed, added for theme mode saving
+  WidgetsFlutterBinding.ensureInitialized();
   _setupLogging();
+  _runUpdateCleanup();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -40,8 +42,6 @@ class MyApp extends ConsumerWidget {
     MyApp._log.info("Building MyApp widget");
     final themeMode = ref.watch(themeProvider);
     const seedColor = Colors.blueAccent;
-
-    _runUpdateCleanup();
 
     // Predictive back transitions for Android
     // const pageTransitionsTheme = PageTransitionsTheme(

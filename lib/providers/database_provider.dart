@@ -1,8 +1,15 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:logging/logging.dart';
 
 import '../models/note_model.dart';
+
+final _log = Logger('DatabaseProvider');
+
+final databaseProvider = Provider<DatabaseHelper>((ref) {
+  return DatabaseHelper();
+});
 
 class DatabaseHelper {
   factory DatabaseHelper() => _instance;
@@ -14,8 +21,6 @@ class DatabaseHelper {
   static const int _dbVersion = 1;
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static const String _tableName = 'notes';
-
-  final _log = Logger('DatabaseHelper');
 
   Future<Database> get database async {
     if (_database != null) return _database!;

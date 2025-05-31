@@ -5,10 +5,10 @@ import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../providers/providers.dart';
 import '../../models/note_model.dart';
 import '../l10n/app_localizations.dart';
 
+import '../providers/notes_provider.dart';
 import '../widgets/note_editor_content.dart';
 import '../widgets/note_editor_dialogs.dart';
 import '../widgets/quill_toolbar_widget.dart';
