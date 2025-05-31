@@ -145,13 +145,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get backupSuccessful => '¡Copia de seguridad exitosa!';
 
   @override
-  String get backupFailed => 'Copia de seguridad fallida o cancelada (¿no se añadieron notas?).';
+  String get backupFailed => 'Copia de seguridad fallida o cancelada.';
 
   @override
   String get restoreSuccessful => '¡Restauración exitosa!';
 
   @override
-  String get restoreFailed => 'Restauración fallida o cancelada (¿formato de archivo inválido?).';
+  String get restoreFailed => 'Restauración fallida o cancelada.';
 
   @override
   String get languageSectionTitle => 'Idioma';

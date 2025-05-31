@@ -76,9 +76,9 @@
     },
     "errorLoadingVersion": "Erreur de chargement de la version",
     "backupSuccessful": "Sauvegarde réussie !",
-    "backupFailed": "Échec de la sauvegarde ou annulée (aucune note ajoutée ?).",
+    "backupFailed": "Échec de la sauvegarde ou annulée.",
     "restoreSuccessful": "Restauration réussie !",
-    "restoreFailed": "Échec de la restauration ou annulée (format de fichier invalide ?).",
+    "restoreFailed": "Échec de la restauration ou annulée.",
 
     "languageSectionTitle": "Langue",
     "languageSystemDefault": "Système par Défaut",

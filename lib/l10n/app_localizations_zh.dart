@@ -145,13 +145,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupSuccessful => '备份成功！';
 
   @override
-  String get backupFailed => '备份失败或已取消（未添加笔记？）。';
+  String get backupFailed => '备份失败或已取消。';
 
   @override
   String get restoreSuccessful => '恢复成功！';
 
   @override
-  String get restoreFailed => '恢复失败或已取消（文件格式无效？）。';
+  String get restoreFailed => '恢复失败或已取消。';
 
   @override
   String get languageSectionTitle => '语言';

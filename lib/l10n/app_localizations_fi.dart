@@ -145,13 +145,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get backupSuccessful => 'Varmuuskopiointi onnistui!';
 
   @override
-  String get backupFailed => 'Varmuuskopiointi epäonnistui (ei muistiinpanoja?).';
+  String get backupFailed => 'Varmuuskopiointi epäonnistui.';
 
   @override
   String get restoreSuccessful => 'Palautus onnistui!';
 
   @override
-  String get restoreFailed => 'Palautus epäonnistui (virheellinen tiedosto?)';
+  String get restoreFailed => 'Palautus epäonnistui.';
 
   @override
   String get languageSectionTitle => 'Kieli';

@@ -76,9 +76,9 @@
     },
     "errorLoadingVersion": "Error al cargar la versión",
     "backupSuccessful": "¡Copia de seguridad exitosa!",
-    "backupFailed": "Copia de seguridad fallida o cancelada (¿no se añadieron notas?).",
+    "backupFailed": "Copia de seguridad fallida o cancelada.",
     "restoreSuccessful": "¡Restauración exitosa!",
-    "restoreFailed": "Restauración fallida o cancelada (¿formato de archivo inválido?).",
+    "restoreFailed": "Restauración fallida o cancelada.",
 
     "languageSectionTitle": "Idioma",
     "languageSystemDefault": "Predeterminado del Sistema",

@@ -145,13 +145,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupSuccessful => 'Backup successful!';
 
   @override
-  String get backupFailed => 'Backup failed or cancelled (no notes added?).';
+  String get backupFailed => 'Backup failed or cancelled.';
 
   @override
   String get restoreSuccessful => 'Restore successful!';
 
   @override
-  String get restoreFailed => 'Restore failed or cancelled (invalid file format?)';
+  String get restoreFailed => 'Restore failed or cancelled.';
 
   @override
   String get languageSectionTitle => 'Language';

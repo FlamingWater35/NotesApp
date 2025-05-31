@@ -145,13 +145,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get backupSuccessful => 'バックアップ成功！';
 
   @override
-  String get backupFailed => 'バックアップ失敗（メモがありません？）';
+  String get backupFailed => 'バックアップ失敗';
 
   @override
   String get restoreSuccessful => '復元成功！';
 
   @override
-  String get restoreFailed => '復元失敗（無効なファイル形式？）';
+  String get restoreFailed => '復元失敗';
 
   @override
   String get languageSectionTitle => '言語';

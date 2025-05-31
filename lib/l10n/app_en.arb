@@ -205,7 +205,7 @@
     "@backupSuccessful": {
         "description": "Snackbar message indicating that the notes backup was successful."
     },
-    "backupFailed": "Backup failed or cancelled (no notes added?).",
+    "backupFailed": "Backup failed or cancelled.",
     "@backupFailed": {
         "description": "Snackbar message indicating that the notes backup failed or was cancelled."
     },
@@ -213,7 +213,7 @@
     "@restoreSuccessful": {
         "description": "Snackbar message indicating that restoring notes from a backup was successful."
     },
-    "restoreFailed": "Restore failed or cancelled (invalid file format?)",
+    "restoreFailed": "Restore failed or cancelled.",
     "@restoreFailed": {
         "description": "Snackbar message indicating that restoring notes failed or was cancelled."
     },

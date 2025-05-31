@@ -145,13 +145,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get backupSuccessful => 'Backup realizado!';
 
   @override
-  String get backupFailed => 'Falha no backup (nenhuma nota adicionada?).';
+  String get backupFailed => 'Falha no backup.';
 
   @override
   String get restoreSuccessful => 'Restauração concluída!';
 
   @override
-  String get restoreFailed => 'Falha na restauração (formato inválido?)';
+  String get restoreFailed => 'Falha na restauração.';
 
   @override
   String get languageSectionTitle => 'Idioma';

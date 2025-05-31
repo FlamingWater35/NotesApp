@@ -145,13 +145,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get backupSuccessful => 'Backup berhasil!';
 
   @override
-  String get backupFailed => 'Backup gagal (tidak ada catatan?).';
+  String get backupFailed => 'Backup gagal.';
 
   @override
   String get restoreSuccessful => 'Pemulihan berhasil!';
 
   @override
-  String get restoreFailed => 'Pemulihan gagal (format file salah?)';
+  String get restoreFailed => 'Pemulihan gagal.';
 
   @override
   String get languageSectionTitle => 'Bahasa';

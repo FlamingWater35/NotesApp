@@ -364,7 +364,7 @@ abstract class AppLocalizations {
   /// Snackbar message indicating that the notes backup failed or was cancelled.
   ///
   /// In en, this message translates to:
-  /// **'Backup failed or cancelled (no notes added?).'**
+  /// **'Backup failed or cancelled.'**
   String get backupFailed;
 
   /// Snackbar message indicating that restoring notes from a backup was successful.
@@ -376,7 +376,7 @@ abstract class AppLocalizations {
   /// Snackbar message indicating that restoring notes failed or was cancelled.
   ///
   /// In en, this message translates to:
-  /// **'Restore failed or cancelled (invalid file format?)'**
+  /// **'Restore failed or cancelled.'**
   String get restoreFailed;
 
   /// Section title for language settings.

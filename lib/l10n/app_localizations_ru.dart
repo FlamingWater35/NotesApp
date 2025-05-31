@@ -145,13 +145,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get backupSuccessful => 'Резервная копия создана!';
 
   @override
-  String get backupFailed => 'Ошибка создания резервной копии (нет заметок?).';
+  String get backupFailed => 'Ошибка создания резервной копии.';
 
   @override
   String get restoreSuccessful => 'Восстановление завершено!';
 
   @override
-  String get restoreFailed => 'Ошибка восстановления (неверный формат файла?)';
+  String get restoreFailed => 'Ошибка восстановления.';
 
   @override
   String get languageSectionTitle => 'Язык';
