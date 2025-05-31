@@ -11,6 +11,7 @@ import '../providers/locale_provider.dart';
 import '../providers/notes_provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/settings/language_widget.dart';
+import '../widgets/settings/settings_section_widget.dart';
 import '../widgets/settings/thememode_widget.dart';
 import 'update_screen.dart';
 import '../../models/note_model.dart';
@@ -178,101 +179,101 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Text(
-                      l10n.languageSectionTitle,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.colorScheme.primary,
+                  SettingsSectionCard(
+                    context: context,
+                    title: l10n.languageSectionTitle,
+                    children: [
+                      languageOptions(
+                        theme,
+                        l10n,
+                        currentLocale,
+                        context,
+                        ref,
+                        _log,
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                    ],
                   ),
-                  languageOptions(
-                    theme,
-                    l10n,
-                    currentLocale,
-                    context,
-                    ref,
-                    _log,
-                  ),
-                  const SizedBox(height: 8),
-                  const Divider(indent: 16, endIndent: 16, height: 24),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Text(
-                      l10n.appearanceSectionTitle,
-                      style: theme.textTheme.titleSmall,
-                    ),
+                  SettingsSectionCard(
+                    context: context,
+                    title: l10n.appearanceSectionTitle,
+                    children: [themeModeOptions(currentMode, l10n, _log, ref)],
                   ),
-                  themeModeOptions(currentMode, l10n, _log, ref),
-                  const Divider(indent: 16, endIndent: 16, height: 24),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Text(
-                      l10n.dataManagementSectionTitle,
-                      style: theme.textTheme.titleSmall,
-                    ),
+                  SettingsSectionCard(
+                    context: context,
+                    title: l10n.dataManagementSectionTitle,
+                    children: [
+                      ListTile(
+                            leading: Icon(
+                              Icons.backup_outlined,
+                              color: theme.colorScheme.secondary,
+                            ),
+                            title: Text(l10n.backupNotesTitle),
+                            subtitle: Text(l10n.backupNotesSubtitle),
+                            enabled: !_isBackupRestoreRunning,
+                            onTap: _handleBackup,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 4.0,
+                            ),
+                          )
+                          .animate()
+                          .fadeIn(duration: _settingAnimationDuration)
+                          .slideX(
+                            begin: -0.1,
+                            duration: _settingAnimationDuration,
+                          ),
+                      const Divider(indent: 16, endIndent: 16, height: 1),
+                      ListTile(
+                            leading: Icon(
+                              Icons.restore_page_outlined,
+                              color: theme.colorScheme.secondary,
+                            ),
+                            title: Text(l10n.restoreNotesTitle),
+                            subtitle: Text(l10n.restoreNotesSubtitle),
+                            enabled: !_isBackupRestoreRunning,
+                            onTap: _handleRestore,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 4.0,
+                            ),
+                          )
+                          .animate()
+                          .fadeIn(duration: _settingAnimationDuration)
+                          .slideX(
+                            begin: -0.1,
+                            duration: _settingAnimationDuration,
+                          ),
+                    ],
                   ),
-                  ListTile(
-                        leading: const Icon(Icons.backup_outlined),
-                        title: Text(l10n.backupNotesTitle),
-                        subtitle: Text(l10n.backupNotesSubtitle),
-                        enabled: !_isBackupRestoreRunning,
-                        onTap: _handleBackup,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                        ),
-                      )
-                      .animate()
-                      .fadeIn(duration: _settingAnimationDuration)
-                      .flipV(duration: _settingAnimationDuration),
-                  ListTile(
-                        leading: const Icon(Icons.restore_page_outlined),
-                        title: Text(l10n.restoreNotesTitle),
-                        subtitle: Text(l10n.restoreNotesSubtitle),
-                        enabled: !_isBackupRestoreRunning,
-                        onTap: _handleRestore,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                        ),
-                      )
-                      .animate()
-                      .fadeIn(duration: _settingAnimationDuration)
-                      .flipV(duration: _settingAnimationDuration),
-                  const Divider(indent: 16, endIndent: 16, height: 24),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Text(
-                      l10n.applicationSectionTitle,
-                      style: theme.textTheme.titleSmall,
-                    ),
+                  SettingsSectionCard(
+                    context: context,
+                    title: l10n.applicationSectionTitle,
+                    children: [
+                      ListTile(
+                            leading: Icon(
+                              Icons.system_update_alt_outlined,
+                              color: theme.colorScheme.secondary,
+                            ),
+                            title: Text(l10n.checkForUpdatesTitle),
+                            onTap: _handleCheckForUpdates,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 4.0,
+                            ),
+                          )
+                          .animate()
+                          .fadeIn(duration: _settingAnimationDuration)
+                          .slideX(
+                            begin: -0.1,
+                            duration: _settingAnimationDuration,
+                          ),
+                    ],
                   ),
-                  ListTile(
-                        leading: const Icon(Icons.system_update_alt_outlined),
-                        title: Text(l10n.checkForUpdatesTitle),
-                        onTap: _handleCheckForUpdates,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                        ),
-                      )
-                      .animate()
-                      .fadeIn(duration: _settingAnimationDuration)
-                      .slideX(duration: _settingAnimationDuration),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -281,7 +282,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 _appVersion,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
