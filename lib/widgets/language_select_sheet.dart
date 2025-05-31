@@ -41,19 +41,25 @@ void showLanguageSelectionSheet(
           var languageOptions = <Widget>[];
 
           languageOptions.add(
-            ListTile(
-              title: Text(l10n.languageSystemDefault),
-              leading: Radio<Locale?>(
-                value: null,
-                groupValue: currentLocaleInSheet,
-                onChanged: (Locale? val) => handleLocaleSelection(val),
-                activeColor: theme.colorScheme.primary,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: ListTile(
+                title: Text(l10n.languageSystemDefault),
+                leading: Radio<Locale?>(
+                  value: null,
+                  groupValue: currentLocaleInSheet,
+                  onChanged: (Locale? val) => handleLocaleSelection(val),
+                  activeColor: theme.colorScheme.primary,
+                  visualDensity: VisualDensity.compact,
+                ),
+                selected: currentLocaleInSheet == null,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 visualDensity: VisualDensity.compact,
+                onTap: () => handleLocaleSelection(null),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
               ),
-              selected: currentLocaleInSheet == null,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-              visualDensity: VisualDensity.compact,
-              onTap: () => handleLocaleSelection(null),
             ),
           );
 
@@ -62,19 +68,25 @@ void showLanguageSelectionSheet(
               final languageName = getLanguageName(locale, l10n);
               final bool isSelected = locale == currentLocaleInSheet;
 
-              return ListTile(
-                title: Text(languageName),
-                leading: Radio<Locale?>(
-                  value: locale,
-                  groupValue: currentLocaleInSheet,
-                  onChanged: (Locale? val) => handleLocaleSelection(val),
-                  activeColor: theme.colorScheme.primary,
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: ListTile(
+                  title: Text(languageName),
+                  leading: Radio<Locale?>(
+                    value: locale,
+                    groupValue: currentLocaleInSheet,
+                    onChanged: (Locale? val) => handleLocaleSelection(val),
+                    activeColor: theme.colorScheme.primary,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  selected: isSelected,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                   visualDensity: VisualDensity.compact,
+                  onTap: () => handleLocaleSelection(locale),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
-                selected: isSelected,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                visualDensity: VisualDensity.compact,
-                onTap: () => handleLocaleSelection(locale),
               );
             }).toList(),
           );

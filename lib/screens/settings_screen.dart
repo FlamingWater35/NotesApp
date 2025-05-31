@@ -205,47 +205,65 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     context: context,
                     title: l10n.dataManagementSectionTitle,
                     children: [
-                      ListTile(
-                            leading: Icon(
-                              Icons.backup_outlined,
-                              color: theme.colorScheme.secondary,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 3,
+                        ),
+                        child: ListTile(
+                              leading: Icon(
+                                Icons.backup_outlined,
+                                color: theme.colorScheme.secondary,
+                              ),
+                              title: Text(l10n.backupNotesTitle),
+                              subtitle: Text(l10n.backupNotesSubtitle),
+                              enabled: !_isBackupRestoreRunning,
+                              onTap: _handleBackup,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 4.0,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            )
+                            .animate()
+                            .fadeIn(duration: _settingAnimationDuration)
+                            .slideX(
+                              begin: -0.1,
+                              duration: _settingAnimationDuration,
                             ),
-                            title: Text(l10n.backupNotesTitle),
-                            subtitle: Text(l10n.backupNotesSubtitle),
-                            enabled: !_isBackupRestoreRunning,
-                            onTap: _handleBackup,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                              vertical: 4.0,
-                            ),
-                          )
-                          .animate()
-                          .fadeIn(duration: _settingAnimationDuration)
-                          .slideX(
-                            begin: -0.1,
-                            duration: _settingAnimationDuration,
-                          ),
+                      ),
                       const Divider(indent: 16, endIndent: 16, height: 1),
-                      ListTile(
-                            leading: Icon(
-                              Icons.restore_page_outlined,
-                              color: theme.colorScheme.secondary,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 3,
+                        ),
+                        child: ListTile(
+                              leading: Icon(
+                                Icons.restore_page_outlined,
+                                color: theme.colorScheme.secondary,
+                              ),
+                              title: Text(l10n.restoreNotesTitle),
+                              subtitle: Text(l10n.restoreNotesSubtitle),
+                              enabled: !_isBackupRestoreRunning,
+                              onTap: _handleRestore,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 4.0,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            )
+                            .animate()
+                            .fadeIn(duration: _settingAnimationDuration)
+                            .slideX(
+                              begin: -0.1,
+                              duration: _settingAnimationDuration,
                             ),
-                            title: Text(l10n.restoreNotesTitle),
-                            subtitle: Text(l10n.restoreNotesSubtitle),
-                            enabled: !_isBackupRestoreRunning,
-                            onTap: _handleRestore,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                              vertical: 4.0,
-                            ),
-                          )
-                          .animate()
-                          .fadeIn(duration: _settingAnimationDuration)
-                          .slideX(
-                            begin: -0.1,
-                            duration: _settingAnimationDuration,
-                          ),
+                      ),
                     ],
                   ),
 
@@ -253,24 +271,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     context: context,
                     title: l10n.applicationSectionTitle,
                     children: [
-                      ListTile(
-                            leading: Icon(
-                              Icons.system_update_alt_outlined,
-                              color: theme.colorScheme.secondary,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 3,
+                        ),
+                        child: ListTile(
+                              leading: Icon(
+                                Icons.system_update_alt_outlined,
+                                color: theme.colorScheme.secondary,
+                              ),
+                              title: Text(l10n.checkForUpdatesTitle),
+                              onTap: _handleCheckForUpdates,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 4.0,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            )
+                            .animate()
+                            .fadeIn(duration: _settingAnimationDuration)
+                            .slideX(
+                              begin: -0.1,
+                              duration: _settingAnimationDuration,
                             ),
-                            title: Text(l10n.checkForUpdatesTitle),
-                            onTap: _handleCheckForUpdates,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16.0,
-                              vertical: 4.0,
-                            ),
-                          )
-                          .animate()
-                          .fadeIn(duration: _settingAnimationDuration)
-                          .slideX(
-                            begin: -0.1,
-                            duration: _settingAnimationDuration,
-                          ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
