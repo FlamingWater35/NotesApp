@@ -38,16 +38,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       setState(() {
         _selectedIndex = index;
       });
-
-      // Fix for search bar getting focused on settings screen after exiting update check screen
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          FocusScope.of(context).requestFocus(FocusNode());
-          _log.fine(
-            "Requested focus on a new empty node after tab switch frame.",
-          );
-        }
-      });
     }
   }
 
