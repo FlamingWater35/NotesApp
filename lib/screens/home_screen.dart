@@ -66,6 +66,91 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _searchController.addListener(_onSearchOrSortChanged);
   }
 
+  Row noteSortWidget(
+    AppLocalizations l10n,
+    ThemeData theme,
+    BuildContext context,
+  ) {
+    return Row(
+      children: [
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 6.0)),
+        Text(l10n.sortByLabel, style: theme.textTheme.bodyMedium),
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 3.0)),
+        PopupMenuButton<SortProperty>(
+          initialValue: _sortBy,
+          onSelected: (SortProperty newSortBy) {
+            if (_sortBy != newSortBy) {
+              _log.fine("Sort property changed to: $newSortBy");
+              setState(() {
+                _sortBy = newSortBy;
+              });
+              _onSearchOrSortChanged();
+            }
+          },
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          position: PopupMenuPosition.under,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                getSortPropertyText(context, _sortBy),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Icon(
+                Icons.arrow_drop_down,
+                size: 20.0,
+                color: theme.colorScheme.primary,
+              ),
+            ],
+          ),
+          itemBuilder:
+              (BuildContext context) => <PopupMenuEntry<SortProperty>>[
+                PopupMenuItem<SortProperty>(
+                  value: SortProperty.lastModified,
+                  child: Text(l10n.sortPropertyLastModified),
+                ),
+                PopupMenuItem<SortProperty>(
+                  value: SortProperty.createdAt,
+                  child: Text(l10n.sortPropertyCreatedAt),
+                ),
+                PopupMenuItem<SortProperty>(
+                  value: SortProperty.date,
+                  child: Text(l10n.sortPropertyDate),
+                ),
+                PopupMenuItem<SortProperty>(
+                  value: SortProperty.title,
+                  child: Text(l10n.sortPropertyTitle),
+                ),
+              ],
+        ),
+        const Spacer(),
+        IconButton(
+          icon: Icon(
+            _sortAscending ? Icons.arrow_upward : Icons.arrow_downward,
+            size: 20.0,
+            color: theme.colorScheme.primary,
+          ),
+          tooltip:
+              _sortAscending
+                  ? l10n.sortAscendingTooltip
+                  : l10n.sortDescendingTooltip,
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            _log.fine("Sort direction toggled.");
+            setState(() {
+              _sortAscending = !_sortAscending;
+            });
+            _onSearchOrSortChanged();
+          },
+        ),
+      ],
+    );
+  }
+
   void _updateDisplayedNotesAndEmptyMessage(List<Note> sourceNotes) {
     final newList = getFilteredAndSortedNotes(
       sourceNotes,
@@ -200,93 +285,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   horizontal: 16.0,
                   vertical: 4.0,
                 ),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                    ),
-                    Text(l10n.sortByLabel, style: theme.textTheme.bodyMedium),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                    ),
-                    PopupMenuButton<SortProperty>(
-                      initialValue: _sortBy,
-                      onSelected: (SortProperty newSortBy) {
-                        if (_sortBy != newSortBy) {
-                          _log.fine("Sort property changed to: $newSortBy");
-                          setState(() {
-                            _sortBy = newSortBy;
-                          });
-                          _onSearchOrSortChanged();
-                        }
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      position: PopupMenuPosition.under,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            getSortPropertyText(context, _sortBy),
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_drop_down,
-                            size: 20.0,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ],
-                      ),
-                      itemBuilder:
-                          (BuildContext context) =>
-                              <PopupMenuEntry<SortProperty>>[
-                                PopupMenuItem<SortProperty>(
-                                  value: SortProperty.lastModified,
-                                  child: Text(l10n.sortPropertyLastModified),
-                                ),
-                                PopupMenuItem<SortProperty>(
-                                  value: SortProperty.createdAt,
-                                  child: Text(l10n.sortPropertyCreatedAt),
-                                ),
-                                PopupMenuItem<SortProperty>(
-                                  value: SortProperty.date,
-                                  child: Text(l10n.sortPropertyDate),
-                                ),
-                                PopupMenuItem<SortProperty>(
-                                  value: SortProperty.title,
-                                  child: Text(l10n.sortPropertyTitle),
-                                ),
-                              ],
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: Icon(
-                        _sortAscending
-                            ? Icons.arrow_upward
-                            : Icons.arrow_downward,
-                        size: 20.0,
-                        color: theme.colorScheme.primary,
-                      ),
-                      tooltip:
-                          _sortAscending
-                              ? l10n.sortAscendingTooltip
-                              : l10n.sortDescendingTooltip,
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        _log.fine("Sort direction toggled.");
-                        setState(() {
-                          _sortAscending = !_sortAscending;
-                        });
-                        _onSearchOrSortChanged();
-                      },
-                    ),
-                  ],
-                ),
+                child: noteSortWidget(l10n, theme, context),
               ),
 
               Expanded(
