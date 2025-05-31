@@ -8,7 +8,6 @@ enum ToolbarSection {
   headerStyle,
   listStyle,
   alignment,
-  indentation,
 }
 
 class QuillToolbarWidget extends StatefulWidget {
@@ -225,6 +224,22 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
           iconSize: QuillToolbarWidget.defaultToolbarIconSize,
         ),
       ),
+      QuillToolbarIndentButton(
+        controller: widget.controller,
+        isIncrease: false,
+        options: QuillToolbarIndentButtonOptions(
+          iconData: Icons.format_indent_decrease,
+          iconSize: QuillToolbarWidget.defaultToolbarIconSize,
+        ),
+      ),
+      QuillToolbarIndentButton(
+        controller: widget.controller,
+        isIncrease: true,
+        options: QuillToolbarIndentButtonOptions(
+          iconData: Icons.format_indent_increase,
+          iconSize: QuillToolbarWidget.defaultToolbarIconSize,
+        ),
+      ),
     ]);
   }
 
@@ -255,27 +270,6 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
         controller: widget.controller,
         attribute: Attribute.justifyAlignment,
         options: QuillToolbarToggleStyleButtonOptions(
-          iconSize: QuillToolbarWidget.defaultToolbarIconSize,
-        ),
-      ),
-    ]);
-  }
-
-  Widget _buildIndentationToolbar(BuildContext context) {
-    return _buildExpandableSectionContainer(context, [
-      QuillToolbarIndentButton(
-        controller: widget.controller,
-        isIncrease: false,
-        options: QuillToolbarIndentButtonOptions(
-          iconData: Icons.format_indent_decrease,
-          iconSize: QuillToolbarWidget.defaultToolbarIconSize,
-        ),
-      ),
-      QuillToolbarIndentButton(
-        controller: widget.controller,
-        isIncrease: true,
-        options: QuillToolbarIndentButtonOptions(
-          iconData: Icons.format_indent_increase,
           iconSize: QuillToolbarWidget.defaultToolbarIconSize,
         ),
       ),
@@ -319,9 +313,6 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
       case ToolbarSection.alignment:
         currentExpandedToolbar = _buildAlignmentToolbar(context);
         break;
-      case ToolbarSection.indentation:
-        currentExpandedToolbar = _buildIndentationToolbar(context);
-        break;
       case ToolbarSection.none:
         currentExpandedToolbar = const SizedBox.shrink();
     }
@@ -348,7 +339,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                       iconSize: QuillToolbarWidget.defaultToolbarIconSize,
                     ),
                   ),
-                  const VerticalDivider(indent: 6, endIndent: 6),
+                  const VerticalDivider(width: 5),
                   _buildMainToolbarToggleButton(
                     context,
                     ToolbarSection.commonOptions,
@@ -379,13 +370,13 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                     Icons.format_align_left,
                     collapseIcon,
                   ),
-                  _buildMainToolbarToggleButton(
-                    context,
-                    ToolbarSection.indentation,
-                    Icons.format_indent_increase,
-                    collapseIcon,
+                  const VerticalDivider(width: 5),
+                  QuillToolbarSearchButton(
+                    controller: widget.controller,
+                    options: QuillToolbarSearchButtonOptions(
+                      iconSize: QuillToolbarWidget.defaultToolbarIconSize,
+                    ),
                   ),
-                  const VerticalDivider(indent: 6, endIndent: 6),
                   QuillToolbarLinkStyleButton(
                     controller: widget.controller,
                     options: QuillToolbarLinkStyleButtonOptions(

@@ -41,7 +41,7 @@ class NoteEditorContentWidget extends StatelessWidget {
         autoFocus: false,
         scrollable: false,
         expands: false,
-        minHeight: MediaQuery.of(context).size.height * 0.2,
+        minHeight: MediaQuery.of(context).size.height * 0.5,
         // Custom styles
         // customStyles: DefaultStyles( ... ),
         onLaunchUrl: (url) async {
@@ -162,7 +162,7 @@ class NoteEditorContentWidget extends StatelessWidget {
                                   border: Border.all(
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.primary.withAlpha(150),
+                                    ).colorScheme.primary.withAlpha(100),
                                   ),
                                   borderRadius: BorderRadius.circular(6),
                                 ),

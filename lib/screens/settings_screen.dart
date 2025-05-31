@@ -165,7 +165,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 8.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 20.0),
           child: Text(
             l10n.settingsScreenTitle,
             style: theme.textTheme.headlineMedium,
@@ -306,7 +306,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
 
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(10.0),
               child: Text(
                 _appVersion,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(

@@ -42,7 +42,7 @@ Padding languageOptions(
       },
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
-        side: BorderSide(color: theme.dividerColor, width: 0.5),
+        side: BorderSide(color: theme.dividerColor, width: 0.8),
       ),
       horizontalTitleGap: 8.0,
       tileColor: theme.colorScheme.surfaceContainerHighest.withAlpha(64),
