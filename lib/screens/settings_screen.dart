@@ -111,31 +111,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (_isBackupRestoreRunning) return;
     setState(() => _isBackupRestoreRunning = true);
     _log.info("Restore button tapped");
-    final l10n = AppLocalizations.of(context);
 
     final List<Note>? restoredNotes = await RestoreService.restoreNotes();
 
-    if (mounted) {
-      if (restoredNotes != null) {
-        _log.info("Restore service returned ${restoredNotes.length} notes.");
-        await ref.read(notesProvider.notifier).replaceAllNotes(restoredNotes);
+    if (!mounted) {
+      _log.warning(
+        "Widget was unmounted during or after RestoreService.restoreNotes(). Aborting _handleRestore.",
+      );
+      return;
+    }
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.restoreSuccessful),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.restoreFailed),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+    final l10n = AppLocalizations.of(context);
+
+    if (restoredNotes != null) {
+      _log.info("Restore service returned ${restoredNotes.length} notes.");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.restoreSuccessful),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      await ref.read(notesProvider.notifier).replaceAllNotes(restoredNotes);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.restoreFailed),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
 
     if (mounted) {
@@ -143,7 +148,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _log.fine("Called final setState in _handleRestore.");
     } else {
       _log.warning(
-        "Skipped final setState in _handleRestore because widget was unmounted.",
+        "Skipped final setState in _handleRestore because widget was unmounted (likely after notes update).",
       );
     }
   }

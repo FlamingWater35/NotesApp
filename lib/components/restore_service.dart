@@ -31,7 +31,6 @@ class RestoreService {
         _log.warning(
           "Restore failed: Selected file is not a .json file (extension: $fileExtension).",
         );
-        // Possibly show a specific user message here
         return null;
       }
 

@@ -12,7 +12,7 @@ class BackupService {
     _log.info("Starting notes backup process...");
     if (notes.isEmpty) {
       _log.warning("No notes available to backup.");
-      return false; // No need to backup when no notes
+      return false;
     }
 
     try {
