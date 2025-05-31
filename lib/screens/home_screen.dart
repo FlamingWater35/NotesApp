@@ -92,11 +92,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                getSortPropertyText(context, _sortBy),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w500,
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Text(
+                  getSortPropertyText(context, _sortBy),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               Icon(

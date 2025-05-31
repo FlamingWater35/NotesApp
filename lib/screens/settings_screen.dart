@@ -28,6 +28,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   static const Duration _settingAnimationDuration = Duration(milliseconds: 300);
 
   String _appVersion = '';
+  bool _areNotesEmpty = true;
+  List<Note> _currentNotes = [];
   bool _isBackupRestoreRunning = false;
   final _log = Logger('SettingsScreen');
 
@@ -35,6 +37,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _getAppVersion();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkNotes();
   }
 
   Future<void> _getAppVersion() async {
@@ -66,16 +74,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  Future<void> _checkNotes() async {
+    _log.info("Getting notes from provider");
+    final notesAsync = ref.read(notesProvider);
+    final List<Note> retrievedNotes = notesAsync.value ?? [];
+
+    _log.info("Got notes, updating states");
+    if (mounted) {
+      setState(() {
+        _areNotesEmpty = retrievedNotes.isEmpty;
+        _currentNotes = retrievedNotes;
+      });
+    }
+  }
+
   Future<void> _handleBackup() async {
     if (_isBackupRestoreRunning) return;
     setState(() => _isBackupRestoreRunning = true);
     _log.info("Backup button tapped");
     final l10n = AppLocalizations.of(context);
 
-    final notesAsync = ref.read(notesProvider);
-    final List<Note> currentNotes = notesAsync.value ?? [];
-
-    final bool success = await BackupService.backupNotes(currentNotes);
+    final bool success = await BackupService.backupNotes(_currentNotes);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -217,7 +236,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                               title: Text(l10n.backupNotesTitle),
                               subtitle: Text(l10n.backupNotesSubtitle),
-                              enabled: !_isBackupRestoreRunning,
+                              enabled:
+                                  !_isBackupRestoreRunning && !_areNotesEmpty,
                               onTap: _handleBackup,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16.0,
@@ -300,7 +320,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                 ],
               ),
             ),
