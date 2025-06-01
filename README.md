@@ -1,4 +1,4 @@
-# Notes App
+# NotesApp
 
 A Material 3 app for writing down notes.
 
@@ -22,7 +22,9 @@ A Material 3 app for writing down notes.
 
 - Android 5 or newer
 
-## Installation
+## Installation and setup
 
 1. Go to latest release
-2. Download an apk compatible with your device (arm-v8 is recommended for newer phones)
+2. Download an apk compatible with your device (arm-v8 is recommended for phones manufactured after 2016)
+3. Install the downloaded file
+4. Run the installed application
