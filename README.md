@@ -1,6 +1,6 @@
 # Notes App
 
-A Material 3 note keeping app made with Flutter.
+A Material 3 app for writing down notes.
 
 ## Features
 
