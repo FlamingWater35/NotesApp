@@ -15,7 +15,7 @@ A Material 3 note keeping app made with Flutter.
    <img src="screenshots/qemu-system-x86_64_lguPgXaFKA.png" alt="Home screen of the application" width="25%">
    <img src="screenshots/qemu-system-x86_64_PQHbSh5Yjb.png" alt="Editing screen of the application" width="25%">
    <img src="screenshots/qemu-system-x86_64_p7lJQetggp.png" alt="Settings screen of the application (dark theme)" width="25%">
-   <img src="sscreenshots/qemu-system-x86_64_ubQLFms0KF.png" alt="Settings screen of the application (light theme)" width="25%">
+   <img src="screenshots/qemu-system-x86_64_ubQLFms0KF.png" alt="Settings screen of the application (light theme)" width="25%">
 </p>
 
 ## Requirements
