@@ -1,12 +1,14 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/note_model.dart';
 import '../components/backup_service.dart';
 import '../components/restore_service.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/locale_provider.dart';
 import '../providers/notes_provider.dart';
 import '../providers/theme_provider.dart';
@@ -14,8 +16,6 @@ import '../widgets/settings/language_widget.dart';
 import '../widgets/settings/settings_section_widget.dart';
 import '../widgets/settings/thememode_widget.dart';
 import 'update_screen.dart';
-import '../../models/note_model.dart';
-import '../l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});

@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animations/animations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 
+import '../l10n/app_localizations.dart';
+import 'models/note_model.dart';
 import 'providers/notes_provider.dart';
 import 'screens/add_note_screen.dart';
 import 'screens/edit_note_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/settings_screen.dart';
-import 'models/note_model.dart';
-import '../l10n/app_localizations.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});

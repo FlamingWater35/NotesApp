@@ -1,13 +1,13 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
-import 'package:logging/logging.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 
 import '../../models/note_model.dart';
 import '../l10n/app_localizations.dart';
-
 import '../providers/notes_provider.dart';
 import '../widgets/note_editor_content.dart';
 import '../widgets/note_editor_dialogs.dart';
