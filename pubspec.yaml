@@ -1,5 +1,5 @@
 name: notes_app
-description: "A Material 3 app for writing down notes."
+description: "A new Flutter project."
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # Read more about Android versioning at https://developer.android.com/studio/publish/versioning
