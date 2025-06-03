@@ -1,13 +1,14 @@
 # NotesApp
 
-A Material 3 app for writing down notes.
+A Material 3 app for writing down notes and keeping track of important things.
 
 ## Features
 
-- Rich text editor
-- Note filtering
+- Feature-rich text editor
+- Note sorting/filtering
 - Date picker
 - Backup and restore
+- In-app updater
 
 ## Showcase
 
@@ -20,11 +21,13 @@ A Material 3 app for writing down notes.
 
 ## Requirements
 
-- Android 5 or newer
+- Platform: Android
+- Operating System: Android 5 or newer
+- Network: Optional, needed for in-app updater
 
 ## Installation and setup
 
-1. Go to latest release
-2. Download an apk compatible with your device (arm-v8 is recommended for phones manufactured after 2016)
+1. Head to the latest release
+2. Download an apk file compatible with your device (arm-v8 is recommended for phones manufactured after 2016)
 3. Install the downloaded file
-4. Run the installed application
+4. Open the installed application
