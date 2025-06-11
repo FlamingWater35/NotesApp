@@ -18,13 +18,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get saveNoteTooltip => 'Tallenna muistiinpano';
 
   @override
-  String get cannotSaveNoteWithoutTitle => 'Muistiinpanoa ei voi tallentaa ilman otsikkoa.';
+  String get cannotSaveNoteWithoutTitle =>
+      'Muistiinpanoa ei voi tallentaa ilman otsikkoa.';
 
   @override
   String get discardChangesDialogTitle => 'Hylätäänkö muutokset?';
 
   @override
-  String get discardChangesDialogContent => 'Jos palaat nyt, muutoksesi katoavat.';
+  String get discardChangesDialogContent =>
+      'Jos palaat nyt, muutoksesi katoavat.';
 
   @override
   String get cancelButtonLabel => 'Peruuta';
@@ -45,7 +47,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get editNoteScreenTitle => 'Muokkaa muistiinpanoa';
 
   @override
-  String get errorCouldNotLoadNoteData => 'Virhe: Muistiinpanon tietoja ei voitu ladata.';
+  String get errorCouldNotLoadNoteData =>
+      'Virhe: Muistiinpanon tietoja ei voitu ladata.';
 
   @override
   String errorSavingNote(String errorDetails) {
@@ -108,7 +111,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get sortDescendingTooltip => 'Laskeva (Ö-A, Uusin ensin)';
 
   @override
-  String get emptyNotesMessage => 'Ei muistiinpanoja vielä.\nPaina + lisätäksesi!';
+  String get emptyNotesMessage =>
+      'Ei muistiinpanoja vielä.\nPaina + lisätäksesi!';
 
   @override
   String get noNotesFoundMessage => 'Hakutuloksia ei löytynyt.';
@@ -257,10 +261,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get updateErrorIncompleteInfo => 'Päivitystiedot puutteellisia.';
 
   @override
-  String get updateErrorCouldNotStartInstall => 'Asennuksen aloitus epäonnistui. Tarkista oikeudet.';
+  String get updateErrorCouldNotStartInstall =>
+      'Asennuksen aloitus epäonnistui. Tarkista oikeudet.';
 
   @override
-  String get updateErrorDownloadFailed => 'Lataus epäonnistui. Tarkista yhteys.';
+  String get updateErrorDownloadFailed =>
+      'Lataus epäonnistui. Tarkista yhteys.';
 
   @override
   String get versionNotAvailable => 'Ei saatavilla';

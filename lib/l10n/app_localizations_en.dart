@@ -18,13 +18,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveNoteTooltip => 'Save Note';
 
   @override
-  String get cannotSaveNoteWithoutTitle => 'Cannot save a note without a title.';
+  String get cannotSaveNoteWithoutTitle =>
+      'Cannot save a note without a title.';
 
   @override
   String get discardChangesDialogTitle => 'Discard changes?';
 
   @override
-  String get discardChangesDialogContent => 'If you go back now, your changes will be lost.';
+  String get discardChangesDialogContent =>
+      'If you go back now, your changes will be lost.';
 
   @override
   String get cancelButtonLabel => 'Cancel';
@@ -251,16 +253,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateErrorNoNewUpdate => 'No new update available.';
 
   @override
-  String get updateErrorUnexpected => 'An unexpected error occurred during check.';
+  String get updateErrorUnexpected =>
+      'An unexpected error occurred during check.';
 
   @override
   String get updateErrorIncompleteInfo => 'Update information is incomplete.';
 
   @override
-  String get updateErrorCouldNotStartInstall => 'Could not start installation. Check permissions.';
+  String get updateErrorCouldNotStartInstall =>
+      'Could not start installation. Check permissions.';
 
   @override
-  String get updateErrorDownloadFailed => 'Download failed. Check connection and permissions.';
+  String get updateErrorDownloadFailed =>
+      'Download failed. Check connection and permissions.';
 
   @override
   String get versionNotAvailable => 'N/A';

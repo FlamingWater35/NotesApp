@@ -257,7 +257,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get updateErrorIncompleteInfo => 'アップデート情報が不完全です。';
 
   @override
-  String get updateErrorCouldNotStartInstall => 'インストールを開始できませんでした。権限を確認してください。';
+  String get updateErrorCouldNotStartInstall =>
+      'インストールを開始できませんでした。権限を確認してください。';
 
   @override
   String get updateErrorDownloadFailed => 'ダウンロードに失敗しました。接続を確認してください。';

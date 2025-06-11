@@ -18,13 +18,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get saveNoteTooltip => 'Simpan Catatan';
 
   @override
-  String get cannotSaveNoteWithoutTitle => 'Tidak dapat menyimpan catatan tanpa judul.';
+  String get cannotSaveNoteWithoutTitle =>
+      'Tidak dapat menyimpan catatan tanpa judul.';
 
   @override
   String get discardChangesDialogTitle => 'Buang perubahan?';
 
   @override
-  String get discardChangesDialogContent => 'Jika Anda kembali sekarang, perubahan akan hilang.';
+  String get discardChangesDialogContent =>
+      'Jika Anda kembali sekarang, perubahan akan hilang.';
 
   @override
   String get cancelButtonLabel => 'Batal';
@@ -45,7 +47,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get editNoteScreenTitle => 'Edit Catatan';
 
   @override
-  String get errorCouldNotLoadNoteData => 'Error: Tidak dapat memuat data catatan.';
+  String get errorCouldNotLoadNoteData =>
+      'Error: Tidak dapat memuat data catatan.';
 
   @override
   String errorSavingNote(String errorDetails) {
@@ -108,7 +111,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get sortDescendingTooltip => 'Turun (Z-A, Baru dulu)';
 
   @override
-  String get emptyNotesMessage => 'Belum ada catatan.\nTekan + untuk menambahkan!';
+  String get emptyNotesMessage =>
+      'Belum ada catatan.\nTekan + untuk menambahkan!';
 
   @override
   String get noNotesFoundMessage => 'Tidak ada catatan yang cocok.';
@@ -257,7 +261,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get updateErrorIncompleteInfo => 'Informasi pembaruan tidak lengkap.';
 
   @override
-  String get updateErrorCouldNotStartInstall => 'Tidak bisa mulai instalasi. Periksa izin.';
+  String get updateErrorCouldNotStartInstall =>
+      'Tidak bisa mulai instalasi. Periksa izin.';
 
   @override
   String get updateErrorDownloadFailed => 'Unduhan gagal. Periksa koneksi.';

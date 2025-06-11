@@ -18,13 +18,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get saveNoteTooltip => 'Сохранить заметку';
 
   @override
-  String get cannotSaveNoteWithoutTitle => 'Нельзя сохранить заметку без заголовка.';
+  String get cannotSaveNoteWithoutTitle =>
+      'Нельзя сохранить заметку без заголовка.';
 
   @override
   String get discardChangesDialogTitle => 'Отменить изменения?';
 
   @override
-  String get discardChangesDialogContent => 'Если вы вернетесь сейчас, ваши изменения будут потеряны.';
+  String get discardChangesDialogContent =>
+      'Если вы вернетесь сейчас, ваши изменения будут потеряны.';
 
   @override
   String get cancelButtonLabel => 'Отмена';
@@ -45,7 +47,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editNoteScreenTitle => 'Редактировать заметку';
 
   @override
-  String get errorCouldNotLoadNoteData => 'Ошибка: Не удалось загрузить данные заметки.';
+  String get errorCouldNotLoadNoteData =>
+      'Ошибка: Не удалось загрузить данные заметки.';
 
   @override
   String errorSavingNote(String errorDetails) {
@@ -108,7 +111,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sortDescendingTooltip => 'По убыванию (Я-А, Новые сначала)';
 
   @override
-  String get emptyNotesMessage => 'Пока нет заметок.\nНажмите +, чтобы добавить!';
+  String get emptyNotesMessage =>
+      'Пока нет заметок.\nНажмите +, чтобы добавить!';
 
   @override
   String get noNotesFoundMessage => 'Заметки не найдены.';
@@ -257,10 +261,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get updateErrorIncompleteInfo => 'Неполная информация об обновлении.';
 
   @override
-  String get updateErrorCouldNotStartInstall => 'Не удалось начать установку. Проверьте разрешения.';
+  String get updateErrorCouldNotStartInstall =>
+      'Не удалось начать установку. Проверьте разрешения.';
 
   @override
-  String get updateErrorDownloadFailed => 'Ошибка загрузки. Проверьте соединение.';
+  String get updateErrorDownloadFailed =>
+      'Ошибка загрузки. Проверьте соединение.';
 
   @override
   String get versionNotAvailable => 'Н/Д';

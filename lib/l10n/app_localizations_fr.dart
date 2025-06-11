@@ -18,13 +18,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get saveNoteTooltip => 'Enregistrer la Note';
 
   @override
-  String get cannotSaveNoteWithoutTitle => 'Impossible d\'enregistrer une note sans titre.';
+  String get cannotSaveNoteWithoutTitle =>
+      'Impossible d\'enregistrer une note sans titre.';
 
   @override
   String get discardChangesDialogTitle => 'Annuler les modifications ?';
 
   @override
-  String get discardChangesDialogContent => 'Si vous revenez en arrière maintenant, vos modifications seront perdues.';
+  String get discardChangesDialogContent =>
+      'Si vous revenez en arrière maintenant, vos modifications seront perdues.';
 
   @override
   String get cancelButtonLabel => 'Annuler';
@@ -45,7 +47,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editNoteScreenTitle => 'Modifier la Note';
 
   @override
-  String get errorCouldNotLoadNoteData => 'Erreur : Impossible de charger les données de la note.';
+  String get errorCouldNotLoadNoteData =>
+      'Erreur : Impossible de charger les données de la note.';
 
   @override
   String errorSavingNote(String errorDetails) {
@@ -105,13 +108,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sortAscendingTooltip => 'Croissant (A-Z, Plus anciennes d\'abord)';
 
   @override
-  String get sortDescendingTooltip => 'Décroissant (Z-A, Plus récentes d\'abord)';
+  String get sortDescendingTooltip =>
+      'Décroissant (Z-A, Plus récentes d\'abord)';
 
   @override
-  String get emptyNotesMessage => 'Aucune note pour l\'instant.\nAppuyez sur le bouton + pour en ajouter une !';
+  String get emptyNotesMessage =>
+      'Aucune note pour l\'instant.\nAppuyez sur le bouton + pour en ajouter une !';
 
   @override
-  String get noNotesFoundMessage => 'Aucune note trouvée correspondant à votre recherche.';
+  String get noNotesFoundMessage =>
+      'Aucune note trouvée correspondant à votre recherche.';
 
   @override
   String errorLoadingNotes(String errorDetails) {
@@ -184,7 +190,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get restoreNotesTitle => 'Restaurer les Notes';
 
   @override
-  String get restoreNotesSubtitle => 'Charger les notes depuis un fichier de sauvegarde';
+  String get restoreNotesSubtitle =>
+      'Charger les notes depuis un fichier de sauvegarde';
 
   @override
   String get applicationSectionTitle => 'Application';
@@ -248,19 +255,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get updateStatusInstalled => 'Dialogue d\'installation affiché';
 
   @override
-  String get updateErrorNoNewUpdate => 'Aucune nouvelle mise à jour disponible.';
+  String get updateErrorNoNewUpdate =>
+      'Aucune nouvelle mise à jour disponible.';
 
   @override
-  String get updateErrorUnexpected => 'Une erreur inattendue s\'est produite lors de la vérification.';
+  String get updateErrorUnexpected =>
+      'Une erreur inattendue s\'est produite lors de la vérification.';
 
   @override
-  String get updateErrorIncompleteInfo => 'Les informations de mise à jour sont incomplètes.';
+  String get updateErrorIncompleteInfo =>
+      'Les informations de mise à jour sont incomplètes.';
 
   @override
-  String get updateErrorCouldNotStartInstall => 'Impossible de démarrer l\'installation. Vérifiez les autorisations.';
+  String get updateErrorCouldNotStartInstall =>
+      'Impossible de démarrer l\'installation. Vérifiez les autorisations.';
 
   @override
-  String get updateErrorDownloadFailed => 'Échec du téléchargement. Vérifiez la connexion et les autorisations.';
+  String get updateErrorDownloadFailed =>
+      'Échec du téléchargement. Vérifiez la connexion et les autorisations.';
 
   @override
   String get versionNotAvailable => 'N/D';

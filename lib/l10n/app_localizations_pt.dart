@@ -18,13 +18,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get saveNoteTooltip => 'Salvar Nota';
 
   @override
-  String get cannotSaveNoteWithoutTitle => 'Não é possível salvar uma nota sem título.';
+  String get cannotSaveNoteWithoutTitle =>
+      'Não é possível salvar uma nota sem título.';
 
   @override
   String get discardChangesDialogTitle => 'Descartar alterações?';
 
   @override
-  String get discardChangesDialogContent => 'Se você voltar agora, suas alterações serão perdidas.';
+  String get discardChangesDialogContent =>
+      'Se você voltar agora, suas alterações serão perdidas.';
 
   @override
   String get cancelButtonLabel => 'Cancelar';
@@ -45,7 +47,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get editNoteScreenTitle => 'Editar Nota';
 
   @override
-  String get errorCouldNotLoadNoteData => 'Erro: Não foi possível carregar os dados da nota.';
+  String get errorCouldNotLoadNoteData =>
+      'Erro: Não foi possível carregar os dados da nota.';
 
   @override
   String errorSavingNote(String errorDetails) {
@@ -108,7 +111,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sortDescendingTooltip => 'Descendente (Z-A, Mais novas primeiro)';
 
   @override
-  String get emptyNotesMessage => 'Nenhuma nota ainda.\nToque no + para adicionar!';
+  String get emptyNotesMessage =>
+      'Nenhuma nota ainda.\nToque no + para adicionar!';
 
   @override
   String get noNotesFoundMessage => 'Nenhuma nota encontrada.';
@@ -257,10 +261,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get updateErrorIncompleteInfo => 'Informações incompletas.';
 
   @override
-  String get updateErrorCouldNotStartInstall => 'Não foi possível instalar. Verifique permissões.';
+  String get updateErrorCouldNotStartInstall =>
+      'Não foi possível instalar. Verifique permissões.';
 
   @override
-  String get updateErrorDownloadFailed => 'Falha no download. Verifique conexão.';
+  String get updateErrorDownloadFailed =>
+      'Falha no download. Verifique conexão.';
 
   @override
   String get versionNotAvailable => 'N/D';

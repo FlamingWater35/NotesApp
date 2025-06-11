@@ -18,13 +18,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get saveNoteTooltip => 'Guardar Nota';
 
   @override
-  String get cannotSaveNoteWithoutTitle => 'No se puede guardar una nota sin título.';
+  String get cannotSaveNoteWithoutTitle =>
+      'No se puede guardar una nota sin título.';
 
   @override
   String get discardChangesDialogTitle => '¿Descartar cambios?';
 
   @override
-  String get discardChangesDialogContent => 'Si retrocedes ahora, tus cambios se perderán.';
+  String get discardChangesDialogContent =>
+      'Si retrocedes ahora, tus cambios se perderán.';
 
   @override
   String get cancelButtonLabel => 'Cancelar';
@@ -45,7 +47,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get editNoteScreenTitle => 'Editar Nota';
 
   @override
-  String get errorCouldNotLoadNoteData => 'Error: No se pudieron cargar los datos de la nota.';
+  String get errorCouldNotLoadNoteData =>
+      'Error: No se pudieron cargar los datos de la nota.';
 
   @override
   String errorSavingNote(String errorDetails) {
@@ -108,10 +111,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sortDescendingTooltip => 'Descendente (Z-A, Más nuevas primero)';
 
   @override
-  String get emptyNotesMessage => 'Aún no hay notas.\n¡Toca el botón + para añadir una!';
+  String get emptyNotesMessage =>
+      'Aún no hay notas.\n¡Toca el botón + para añadir una!';
 
   @override
-  String get noNotesFoundMessage => 'No se encontraron notas que coincidan con tu búsqueda.';
+  String get noNotesFoundMessage =>
+      'No se encontraron notas que coincidan con tu búsqueda.';
 
   @override
   String errorLoadingNotes(String errorDetails) {
@@ -184,7 +189,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get restoreNotesTitle => 'Restaurar Notas';
 
   @override
-  String get restoreNotesSubtitle => 'Cargar notas desde un archivo de copia de seguridad';
+  String get restoreNotesSubtitle =>
+      'Cargar notas desde un archivo de copia de seguridad';
 
   @override
   String get applicationSectionTitle => 'Aplicación';
@@ -248,19 +254,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get updateStatusInstalled => 'Diálogo de instalación mostrado';
 
   @override
-  String get updateErrorNoNewUpdate => 'No hay nuevas actualizaciones disponibles.';
+  String get updateErrorNoNewUpdate =>
+      'No hay nuevas actualizaciones disponibles.';
 
   @override
-  String get updateErrorUnexpected => 'Ocurrió un error inesperado durante la búsqueda.';
+  String get updateErrorUnexpected =>
+      'Ocurrió un error inesperado durante la búsqueda.';
 
   @override
-  String get updateErrorIncompleteInfo => 'La información de la actualización está incompleta.';
+  String get updateErrorIncompleteInfo =>
+      'La información de la actualización está incompleta.';
 
   @override
-  String get updateErrorCouldNotStartInstall => 'No se pudo iniciar la instalación. Verifica los permisos.';
+  String get updateErrorCouldNotStartInstall =>
+      'No se pudo iniciar la instalación. Verifica los permisos.';
 
   @override
-  String get updateErrorDownloadFailed => 'Descarga fallida. Verifica la conexión y los permisos.';
+  String get updateErrorDownloadFailed =>
+      'Descarga fallida. Verifica la conexión y los permisos.';
 
   @override
   String get versionNotAvailable => 'N/D';
