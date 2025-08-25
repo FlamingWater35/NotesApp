@@ -38,6 +38,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   String _originalContentJson = '';
   Note? _originalNote;
   late QuillController _quillController;
+  final GlobalKey<EditorState> _quillEditorKey = GlobalKey<EditorState>();
   DateTime? _selectedDate;
   late TextEditingController _titleController;
 
@@ -46,6 +47,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     _log.fine("dispose called");
     _titleController.removeListener(_checkIfDirty);
     _quillController.removeListener(_checkIfDirty);
+    _quillController.removeListener(_scrollToSelection);
     _titleController.dispose();
 
     _quillController.dispose();
@@ -61,6 +63,31 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     _log.fine("initState called for editing note ID: ${widget.noteId}");
     _titleController = TextEditingController();
     _loadNoteData();
+  }
+
+  void _scrollToSelection() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final editorState = _quillEditorKey.currentState;
+      if (editorState == null) {
+        _log.finer('Quill Editor state is null, cannot scroll.');
+        return;
+      }
+
+      final renderEditor = editorState.renderEditor;
+      try {
+        final caretRect = renderEditor.getLocalRectForCaret(
+          _quillController.selection.extent,
+        );
+
+        renderEditor.showOnScreen(
+          rect: caretRect,
+          duration: const Duration(milliseconds: 200),
+        );
+      } catch (e, s) {
+        _log.warning('Could not scroll to selection', e, s);
+      }
+    });
   }
 
   Future<void> _loadNoteData() async {
@@ -83,6 +110,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
 
       _titleController.addListener(_checkIfDirty);
       _quillController.addListener(_checkIfDirty);
+      _quillController.addListener(_scrollToSelection);
 
       setState(() {
         _isLoading = false;
@@ -287,6 +315,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
               children: [
                 Expanded(
                   child: NoteEditorContentWidget(
+                    quillEditorKey: _quillEditorKey,
                     titleController: _titleController,
                     quillController: _quillController,
                     editorFocusNode: _editorFocusNode,

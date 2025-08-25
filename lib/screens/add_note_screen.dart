@@ -28,6 +28,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   bool _isDirty = false;
   final _log = Logger('AddNoteScreenState');
   late QuillController _quillController;
+  final GlobalKey<EditorState> _quillEditorKey = GlobalKey<EditorState>();
   DateTime _selectedDate = DateTime.now();
   final TextEditingController _titleController = TextEditingController();
 
@@ -36,6 +37,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
     _log.fine("dispose called");
     _titleController.removeListener(_checkIfDirty);
     _quillController.removeListener(_checkIfDirty);
+    _quillController.removeListener(_scrollToSelection);
     _titleController.dispose();
     _quillController.dispose();
 
@@ -63,6 +65,32 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
     _titleController.addListener(_checkIfDirty);
     _quillController.addListener(_checkIfDirty);
+    _quillController.addListener(_scrollToSelection);
+  }
+
+  void _scrollToSelection() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final editorState = _quillEditorKey.currentState;
+      if (editorState == null) {
+        _log.finer('Quill Editor state is null, cannot scroll.');
+        return;
+      }
+
+      final renderEditor = editorState.renderEditor;
+      try {
+        final caretRect = renderEditor.getLocalRectForCaret(
+          _quillController.selection.extent,
+        );
+
+        renderEditor.showOnScreen(
+          rect: caretRect,
+          duration: const Duration(milliseconds: 200),
+        );
+      } catch (e, s) {
+        _log.warning('Could not scroll to selection', e, s);
+      }
+    });
   }
 
   void _checkIfDirty() {
@@ -179,6 +207,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
           children: [
             Expanded(
               child: NoteEditorContentWidget(
+                quillEditorKey: _quillEditorKey,
                 titleController: _titleController,
                 quillController: _quillController,
                 editorFocusNode: _editorFocusNode,
