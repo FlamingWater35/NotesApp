@@ -15,7 +15,6 @@ class NoteEditorContentWidget extends StatelessWidget {
     required this.onSelectDate,
     required this.l10n,
     this.isEditable = true,
-    this.quillEditorKey,
     this.heroTag,
   });
 
@@ -28,13 +27,11 @@ class NoteEditorContentWidget extends StatelessWidget {
   final AppLocalizations l10n;
   final VoidCallback onSelectDate;
   final QuillController quillController;
-  final GlobalKey<EditorState>? quillEditorKey;
   final TextEditingController titleController;
 
   @override
   Widget build(BuildContext context) {
     final quillEditor = QuillEditor(
-      key: quillEditorKey,
       focusNode: editorFocusNode,
       scrollController: editorScrollController,
       controller: quillController,
