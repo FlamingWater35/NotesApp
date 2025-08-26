@@ -21,7 +21,6 @@ class AddNoteScreen extends ConsumerStatefulWidget {
 }
 
 class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
-  final ScrollController _cardScrollController = ScrollController();
   final FocusNode _editorFocusNode = FocusNode();
   final ScrollController _editorScrollController = ScrollController();
   late DateTime _initialDate;
@@ -41,7 +40,6 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
     _editorFocusNode.dispose();
     _editorScrollController.dispose();
-    _cardScrollController.dispose();
     super.dispose();
   }
 
@@ -54,10 +52,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
 
     _quillController = QuillController.basic(
       config: QuillControllerConfig(
-        clipboardConfig: QuillClipboardConfig(
-          enableExternalRichPaste: true,
-          // onImagePaste:
-        ),
+        clipboardConfig: QuillClipboardConfig(enableExternalRichPaste: true),
       ),
     );
 
@@ -183,7 +178,6 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                 quillController: _quillController,
                 editorFocusNode: _editorFocusNode,
                 editorScrollController: _editorScrollController,
-                cardScrollController: _cardScrollController,
                 displayDate: displayDate,
                 onSelectDate: () => _selectDate(context),
                 l10n: l10n,

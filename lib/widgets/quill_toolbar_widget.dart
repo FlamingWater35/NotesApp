@@ -40,6 +40,180 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     });
   }
 
+  void _showSearchDialog(
+    BuildContext context,
+    QuillController controller,
+    FocusNode? editorFocusNode,
+  ) {
+    final searchController = TextEditingController();
+    final matchPositions = <int>[];
+    int currentMatchIndex = -1;
+    bool isCaseSensitive = false;
+    String? lastSearchedText;
+
+    void runSearch(StateSetter setState) {
+      final query = searchController.text;
+      if (lastSearchedText == query) return;
+
+      lastSearchedText = query;
+      matchPositions.clear();
+      currentMatchIndex = -1;
+
+      if (query.isNotEmpty) {
+        final documentText = controller.document.toPlainText();
+        final textToSearch =
+            isCaseSensitive ? documentText : documentText.toLowerCase();
+        final queryToSearch = isCaseSensitive ? query : query.toLowerCase();
+
+        int startIndex = 0;
+        while ((startIndex = textToSearch.indexOf(queryToSearch, startIndex)) !=
+            -1) {
+          matchPositions.add(startIndex);
+          startIndex += query.length;
+        }
+      }
+      setState(() {});
+    }
+
+    void navigateToMatch(StateSetter setState, int direction) {
+      if (matchPositions.isEmpty) return;
+
+      currentMatchIndex =
+          (currentMatchIndex + direction + matchPositions.length) %
+          matchPositions.length;
+      final position = matchPositions[currentMatchIndex];
+      final query = searchController.text;
+
+      editorFocusNode?.requestFocus();
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (!mounted) return;
+        controller.updateSelection(
+          TextSelection(
+            baseOffset: position,
+            extentOffset: position + query.length,
+          ),
+          ChangeSource.local,
+        );
+      });
+
+      setState(() {});
+    }
+
+    showDialog<void>(
+      // TODO: Implement localization
+      context: context,
+      barrierColor: Colors.black38,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final hasQuery = searchController.text.isNotEmpty;
+            final hasMatches = matchPositions.isNotEmpty;
+
+            return AlertDialog(
+              title: const Text("Search in Note"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      hintText: "Search...",
+                      suffixIcon:
+                          hasQuery
+                              ? IconButton(
+                                icon: const Icon(Icons.clear, size: 20),
+                                onPressed: () {
+                                  searchController.clear();
+                                  runSearch(setState);
+                                },
+                              )
+                              : null,
+                    ),
+                    autofocus: true,
+                    onChanged: (value) => runSearch(setState),
+                    onSubmitted: (_) => navigateToMatch(setState, 1),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isCaseSensitive,
+                            onChanged: (value) {
+                              setState(() {
+                                isCaseSensitive = value ?? false;
+                                lastSearchedText = null;
+                              });
+                              runSearch(setState);
+                            },
+                          ),
+                          const Text("Case sensitive"),
+                        ],
+                      ),
+                      if (hasQuery)
+                        Text(
+                          hasMatches
+                              ? "${currentMatchIndex + 1} of ${matchPositions.length}"
+                              : "No results",
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                TextButton(
+                  child: const Text("Close"),
+                  onPressed: () {
+                    controller.updateSelection(
+                      TextSelection.collapsed(
+                        offset: controller.selection.baseOffset,
+                      ),
+                      ChangeSource.local,
+                    );
+                    Navigator.of(context).pop();
+                  },
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_upward),
+                      tooltip: "Previous match",
+                      onPressed:
+                          hasMatches
+                              ? () => navigateToMatch(setState, -1)
+                              : null,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_downward),
+                      tooltip: "Next match",
+                      onPressed:
+                          hasMatches
+                              ? () => navigateToMatch(setState, 1)
+                              : null,
+                    ),
+                  ],
+                ),
+              ],
+              contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+              actionsPadding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      editorFocusNode?.requestFocus();
+    });
+  }
+
   Widget _buildExpandableSectionContainer(
     BuildContext context,
     List<Widget> children,
@@ -371,11 +545,18 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                     collapseIcon,
                   ),
                   const VerticalDivider(width: 5),
-                  QuillToolbarSearchButton(
-                    controller: widget.controller,
-                    options: QuillToolbarSearchButtonOptions(
-                      iconSize: QuillToolbarWidget.defaultToolbarIconSize,
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    iconSize: QuillToolbarWidget.defaultMainToolbarIconSize,
+                    onPressed: () {
+                      if (mounted) {
+                        _showSearchDialog(
+                          context,
+                          widget.controller,
+                          widget.editorFocusNode,
+                        );
+                      }
+                    },
                   ),
                   QuillToolbarLinkStyleButton(
                     controller: widget.controller,

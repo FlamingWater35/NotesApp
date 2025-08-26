@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,19 @@ import '../providers/notes_provider.dart';
 import '../widgets/note_editor_content.dart';
 import '../widgets/note_editor_dialogs.dart';
 import '../widgets/quill_toolbar_widget.dart';
+
+Document _parseQuillContent(String contentJson) {
+  if (contentJson.isEmpty) {
+    return Document();
+  }
+  try {
+    final List<dynamic> deltaJson = jsonDecode(contentJson);
+    return Document.fromJson(deltaJson);
+  } catch (e) {
+    debugPrint("Error parsing quill content: $e");
+    return Document()..insert(0, 'Error: Could not load content.');
+  }
+}
 
 class EditNoteScreen extends ConsumerStatefulWidget {
   const EditNoteScreen({
@@ -28,7 +42,6 @@ class EditNoteScreen extends ConsumerStatefulWidget {
 }
 
 class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
-  final ScrollController _cardScrollController = ScrollController();
   final FocusNode _editorFocusNode = FocusNode();
   final ScrollController _editorScrollController = ScrollController();
   bool _isDirty = false;
@@ -37,7 +50,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   final _log = Logger('EditNoteScreenState');
   String _originalContentJson = '';
   Note? _originalNote;
-  late QuillController _quillController;
+  QuillController? _quillController;
   DateTime? _selectedDate;
   late TextEditingController _titleController;
 
@@ -45,13 +58,12 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   void dispose() {
     _log.fine("dispose called");
     _titleController.removeListener(_checkIfDirty);
-    _quillController.removeListener(_checkIfDirty);
+    _quillController?.removeListener(_checkIfDirty);
     _titleController.dispose();
 
-    _quillController.dispose();
+    _quillController?.dispose();
     _editorFocusNode.dispose();
     _editorScrollController.dispose();
-    _cardScrollController.dispose();
     super.dispose();
   }
 
@@ -66,13 +78,22 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   Future<void> _loadNoteData() async {
     final note = ref.read(notesProvider.notifier).getNoteById(widget.noteId);
 
-    if (note != null && mounted) {
-      _originalNote = note;
-      _titleController.text = note.title;
-      _selectedDate = note.date;
-      _originalContentJson = note.content;
+    if (note != null) {
+      if (mounted) {
+        setState(() {
+          _originalNote = note;
+          _titleController.text = note.title;
+          _selectedDate = note.date;
+          _originalContentJson = note.content;
+        });
+      } else {
+        return;
+      }
 
-      final Document doc = note.contentDocument;
+      final Document doc = await compute(_parseQuillContent, note.content);
+
+      if (!mounted) return;
+
       _quillController = QuillController(
         document: doc,
         selection: const TextSelection.collapsed(offset: 0),
@@ -82,7 +103,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       );
 
       _titleController.addListener(_checkIfDirty);
-      _quillController.addListener(_checkIfDirty);
+      _quillController!.addListener(_checkIfDirty);
 
       setState(() {
         _isLoading = false;
@@ -105,10 +126,10 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   }
 
   void _checkIfDirty() {
-    if (_originalNote == null) return;
+    if (_originalNote == null || _quillController == null) return;
 
     final String currentContentJson = jsonEncode(
-      _quillController.document.toDelta().toJson(),
+      _quillController!.document.toDelta().toJson(),
     );
     final bool contentChanged = currentContentJson != _originalContentJson;
 
@@ -128,7 +149,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   void _updateNote() async {
     _log.info("Attempting to update note ID: ${widget.noteId}");
     final l10n = AppLocalizations.of(context);
-    if (_originalNote == null || _isSaving) {
+    if (_originalNote == null || _isSaving || _quillController == null) {
       _log.warning(
         "Attempted to update note before it was loaded or while saving.",
       );
@@ -151,7 +172,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     });
 
     final String contentJson = jsonEncode(
-      _quillController.document.toDelta().toJson(),
+      _quillController!.document.toDelta().toJson(),
     );
     final DateTime newDate = _selectedDate ?? _originalNote!.date;
     final DateTime modifiedTime = DateTime.now();
@@ -217,12 +238,6 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     _log.finer("Building EditNoteScreen widget");
     final l10n = AppLocalizations.of(context);
 
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: Text(l10n.editNoteScreenTitle)),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
     if (_originalNote == null && !_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.errorAppBarTitle)),
@@ -231,7 +246,7 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     }
 
     final displayDate = DateFormat.yMMMd().format(
-      _selectedDate ?? _originalNote!.date,
+      _selectedDate ?? _originalNote?.date ?? DateTime.now(),
     );
 
     return PopScope(
@@ -291,17 +306,17 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                     quillController: _quillController,
                     editorFocusNode: _editorFocusNode,
                     editorScrollController: _editorScrollController,
-                    cardScrollController: _cardScrollController,
                     displayDate: displayDate,
                     onSelectDate: () => _selectDate(context),
                     l10n: l10n,
                     isEditable: !_isSaving,
                     heroTag: widget.heroTag,
+                    isLoading: _isLoading,
                   ),
                 ),
-                if (!_isLoading && _originalNote != null)
+                if (!_isLoading && _quillController != null)
                   QuillToolbarWidget(
-                    controller: _quillController,
+                    controller: _quillController!,
                     editorFocusNode: _editorFocusNode,
                   ),
               ],
