@@ -22,7 +22,7 @@ jobs:
           echo "storePassword=${{ secrets.KEY_STORE_PASSWORD }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=upload-keystore.jks" >> android/key.properties
+          echo "storeFile=../upload-keystore.jks" >> android/key.properties
       - uses: actions/setup-java@v5
         with: { distribution: "temurin", java-version: "17" }
       - uses: subosito/flutter-action@v2
