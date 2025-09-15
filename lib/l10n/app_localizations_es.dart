@@ -275,4 +275,36 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get versionNotAvailable => 'N/D';
+
+  @override
+  String get toolbarFontSize => 'Tamaño de Fuente';
+
+  @override
+  String get toolbarFontFamily => 'Familia de Fuentes';
+
+  @override
+  String get toolbarSearchInNote => 'Buscar en la Nota';
+
+  @override
+  String get toolbarSearchHint => 'Buscar...';
+
+  @override
+  String get toolbarCaseSensitive => 'Distinguir mayúsculas y minúsculas';
+
+  @override
+  String get toolbarNoResults => 'No hay resultados';
+
+  @override
+  String get toolbarCloseButtonLabel => 'Cerrar';
+
+  @override
+  String toolbarSearchMatchOf(String current, String total) {
+    return '$current de $total';
+  }
+
+  @override
+  String get toolbarPreviousMatch => 'Coincidencia anterior';
+
+  @override
+  String get toolbarNextMatch => 'Siguiente coincidencia';
 }

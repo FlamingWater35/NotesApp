@@ -129,5 +129,21 @@
     "updateErrorIncompleteInfo": "更新信息不完整。",
     "updateErrorCouldNotStartInstall": "无法开始安装。请检查权限。",
     "updateErrorDownloadFailed": "下载失败。请检查网络连接和权限。",
-    "versionNotAvailable": "不可用"
+    "versionNotAvailable": "不可用",
+    "toolbarFontSize": "字体大小",
+    "toolbarFontFamily": "字体系列",
+    "toolbarSearchInNote": "在笔记中搜索",
+    "toolbarSearchHint": "搜索...",
+    "toolbarCaseSensitive": "区分大小写",
+    "toolbarNoResults": "无结果",
+    "toolbarCloseButtonLabel": "关闭",
+    "toolbarSearchMatchOf": "{current}/{total}",
+    "@toolbarSearchMatchOf": {
+        "placeholders": {
+            "current": { "type": "String" },
+            "total": { "type": "String" }
+        }
+    },
+    "toolbarPreviousMatch": "上一个匹配项",
+    "toolbarNextMatch": "下一个匹配项"
 }

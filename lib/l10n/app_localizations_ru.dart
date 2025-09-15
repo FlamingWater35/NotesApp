@@ -270,4 +270,36 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get versionNotAvailable => 'Н/Д';
+
+  @override
+  String get toolbarFontSize => 'Размер шрифта';
+
+  @override
+  String get toolbarFontFamily => 'Семейство шрифтов';
+
+  @override
+  String get toolbarSearchInNote => 'Искать в заметке';
+
+  @override
+  String get toolbarSearchHint => 'Поиск...';
+
+  @override
+  String get toolbarCaseSensitive => 'Учитывать регистр';
+
+  @override
+  String get toolbarNoResults => 'Нет результатов';
+
+  @override
+  String get toolbarCloseButtonLabel => 'Закрыть';
+
+  @override
+  String toolbarSearchMatchOf(String current, String total) {
+    return '$current из $total';
+  }
+
+  @override
+  String get toolbarPreviousMatch => 'Предыдущее совпадение';
+
+  @override
+  String get toolbarNextMatch => 'Следующее совпадение';
 }

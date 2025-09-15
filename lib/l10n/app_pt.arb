@@ -78,5 +78,21 @@
     "updateErrorIncompleteInfo": "Informações incompletas.",
     "updateErrorCouldNotStartInstall": "Não foi possível instalar. Verifique permissões.",
     "updateErrorDownloadFailed": "Falha no download. Verifique conexão.",
-    "versionNotAvailable": "N/D"
+    "versionNotAvailable": "N/D",
+    "toolbarFontSize": "Tamanho da Fonte",
+    "toolbarFontFamily": "Família da Fonte",
+    "toolbarSearchInNote": "Pesquisar na Nota",
+    "toolbarSearchHint": "Pesquisar...",
+    "toolbarCaseSensitive": "Diferenciar maiúsculas/minúsculas",
+    "toolbarNoResults": "Sem resultados",
+    "toolbarCloseButtonLabel": "Fechar",
+    "toolbarSearchMatchOf": "{current} de {total}",
+    "@toolbarSearchMatchOf": {
+        "placeholders": {
+            "current": { "type": "String" },
+            "total": { "type": "String" }
+        }
+    },
+    "toolbarPreviousMatch": "Resultado anterior",
+    "toolbarNextMatch": "Próximo resultado"
 }

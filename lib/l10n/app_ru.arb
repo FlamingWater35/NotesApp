@@ -78,5 +78,21 @@
     "updateErrorIncompleteInfo": "Неполная информация об обновлении.",
     "updateErrorCouldNotStartInstall": "Не удалось начать установку. Проверьте разрешения.",
     "updateErrorDownloadFailed": "Ошибка загрузки. Проверьте соединение.",
-    "versionNotAvailable": "Н/Д"
+    "versionNotAvailable": "Н/Д",
+    "toolbarFontSize": "Размер шрифта",
+    "toolbarFontFamily": "Семейство шрифтов",
+    "toolbarSearchInNote": "Искать в заметке",
+    "toolbarSearchHint": "Поиск...",
+    "toolbarCaseSensitive": "Учитывать регистр",
+    "toolbarNoResults": "Нет результатов",
+    "toolbarCloseButtonLabel": "Закрыть",
+    "toolbarSearchMatchOf": "{current} из {total}",
+    "@toolbarSearchMatchOf": {
+        "placeholders": {
+            "current": { "type": "String" },
+            "total": { "type": "String" }
+        }
+    },
+    "toolbarPreviousMatch": "Предыдущее совпадение",
+    "toolbarNextMatch": "Следующее совпадение"
 }

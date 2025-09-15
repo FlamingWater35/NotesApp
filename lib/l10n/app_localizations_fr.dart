@@ -276,4 +276,36 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get versionNotAvailable => 'N/D';
+
+  @override
+  String get toolbarFontSize => 'Taille de la Police';
+
+  @override
+  String get toolbarFontFamily => 'Famille de Police';
+
+  @override
+  String get toolbarSearchInNote => 'Rechercher dans la Note';
+
+  @override
+  String get toolbarSearchHint => 'Rechercher...';
+
+  @override
+  String get toolbarCaseSensitive => 'Sensible à la casse';
+
+  @override
+  String get toolbarNoResults => 'Aucun résultat';
+
+  @override
+  String get toolbarCloseButtonLabel => 'Fermer';
+
+  @override
+  String toolbarSearchMatchOf(String current, String total) {
+    return '$current sur $total';
+  }
+
+  @override
+  String get toolbarPreviousMatch => 'Correspondance précédente';
+
+  @override
+  String get toolbarNextMatch => 'Correspondance suivante';
 }

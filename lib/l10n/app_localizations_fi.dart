@@ -270,4 +270,36 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get versionNotAvailable => 'Ei saatavilla';
+
+  @override
+  String get toolbarFontSize => 'Fonttikoko';
+
+  @override
+  String get toolbarFontFamily => 'Fonttiperhe';
+
+  @override
+  String get toolbarSearchInNote => 'Etsi muistiinpanosta';
+
+  @override
+  String get toolbarSearchHint => 'Hae...';
+
+  @override
+  String get toolbarCaseSensitive => 'Huomioi kirjainkoko';
+
+  @override
+  String get toolbarNoResults => 'Ei tuloksia';
+
+  @override
+  String get toolbarCloseButtonLabel => 'Sulje';
+
+  @override
+  String toolbarSearchMatchOf(String current, String total) {
+    return '$current/$total';
+  }
+
+  @override
+  String get toolbarPreviousMatch => 'Edellinen osuma';
+
+  @override
+  String get toolbarNextMatch => 'Seuraava osuma';
 }

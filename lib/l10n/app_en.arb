@@ -360,5 +360,49 @@
     "versionNotAvailable": "N/A",
     "@versionNotAvailable": {
         "description": "Placeholder for when a version number is not available or applicable."
+    },
+    "toolbarFontSize": "Font Size",
+    "@toolbarFontSize": {
+        "description": "Title for the font size selection menu in the editor toolbar."
+    },
+    "toolbarFontFamily": "Font Family",
+    "@toolbarFontFamily": {
+        "description": "Title for the font family selection menu in the editor toolbar."
+    },
+    "toolbarSearchInNote": "Search in Note",
+    "@toolbarSearchInNote": {
+        "description": "Title for the search dialog in the editor."
+    },
+    "toolbarSearchHint": "Search...",
+    "@toolbarSearchHint": {
+        "description": "Hint text for the search input field in the editor."
+    },
+    "toolbarCaseSensitive": "Case sensitive",
+    "@toolbarCaseSensitive": {
+        "description": "Label for the case-sensitive search checkbox in the editor."
+    },
+    "toolbarNoResults": "No results",
+    "@toolbarNoResults": {
+        "description": "Message shown when a search in the editor finds no results."
+    },
+    "toolbarCloseButtonLabel": "Close",
+    "@toolbarCloseButtonLabel": {
+        "description": "Label for the button that closes the editor search dialog."
+    },
+    "toolbarSearchMatchOf": "{current} of {total}",
+    "@toolbarSearchMatchOf": {
+        "description": "Displays the current search match count (e.g., '1 of 5').",
+        "placeholders": {
+            "current": { "type": "String", "description": "The index of the current match." },
+            "total": { "type": "String", "description": "The total number of matches found." }
+        }
+    },
+    "toolbarPreviousMatch": "Previous match",
+    "@toolbarPreviousMatch": {
+        "description": "Tooltip for the button to navigate to the previous search match."
+    },
+    "toolbarNextMatch": "Next match",
+    "@toolbarNextMatch": {
+        "description": "Tooltip for the button to navigate to the next search match."
     }
 }

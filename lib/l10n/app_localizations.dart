@@ -585,6 +585,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'N/A'**
   String get versionNotAvailable;
+
+  /// Title for the font size selection menu in the editor toolbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Font Size'**
+  String get toolbarFontSize;
+
+  /// Title for the font family selection menu in the editor toolbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Font Family'**
+  String get toolbarFontFamily;
+
+  /// Title for the search dialog in the editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Search in Note'**
+  String get toolbarSearchInNote;
+
+  /// Hint text for the search input field in the editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get toolbarSearchHint;
+
+  /// Label for the case-sensitive search checkbox in the editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Case sensitive'**
+  String get toolbarCaseSensitive;
+
+  /// Message shown when a search in the editor finds no results.
+  ///
+  /// In en, this message translates to:
+  /// **'No results'**
+  String get toolbarNoResults;
+
+  /// Label for the button that closes the editor search dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get toolbarCloseButtonLabel;
+
+  /// Displays the current search match count (e.g., '1 of 5').
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {total}'**
+  String toolbarSearchMatchOf(String current, String total);
+
+  /// Tooltip for the button to navigate to the previous search match.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous match'**
+  String get toolbarPreviousMatch;
+
+  /// Tooltip for the button to navigate to the next search match.
+  ///
+  /// In en, this message translates to:
+  /// **'Next match'**
+  String get toolbarNextMatch;
 }
 
 class _AppLocalizationsDelegate

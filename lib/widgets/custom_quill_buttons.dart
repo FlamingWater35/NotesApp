@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
+import '../l10n/app_localizations.dart';
+
 const kDefaultFontFamily = 'Sans Serif';
 
 const Map<String, String> kFontFamilies = {
@@ -33,6 +35,7 @@ class CustomQuillToolbarFontSizeButton extends StatelessWidget {
     final theme = Theme.of(context);
     final defaultTextStyle =
         options.style ?? theme.textTheme.bodyMedium ?? const TextStyle();
+    final l10n = AppLocalizations.of(context);
 
     return AnimatedBuilder(
       animation: controller,
@@ -48,7 +51,7 @@ class CustomQuillToolbarFontSizeButton extends StatelessWidget {
                 .key;
 
         return TextButton(
-          onPressed: () => _showFontSizeSheet(context, controller),
+          onPressed: () => _showFontSizeSheet(context, controller, l10n),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -87,6 +90,7 @@ class CustomQuillToolbarFontFamilyButton extends StatelessWidget {
     final theme = Theme.of(context);
     final defaultTextStyle =
         options.style ?? theme.textTheme.bodyMedium ?? const TextStyle();
+    final l10n = AppLocalizations.of(context);
 
     return AnimatedBuilder(
       animation: controller,
@@ -105,7 +109,7 @@ class CustomQuillToolbarFontFamilyButton extends StatelessWidget {
                 .key;
 
         return TextButton(
-          onPressed: () => _showFontFamilySheet(context, controller),
+          onPressed: () => _showFontFamilySheet(context, controller, l10n),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -130,7 +134,11 @@ class CustomQuillToolbarFontFamilyButton extends StatelessWidget {
   }
 }
 
-void _showFontSizeSheet(BuildContext context, QuillController controller) {
+void _showFontSizeSheet(
+  BuildContext context,
+  QuillController controller,
+  AppLocalizations l10n,
+) {
   final theme = Theme.of(context);
   final attribute =
       controller.getSelectionStyle().attributes[Attribute.size.key];
@@ -152,7 +160,7 @@ void _showFontSizeSheet(BuildContext context, QuillController controller) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Font Size', style: theme.textTheme.titleLarge),
+              Text(l10n.toolbarFontSize, style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),
               const Divider(),
               Expanded(
@@ -166,8 +174,8 @@ void _showFontSizeSheet(BuildContext context, QuillController controller) {
                       title: Text(entry.key),
                       trailing: isSelected ? const Icon(Icons.check) : null,
                       selected: isSelected,
-                      selectedTileColor: theme.colorScheme.primary.withOpacity(
-                        0.1,
+                      selectedTileColor: theme.colorScheme.primary.withAlpha(
+                        14,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -193,7 +201,11 @@ void _showFontSizeSheet(BuildContext context, QuillController controller) {
   );
 }
 
-void _showFontFamilySheet(BuildContext context, QuillController controller) {
+void _showFontFamilySheet(
+  BuildContext context,
+  QuillController controller,
+  AppLocalizations l10n,
+) {
   final theme = Theme.of(context);
   final String? currentFamily =
       controller.getSelectionStyle().attributes[Attribute.font.key]?.value;
@@ -214,7 +226,7 @@ void _showFontFamilySheet(BuildContext context, QuillController controller) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Font Family', style: theme.textTheme.titleLarge),
+              Text(l10n.toolbarFontFamily, style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),
               const Divider(),
               Expanded(
@@ -231,8 +243,8 @@ void _showFontFamilySheet(BuildContext context, QuillController controller) {
                       ),
                       trailing: isSelected ? const Icon(Icons.check) : null,
                       selected: isSelected,
-                      selectedTileColor: theme.colorScheme.primary.withOpacity(
-                        0.1,
+                      selectedTileColor: theme.colorScheme.primary.withAlpha(
+                        14,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

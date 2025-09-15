@@ -78,5 +78,21 @@
     "updateErrorIncompleteInfo": "アップデート情報が不完全です。",
     "updateErrorCouldNotStartInstall": "インストールを開始できませんでした。権限を確認してください。",
     "updateErrorDownloadFailed": "ダウンロードに失敗しました。接続を確認してください。",
-    "versionNotAvailable": "N/A"
+    "versionNotAvailable": "N/A",
+    "toolbarFontSize": "フォントサイズ",
+    "toolbarFontFamily": "フォントファミリー",
+    "toolbarSearchInNote": "ノート内を検索",
+    "toolbarSearchHint": "検索...",
+    "toolbarCaseSensitive": "大文字と小文字を区別",
+    "toolbarNoResults": "結果なし",
+    "toolbarCloseButtonLabel": "閉じる",
+    "toolbarSearchMatchOf": "{current}/{total}",
+    "@toolbarSearchMatchOf": {
+        "placeholders": {
+            "current": { "type": "String" },
+            "total": { "type": "String" }
+        }
+    },
+    "toolbarPreviousMatch": "前の候補",
+    "toolbarNextMatch": "次の候補"
 }

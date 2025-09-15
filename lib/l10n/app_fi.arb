@@ -78,5 +78,21 @@
     "updateErrorIncompleteInfo": "Päivitystiedot puutteellisia.",
     "updateErrorCouldNotStartInstall": "Asennuksen aloitus epäonnistui. Tarkista oikeudet.",
     "updateErrorDownloadFailed": "Lataus epäonnistui. Tarkista yhteys.",
-    "versionNotAvailable": "Ei saatavilla"
+    "versionNotAvailable": "Ei saatavilla",
+    "toolbarFontSize": "Fonttikoko",
+    "toolbarFontFamily": "Fonttiperhe",
+    "toolbarSearchInNote": "Etsi muistiinpanosta",
+    "toolbarSearchHint": "Hae...",
+    "toolbarCaseSensitive": "Huomioi kirjainkoko",
+    "toolbarNoResults": "Ei tuloksia",
+    "toolbarCloseButtonLabel": "Sulje",
+    "toolbarSearchMatchOf": "{current}/{total}",
+    "@toolbarSearchMatchOf": {
+        "placeholders": {
+            "current": { "type": "String" },
+            "total": { "type": "String" }
+        }
+    },
+    "toolbarPreviousMatch": "Edellinen osuma",
+    "toolbarNextMatch": "Seuraava osuma"
 }

@@ -265,4 +265,36 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get versionNotAvailable => 'N/A';
+
+  @override
+  String get toolbarFontSize => 'フォントサイズ';
+
+  @override
+  String get toolbarFontFamily => 'フォントファミリー';
+
+  @override
+  String get toolbarSearchInNote => 'ノート内を検索';
+
+  @override
+  String get toolbarSearchHint => '検索...';
+
+  @override
+  String get toolbarCaseSensitive => '大文字と小文字を区別';
+
+  @override
+  String get toolbarNoResults => '結果なし';
+
+  @override
+  String get toolbarCloseButtonLabel => '閉じる';
+
+  @override
+  String toolbarSearchMatchOf(String current, String total) {
+    return '$current/$total';
+  }
+
+  @override
+  String get toolbarPreviousMatch => '前の候補';
+
+  @override
+  String get toolbarNextMatch => '次の候補';
 }

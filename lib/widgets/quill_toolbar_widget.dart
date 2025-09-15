@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
+import '../l10n/app_localizations.dart';
 import 'custom_quill_buttons.dart';
 
 enum ToolbarSection {
@@ -46,6 +47,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     BuildContext context,
     QuillController controller,
     FocusNode? editorFocusNode,
+    AppLocalizations l10n,
   ) {
     final searchController = TextEditingController();
     final matchPositions = <int>[];
@@ -102,7 +104,6 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     }
 
     showDialog<void>(
-      // TODO: Implement localization
       context: context,
       barrierColor: Colors.black38,
       builder: (context) {
@@ -112,7 +113,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
             final hasMatches = matchPositions.isNotEmpty;
 
             return AlertDialog(
-              title: const Text("Search in Note"),
+              title: Text(l10n.toolbarSearchInNote),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -120,7 +121,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                   TextField(
                     controller: searchController,
                     decoration: InputDecoration(
-                      hintText: "Search...",
+                      hintText: l10n.toolbarSearchHint,
                       suffixIcon:
                           hasQuery
                               ? IconButton(
@@ -152,14 +153,17 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                               runSearch(setState);
                             },
                           ),
-                          const Text("Case sensitive"),
+                          Text(l10n.toolbarCaseSensitive),
                         ],
                       ),
                       if (hasQuery)
                         Text(
                           hasMatches
-                              ? "${currentMatchIndex + 1} of ${matchPositions.length}"
-                              : "No results",
+                              ? l10n.toolbarSearchMatchOf(
+                                (currentMatchIndex + 1).toString(),
+                                matchPositions.length.toString(),
+                              )
+                              : l10n.toolbarNoResults,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                     ],
@@ -169,7 +173,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
               actionsAlignment: MainAxisAlignment.spaceBetween,
               actions: [
                 TextButton(
-                  child: const Text("Close"),
+                  child: Text(l10n.toolbarCloseButtonLabel),
                   onPressed: () {
                     controller.updateSelection(
                       TextSelection.collapsed(
@@ -185,7 +189,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_upward),
-                      tooltip: "Previous match",
+                      tooltip: l10n.toolbarPreviousMatch,
                       onPressed:
                           hasMatches
                               ? () => navigateToMatch(setState, -1)
@@ -193,7 +197,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.arrow_downward),
-                      tooltip: "Next match",
+                      tooltip: l10n.toolbarNextMatch,
                       onPressed:
                           hasMatches
                               ? () => navigateToMatch(setState, 1)
@@ -470,6 +474,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     Widget currentExpandedToolbar;
     switch (_activeToolbarSection) {
       case ToolbarSection.commonOptions:
@@ -554,6 +559,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                           context,
                           widget.controller,
                           widget.editorFocusNode,
+                          l10n,
                         );
                       }
                     },

@@ -129,5 +129,21 @@
     "updateErrorIncompleteInfo": "Les informations de mise à jour sont incomplètes.",
     "updateErrorCouldNotStartInstall": "Impossible de démarrer l'installation. Vérifiez les autorisations.",
     "updateErrorDownloadFailed": "Échec du téléchargement. Vérifiez la connexion et les autorisations.",
-    "versionNotAvailable": "N/D"
+    "versionNotAvailable": "N/D",
+    "toolbarFontSize": "Taille de la Police",
+    "toolbarFontFamily": "Famille de Police",
+    "toolbarSearchInNote": "Rechercher dans la Note",
+    "toolbarSearchHint": "Rechercher...",
+    "toolbarCaseSensitive": "Sensible à la casse",
+    "toolbarNoResults": "Aucun résultat",
+    "toolbarCloseButtonLabel": "Fermer",
+    "toolbarSearchMatchOf": "{current} sur {total}",
+    "@toolbarSearchMatchOf": {
+        "placeholders": {
+            "current": { "type": "String" },
+            "total": { "type": "String" }
+        }
+    },
+    "toolbarPreviousMatch": "Correspondance précédente",
+    "toolbarNextMatch": "Correspondance suivante"
 }

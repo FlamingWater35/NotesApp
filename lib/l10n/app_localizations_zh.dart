@@ -264,4 +264,36 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get versionNotAvailable => '不可用';
+
+  @override
+  String get toolbarFontSize => '字体大小';
+
+  @override
+  String get toolbarFontFamily => '字体系列';
+
+  @override
+  String get toolbarSearchInNote => '在笔记中搜索';
+
+  @override
+  String get toolbarSearchHint => '搜索...';
+
+  @override
+  String get toolbarCaseSensitive => '区分大小写';
+
+  @override
+  String get toolbarNoResults => '无结果';
+
+  @override
+  String get toolbarCloseButtonLabel => '关闭';
+
+  @override
+  String toolbarSearchMatchOf(String current, String total) {
+    return '$current/$total';
+  }
+
+  @override
+  String get toolbarPreviousMatch => '上一个匹配项';
+
+  @override
+  String get toolbarNextMatch => '下一个匹配项';
 }

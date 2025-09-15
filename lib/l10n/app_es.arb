@@ -129,5 +129,21 @@
     "updateErrorIncompleteInfo": "La información de la actualización está incompleta.",
     "updateErrorCouldNotStartInstall": "No se pudo iniciar la instalación. Verifica los permisos.",
     "updateErrorDownloadFailed": "Descarga fallida. Verifica la conexión y los permisos.",
-    "versionNotAvailable": "N/D"
+    "versionNotAvailable": "N/D",
+    "toolbarFontSize": "Tamaño de Fuente",
+    "toolbarFontFamily": "Familia de Fuentes",
+    "toolbarSearchInNote": "Buscar en la Nota",
+    "toolbarSearchHint": "Buscar...",
+    "toolbarCaseSensitive": "Distinguir mayúsculas y minúsculas",
+    "toolbarNoResults": "No hay resultados",
+    "toolbarCloseButtonLabel": "Cerrar",
+    "toolbarSearchMatchOf": "{current} de {total}",
+    "@toolbarSearchMatchOf": {
+        "placeholders": {
+            "current": { "type": "String" },
+            "total": { "type": "String" }
+        }
+    },
+    "toolbarPreviousMatch": "Coincidencia anterior",
+    "toolbarNextMatch": "Siguiente coincidencia"
 }

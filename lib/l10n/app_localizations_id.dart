@@ -269,4 +269,36 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get versionNotAvailable => 'T/A';
+
+  @override
+  String get toolbarFontSize => 'Ukuran Font';
+
+  @override
+  String get toolbarFontFamily => 'Jenis Font';
+
+  @override
+  String get toolbarSearchInNote => 'Cari di Catatan';
+
+  @override
+  String get toolbarSearchHint => 'Cari...';
+
+  @override
+  String get toolbarCaseSensitive => 'Peka huruf besar/kecil';
+
+  @override
+  String get toolbarNoResults => 'Tidak ada hasil';
+
+  @override
+  String get toolbarCloseButtonLabel => 'Tutup';
+
+  @override
+  String toolbarSearchMatchOf(String current, String total) {
+    return '$current dari $total';
+  }
+
+  @override
+  String get toolbarPreviousMatch => 'Kecocokan sebelumnya';
+
+  @override
+  String get toolbarNextMatch => 'Kecocokan berikutnya';
 }
