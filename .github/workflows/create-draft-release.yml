@@ -69,11 +69,12 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: artifacts/android-apks/*.apk
+          artifacts: |
+            artifacts/**/*.apk
           draft: true
           allowUpdates: true
-          tag: "v${{ needs.build_android.outputs.app_version }}.0"
-          name: "${{ env.APP_NAME }} v${{ needs.build_android.outputs.app_version }}"
+          tag: "dev-build-${{ github.run_number }}"
+          name: "Version ${{ needs.build_android.outputs.app_version }}"
           body: |
             Automated development build.
             Triggered by commit: `${{ github.sha }}`
