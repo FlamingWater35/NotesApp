@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
+import 'custom_quill_buttons.dart';
+
 enum ToolbarSection {
   none,
   commonOptions,
@@ -313,18 +315,16 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
 
   Widget _buildTextOptionsToolbar(BuildContext context) {
     return _buildExpandableSectionContainer(context, [
-      QuillToolbarFontFamilyButton(
+      CustomQuillToolbarFontFamilyButton(
         controller: widget.controller,
         options: QuillToolbarFontFamilyButtonOptions(
           attribute: Attribute.font,
-          iconSize: QuillToolbarWidget.defaultToolbarIconSize,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
-      QuillToolbarFontSizeButton(
+      CustomQuillToolbarFontSizeButton(
         controller: widget.controller,
         options: QuillToolbarFontSizeButtonOptions(
-          iconSize: QuillToolbarWidget.defaultToolbarIconSize,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
