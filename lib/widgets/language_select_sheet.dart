@@ -47,8 +47,6 @@ void showLanguageSelectionSheet(
                 title: Text(l10n.languageSystemDefault),
                 leading: Radio<Locale?>(
                   value: null,
-                  groupValue: currentLocaleInSheet,
-                  onChanged: (Locale? val) => handleLocaleSelection(val),
                   activeColor: theme.colorScheme.primary,
                   visualDensity: VisualDensity.compact,
                 ),
@@ -74,8 +72,6 @@ void showLanguageSelectionSheet(
                   title: Text(languageName),
                   leading: Radio<Locale?>(
                     value: locale,
-                    groupValue: currentLocaleInSheet,
-                    onChanged: (Locale? val) => handleLocaleSelection(val),
                     activeColor: theme.colorScheme.primary,
                     visualDensity: VisualDensity.compact,
                   ),
@@ -115,7 +111,6 @@ void showLanguageSelectionSheet(
                   const SizedBox(height: 4),
                   const Divider(height: 1),
                   const SizedBox(height: 12),
-
                   Expanded(
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -127,9 +122,13 @@ void showLanguageSelectionSheet(
                       clipBehavior: Clip.antiAlias,
                       child: Material(
                         color: Colors.transparent,
-                        child: ListView(
-                          padding: EdgeInsets.zero,
-                          children: languageOptions,
+                        child: RadioGroup<Locale?>(
+                          groupValue: currentLocaleInSheet,
+                          onChanged: handleLocaleSelection,
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            children: languageOptions,
+                          ),
                         ),
                       ),
                     ),
