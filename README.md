@@ -12,10 +12,12 @@ A Material 3 app for writing down notes and keeping track of important things.
 
 ## Showcase
 
-![Home screen of the application](screenshots/qemu-system-x86_64_lguPgXaFKA.png)
-![Editing screen of the application](screenshots/qemu-system-x86_64_GiaQFGxkZc.png)
-![Settings screen of the application (dark theme)](screenshots/qemu-system-x86_64_p7lJQetggp.png)
-![Settings screen of the application (light theme)](screenshots/qemu-system-x86_64_ubQLFms0KF.png)
+<div align="center">
+   <img src="screenshots/qemu-system-x86_64_lguPgXaFKA.png" alt="Home screen of the application" width="23%">
+   <img src="screenshots/qemu-system-x86_64_GiaQFGxkZc.png" alt="Editing screen of the application" width="23%">
+   <img src="screenshots/qemu-system-x86_64_p7lJQetggp.png" alt="Settings screen of the application (dark theme)" width="23%">
+   <img src="screenshots/qemu-system-x86_64_ubQLFms0KF.png" alt="Settings screen of the application (light theme)" width="23%">
+</div>
 
 ## Requirements
 
