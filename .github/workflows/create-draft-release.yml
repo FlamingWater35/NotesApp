@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  APP_NAME: Quizlone
+  APP_NAME: Notes
 
 jobs:
   build_android:
