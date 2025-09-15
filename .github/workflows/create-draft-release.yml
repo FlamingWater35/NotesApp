@@ -63,7 +63,7 @@ jobs:
           draft: true
           allowUpdates: true
           tag: "dev-build-${{ github.run_number }}"
-          name: "${{ env.APP_NAME }} v${{ needs.build_windows.outputs.app_version }}"
+          name: "${{ env.APP_NAME }} v1.x.x"
           body: |
             Automated development build.
             Triggered by commit: `${{ github.sha }}`

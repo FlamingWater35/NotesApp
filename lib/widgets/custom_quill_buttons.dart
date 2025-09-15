@@ -7,8 +7,16 @@ const kDefaultFontFamily = 'Sans Serif';
 
 const Map<String, String> kFontFamilies = {
   'Sans Serif': 'sans-serif',
+  'Arial': 'arial',
+  'Helvetica': 'helvetica',
+  'Verdana': 'verdana',
+  'Trebuchet MS': 'trebuchet ms',
   'Serif': 'serif',
+  'Georgia': 'georgia',
+  'Times New Roman': 'times new roman',
   'Monospace': 'monospace',
+  'Courier New': 'courier new',
+  'Lucida Console': 'lucida console',
   'Cursive': 'cursive',
   'Fantasy': 'fantasy',
 };
@@ -148,7 +156,7 @@ void _showFontSizeSheet(
     context: context,
     isScrollControlled: true,
     constraints: BoxConstraints(
-      maxHeight: MediaQuery.of(context).size.height * 0.4,
+      maxHeight: MediaQuery.of(context).size.height * 0.35,
     ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
