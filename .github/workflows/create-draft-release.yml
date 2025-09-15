@@ -22,7 +22,7 @@ jobs:
           echo "storePassword=${{ secrets.KEY_STORE_PASSWORD }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=../upload-keystore.jks" >> android/key.properties
+          echo "storeFile=upload-keystore.jks" >> android/key.properties
       - uses: actions/setup-java@v5
         with: { distribution: "temurin", java-version: "17" }
       - uses: subosito/flutter-action@v2
@@ -33,16 +33,16 @@ jobs:
       - name: Extract App Version
         id: get_version
         run: |
-          $fullVersion = (Get-Content pubspec.yaml | Select-String -Pattern "version:\s*([0-9A-Za-z\-+.]+)").Matches.Groups[1].Value.Trim()
-          $cleanVersion = $fullVersion.Split('+')[0]
-          echo "app_version=$cleanVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          fullVersion=$(grep -m1 '^version:' pubspec.yaml | sed 's/version: *//')
+          cleanVersion=$(echo "$fullVersion" | cut -d+ -f1)
+          echo "app_version=$cleanVersion" >> $GITHUB_OUTPUT
           echo "Detected full version: $fullVersion"
           echo "Using sanitized version for release: $cleanVersion"
-        shell: powershell
       - name: Prepare APKs for Release
         run: |
           find build/app/outputs/apk/release -name "*x86_64*.apk" -delete
           cd build/app/outputs/apk/release
+          shopt -s nullglob
           for file in app-*-release.apk; do
             arch=$(echo "$file" | sed -e 's/app-//' -e 's/-release.apk//')
             new_name="${{ env.APP_NAME }}-${arch}.apk"
@@ -69,11 +69,10 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: |
-            artifacts/**/*.apk
+          artifacts: artifacts/android-apks/*.apk
           draft: true
           allowUpdates: true
-          tag: "dev-build-${{ github.run_number }}"
+          tag: "v${{ needs.build_android.outputs.app_version }}.0"
           name: "${{ env.APP_NAME }} v${{ needs.build_android.outputs.app_version }}"
           body: |
             Automated development build.
