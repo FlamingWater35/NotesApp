@@ -23,7 +23,7 @@ const Map<String, String> kFontFamilies = {
 
 const Map<String, String?> kFontSizes = {
   'Small': 'small',
-  'Normal': 'Normal',
+  'Normal': null,
   'Large': 'large',
   'Huge': 'huge',
 };
@@ -54,7 +54,7 @@ class CustomQuillToolbarFontSizeButton extends StatelessWidget {
             kFontSizes.entries
                 .firstWhere(
                   (entry) => entry.value == attribute?.value,
-                  orElse: () => const MapEntry('Normal', 'Normal'),
+                  orElse: () => const MapEntry('Normal', null),
                 )
                 .key;
 
@@ -112,7 +112,8 @@ class CustomQuillToolbarFontFamilyButton extends StatelessWidget {
             kFontFamilies.entries
                 .firstWhere(
                   (entry) => entry.value == currentFamily,
-                  orElse: () => const MapEntry(kDefaultFontFamily, ''),
+                  orElse:
+                      () => const MapEntry(kDefaultFontFamily, 'sans-serif'),
                 )
                 .key;
 
@@ -156,7 +157,7 @@ void _showFontSizeSheet(
     context: context,
     isScrollControlled: true,
     constraints: BoxConstraints(
-      maxHeight: MediaQuery.of(context).size.height * 0.35,
+      maxHeight: MediaQuery.of(context).size.height * 0.32,
     ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
@@ -164,41 +165,65 @@ void _showFontSizeSheet(
     builder: (context) {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.toolbarFontSize, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              const Divider(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Text(
+                  l10n.toolbarFontSize,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
               Expanded(
-                child: ListView.builder(
-                  itemCount: kFontSizes.length,
-                  itemBuilder: (context, index) {
-                    final entry = kFontSizes.entries.elementAt(index);
-                    final isSelected = currentSizeValue == entry.value;
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: kFontSizes.length,
+                      itemBuilder: (context, index) {
+                        final entry = kFontSizes.entries.elementAt(index);
+                        final isSelected = currentSizeValue == entry.value;
 
-                    return ListTile(
-                      title: Text(entry.key),
-                      trailing: isSelected ? const Icon(Icons.check) : null,
-                      selected: isSelected,
-                      selectedTileColor: theme.colorScheme.primary.withAlpha(
-                        14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      onTap: () {
-                        controller.formatSelection(
-                          Attribute.fromKeyValue(
-                            Attribute.size.key,
-                            entry.value,
+                        return ListTile(
+                          title: Text(entry.key),
+                          trailing: isSelected ? const Icon(Icons.check) : null,
+                          selected: isSelected,
+                          visualDensity: VisualDensity.compact,
+                          selectedTileColor: theme.colorScheme.primary
+                              .withAlpha(30),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                          onTap: () {
+                            controller.formatSelection(
+                              Attribute.fromKeyValue(
+                                Attribute.size.key,
+                                entry.value,
+                              ),
+                            );
+                            Navigator.of(context).pop();
+                          },
                         );
-                        Navigator.of(context).pop();
                       },
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -215,7 +240,7 @@ void _showFontFamilySheet(
   AppLocalizations l10n,
 ) {
   final theme = Theme.of(context);
-  final String? currentFamily =
+  final String? currentFamilyValue =
       controller.getSelectionStyle().attributes[Attribute.font.key]?.value;
 
   showModalBottomSheet<void>(
@@ -230,44 +255,74 @@ void _showFontFamilySheet(
     builder: (context) {
       return SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.toolbarFontFamily, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              const Divider(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Text(
+                  l10n.toolbarFontFamily,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
               Expanded(
-                child: ListView.builder(
-                  itemCount: kFontFamilies.length,
-                  itemBuilder: (context, index) {
-                    final entry = kFontFamilies.entries.elementAt(index);
-                    final isSelected = currentFamily == entry.value;
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: kFontFamilies.length,
+                      itemBuilder: (context, index) {
+                        final entry = kFontFamilies.entries.elementAt(index);
 
-                    return ListTile(
-                      title: Text(
-                        entry.key,
-                        style: TextStyle(fontFamily: entry.value),
-                      ),
-                      trailing: isSelected ? const Icon(Icons.check) : null,
-                      selected: isSelected,
-                      selectedTileColor: theme.colorScheme.primary.withAlpha(
-                        14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      onTap: () {
-                        controller.formatSelection(
-                          Attribute.fromKeyValue(
-                            Attribute.font.key,
-                            entry.value,
+                        final bool isSelected;
+                        if (currentFamilyValue == null) {
+                          isSelected = entry.key == kDefaultFontFamily;
+                        } else {
+                          isSelected = currentFamilyValue == entry.value;
+                        }
+
+                        return ListTile(
+                          title: Text(
+                            entry.key,
+                            style: TextStyle(fontFamily: entry.value),
                           ),
+                          trailing: isSelected ? const Icon(Icons.check) : null,
+                          selected: isSelected,
+                          visualDensity: VisualDensity.compact,
+                          selectedTileColor: theme.colorScheme.primary
+                              .withAlpha(30),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          onTap: () {
+                            controller.formatSelection(
+                              Attribute.fromKeyValue(
+                                Attribute.font.key,
+                                entry.value,
+                              ),
+                            );
+                            Navigator.of(context).pop();
+                          },
                         );
-                        Navigator.of(context).pop();
                       },
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
             ],
