@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  APP_NAME: Notes
+  APP_NAME: NotesApp
 
 jobs:
   build_android:
