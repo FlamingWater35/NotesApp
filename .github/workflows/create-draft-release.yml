@@ -5,7 +5,6 @@ on:
     branches: [main]
 
 env:
-  REPO_NAME: Quizlone
   APP_NAME: Quizlone
 
 jobs:
