@@ -66,8 +66,12 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
       _selectedDate = _originalNote!.date;
       _originalContentJson = _originalNote!.content;
 
+      final Document editorDocument = Document.fromJson(
+        widget.document.toDelta().toJson(),
+      );
+
       _quillController = QuillController(
-        document: widget.document,
+        document: editorDocument,
         selection: const TextSelection.collapsed(offset: 0),
         config: QuillControllerConfig(
           clipboardConfig: QuillClipboardConfig(enableExternalRichPaste: true),

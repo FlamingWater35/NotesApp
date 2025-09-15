@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
-Document parseQuillContent(String contentJson) {
+Document _parseQuillContent(String contentJson) {
   if (contentJson.isEmpty) {
     return Document();
   }
@@ -58,6 +58,16 @@ class Note {
   @override
   int get hashCode => id.hashCode;
 
+  Future<Document> get documentAsync async {
+    if (_document != null) {
+      return _document!;
+    }
+
+    final Document parsedDocument = await compute(_parseQuillContent, content);
+    _document = parsedDocument;
+    return parsedDocument;
+  }
+
   Document get contentDocument {
     if (_document != null) return _document!;
 
@@ -77,8 +87,7 @@ class Note {
   }
 
   String get plainTextContent {
-    final doc = contentDocument;
-    return doc.toPlainText().trim();
+    return contentDocument.toPlainText().trim();
   }
 
   Map<String, dynamic> toMap() {

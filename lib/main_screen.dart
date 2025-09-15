@@ -1,5 +1,4 @@
 import 'package:animations/animations.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,10 +79,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     _log.info("Navigating to Edit Note screen for ID: ${noteToEdit.id}");
     FocusScope.of(context).unfocus();
 
-    final Document document = await compute(
-      parseQuillContent,
-      noteToEdit.content,
-    );
+    final Document document = await noteToEdit.documentAsync;
 
     if (!mounted) return;
     setState(() => _isNavBarVisible = false);
