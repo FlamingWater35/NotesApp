@@ -1,5 +1,7 @@
 import 'package:animations/animations.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -51,8 +53,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
     await Navigator.push<void>(
       context,
-      // PageRouteBuilder doesn't seem to work with predictive back gesture yet, replace with this if needed
-      // MaterialPageRoute(builder: (context) => const AddNoteScreen()),
       PageRouteBuilder(
         pageBuilder:
             (context, animation, secondaryAnimation) => const AddNoteScreen(),
@@ -80,9 +80,13 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     _log.info("Navigating to Edit Note screen for ID: ${noteToEdit.id}");
     FocusScope.of(context).unfocus();
 
-    if (mounted) {
-      setState(() => _isNavBarVisible = false);
-    }
+    final Document document = await compute(
+      parseQuillContent,
+      noteToEdit.content,
+    );
+
+    if (!mounted) return;
+    setState(() => _isNavBarVisible = false);
 
     await Navigator.push<void>(
       context,
@@ -91,6 +95,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             (context) => EditNoteScreen(
               noteId: noteToEdit.id,
               heroTag: noteToEdit.heroTag,
+              document: document,
             ),
       ),
     );
@@ -158,7 +163,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       bottomNavigationBar: AnimatedSlide(
         duration: _kTransitionDuration,
         offset: navBarOffset,
-        curve: Curves.easeInOut, // Match page transition curve
+        curve: Curves.easeInOut,
         child: NavigationBar(
           destinations: <NavigationDestination>[
             NavigationDestination(
@@ -175,8 +180,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onItemTapped,
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-          // Prevent animation causing issues if nav bar rebuilds mid-animation
-          // key: ValueKey(_selectedIndex),
         ),
       ),
     );

@@ -43,13 +43,6 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     const seedColor = Colors.blueAccent;
 
-    // Predictive back transitions for Android
-    // const pageTransitionsTheme = PageTransitionsTheme(
-    //   builders: <TargetPlatform, PageTransitionsBuilder>{
-    //     TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
-    //   },
-    // );
-
     SnackBarThemeData buildSnackBarTheme(ColorScheme colorScheme) {
       return SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
@@ -66,13 +59,11 @@ class MyApp extends ConsumerWidget {
     }
 
     return MaterialApp(
-      title: 'Notes',
-      /* For title localization
       onGenerateTitle: (context) {
         final localizations = AppLocalizations.of(context);
         return localizations.appTitle;
-      }, 
-      */
+      },
+
       locale: ref.watch(localeProvider),
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -92,12 +83,9 @@ class MyApp extends ConsumerWidget {
         snackBarTheme: buildSnackBarTheme(
           ColorScheme.fromSeed(
             seedColor: seedColor,
-            brightness:
-                Brightness
-                    .dark, // For light theme, snackbar usually uses dark background
+            brightness: Brightness.dark,
           ),
         ),
-        // pageTransitionsTheme: pageTransitionsTheme,
       ),
 
       darkTheme: ThemeData(
@@ -109,12 +97,9 @@ class MyApp extends ConsumerWidget {
         snackBarTheme: buildSnackBarTheme(
           ColorScheme.fromSeed(
             seedColor: seedColor,
-            brightness:
-                Brightness
-                    .light, // For dark theme, snackbar usually uses light background
+            brightness: Brightness.light,
           ),
         ),
-        // pageTransitionsTheme: pageTransitionsTheme,
       ),
 
       themeMode: themeMode,

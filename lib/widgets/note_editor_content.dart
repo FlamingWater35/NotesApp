@@ -15,7 +15,6 @@ class NoteEditorContentWidget extends StatelessWidget {
     required this.l10n,
     this.isEditable = true,
     this.heroTag,
-    this.isLoading = false,
   });
 
   final String displayDate;
@@ -23,7 +22,6 @@ class NoteEditorContentWidget extends StatelessWidget {
   final ScrollController editorScrollController;
   final String? heroTag;
   final bool isEditable;
-  final bool isLoading;
   final AppLocalizations l10n;
   final VoidCallback onSelectDate;
   final QuillController? quillController;
@@ -165,7 +163,7 @@ class NoteEditorContentWidget extends StatelessWidget {
                                   3.0,
                                 ),
                                 child:
-                                    (isLoading || quillController == null)
+                                    (quillController == null)
                                         ? const Center(
                                           child: CircularProgressIndicator(),
                                         )
