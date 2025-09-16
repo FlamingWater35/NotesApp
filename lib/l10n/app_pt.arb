@@ -92,5 +92,9 @@
     "toolbarCaseSensitiveTooltip": "Alternar Sensibilidade a Maiúsculas",
     "toolbarHeaderStyle": "Estilo do Cabeçalho",
     "enterFullscreenTooltip": "Entrar em tela cheia",
-    "exitFullscreenTooltip": "Sair da tela cheia"
+    "exitFullscreenTooltip": "Sair da tela cheia",
+    "toolbarShowReplaceTooltip": "Mostrar/Ocultar Opções de Substituição",
+    "toolbarReplaceWithHint": "Substituir por...",
+    "toolbarReplaceButton": "Substituir",
+    "toolbarReplaceAllButton": "Substituir Tudo"
 }

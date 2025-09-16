@@ -92,5 +92,9 @@
     "toolbarCaseSensitiveTooltip": "大文字と小文字の区別を切り替え",
     "toolbarHeaderStyle": "見出しスタイル",
     "enterFullscreenTooltip": "全画面表示",
-    "exitFullscreenTooltip": "全画面表示を終了"
+    "exitFullscreenTooltip": "全画面表示を終了",
+    "toolbarShowReplaceTooltip": "置換オプションの表示/非表示",
+    "toolbarReplaceWithHint": "置換後の文字列...",
+    "toolbarReplaceButton": "置換",
+    "toolbarReplaceAllButton": "すべて置換"
 }

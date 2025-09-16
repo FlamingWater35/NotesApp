@@ -102,5 +102,9 @@
     "toolbarCaseSensitiveTooltip": "Basculer la Sensibilité à la Casse",
     "toolbarHeaderStyle": "Style d'En-tête",
     "enterFullscreenTooltip": "Passer en plein écran",
-    "exitFullscreenTooltip": "Quitter le mode plein écran"
+    "exitFullscreenTooltip": "Quitter le mode plein écran",
+    "toolbarShowReplaceTooltip": "Afficher/Masquer les Options de Remplacement",
+    "toolbarReplaceWithHint": "Remplacer par...",
+    "toolbarReplaceButton": "Remplacer",
+    "toolbarReplaceAllButton": "Tout Remplacer"
 }

@@ -92,5 +92,9 @@
     "toolbarCaseSensitiveTooltip": "Vaihda Kirjainkokoherkkyys",
     "toolbarHeaderStyle": "Otsikkotyyli",
     "enterFullscreenTooltip": "Koko näyttö",
-    "exitFullscreenTooltip": "Poistu koko näytön tilasta"
+    "exitFullscreenTooltip": "Poistu koko näytön tilasta",
+    "toolbarShowReplaceTooltip": "Näytä/Piilota Korvausasetukset",
+    "toolbarReplaceWithHint": "Korvaa...",
+    "toolbarReplaceButton": "Korvaa",
+    "toolbarReplaceAllButton": "Korvaa Kaikki"
 }

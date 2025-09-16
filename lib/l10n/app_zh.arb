@@ -102,5 +102,9 @@
     "toolbarCaseSensitiveTooltip": "切换大小写敏感",
     "toolbarHeaderStyle": "标题样式",
     "enterFullscreenTooltip": "进入全屏",
-    "exitFullscreenTooltip": "退出全屏"
+    "exitFullscreenTooltip": "退出全屏",
+    "toolbarShowReplaceTooltip": "显示/隐藏替换选项",
+    "toolbarReplaceWithHint": "替换为...",
+    "toolbarReplaceButton": "替换",
+    "toolbarReplaceAllButton": "全部替换"
 }

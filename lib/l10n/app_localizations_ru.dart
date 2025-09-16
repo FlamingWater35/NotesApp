@@ -311,4 +311,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get exitFullscreenTooltip => 'Выйти из полноэкранного режима';
+
+  @override
+  String get toolbarShowReplaceTooltip => 'Показать/Скрыть Параметры Замены';
+
+  @override
+  String get toolbarReplaceWithHint => 'Заменить на...';
+
+  @override
+  String get toolbarReplaceButton => 'Заменить';
+
+  @override
+  String get toolbarReplaceAllButton => 'Заменить Все';
 }

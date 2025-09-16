@@ -311,4 +311,16 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get exitFullscreenTooltip => 'Poistu koko näytön tilasta';
+
+  @override
+  String get toolbarShowReplaceTooltip => 'Näytä/Piilota Korvausasetukset';
+
+  @override
+  String get toolbarReplaceWithHint => 'Korvaa...';
+
+  @override
+  String get toolbarReplaceButton => 'Korvaa';
+
+  @override
+  String get toolbarReplaceAllButton => 'Korvaa Kaikki';
 }

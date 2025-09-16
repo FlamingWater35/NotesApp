@@ -310,4 +310,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exitFullscreenTooltip => 'Exit Fullscreen';
+
+  @override
+  String get toolbarShowReplaceTooltip => 'Show/Hide Replace Options';
+
+  @override
+  String get toolbarReplaceWithHint => 'Replace with...';
+
+  @override
+  String get toolbarReplaceButton => 'Replace';
+
+  @override
+  String get toolbarReplaceAllButton => 'Replace All';
 }

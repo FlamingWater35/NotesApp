@@ -306,4 +306,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get exitFullscreenTooltip => '全画面表示を終了';
+
+  @override
+  String get toolbarShowReplaceTooltip => '置換オプションの表示/非表示';
+
+  @override
+  String get toolbarReplaceWithHint => '置換後の文字列...';
+
+  @override
+  String get toolbarReplaceButton => '置換';
+
+  @override
+  String get toolbarReplaceAllButton => 'すべて置換';
 }

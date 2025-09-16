@@ -92,5 +92,9 @@
     "toolbarCaseSensitiveTooltip": "Переключить Учет Регистра",
     "toolbarHeaderStyle": "Стиль заголовка",
     "enterFullscreenTooltip": "Во весь экран",
-    "exitFullscreenTooltip": "Выйти из полноэкранного режима"
+    "exitFullscreenTooltip": "Выйти из полноэкранного режима",
+    "toolbarShowReplaceTooltip": "Показать/Скрыть Параметры Замены",
+    "toolbarReplaceWithHint": "Заменить на...",
+    "toolbarReplaceButton": "Заменить",
+    "toolbarReplaceAllButton": "Заменить Все"
 }

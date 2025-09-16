@@ -305,4 +305,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get exitFullscreenTooltip => '退出全屏';
+
+  @override
+  String get toolbarShowReplaceTooltip => '显示/隐藏替换选项';
+
+  @override
+  String get toolbarReplaceWithHint => '替换为...';
+
+  @override
+  String get toolbarReplaceButton => '替换';
+
+  @override
+  String get toolbarReplaceAllButton => '全部替换';
 }

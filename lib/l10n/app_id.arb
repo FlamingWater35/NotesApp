@@ -92,5 +92,9 @@
     "toolbarCaseSensitiveTooltip": "Ganti Peka Huruf",
     "toolbarHeaderStyle": "Gaya Header",
     "enterFullscreenTooltip": "Masuk layar penuh",
-    "exitFullscreenTooltip": "Keluar dari layar penuh"
+    "exitFullscreenTooltip": "Keluar dari layar penuh",
+    "toolbarShowReplaceTooltip": "Tampilkan/Sembunyikan Opsi Penggantian",
+    "toolbarReplaceWithHint": "Ganti dengan...",
+    "toolbarReplaceButton": "Ganti",
+    "toolbarReplaceAllButton": "Ganti Semua"
 }

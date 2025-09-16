@@ -102,5 +102,9 @@
     "toolbarCaseSensitiveTooltip": "Alternar Distinción de Mayúsculas",
     "toolbarHeaderStyle": "Estilo de Encabezado",
     "enterFullscreenTooltip": "Entrar en pantalla completa",
-    "exitFullscreenTooltip": "Salir de pantalla completa"
+    "exitFullscreenTooltip": "Salir de pantalla completa",
+    "toolbarShowReplaceTooltip": "Mostrar/Ocultar Opciones de Reemplazo",
+    "toolbarReplaceWithHint": "Reemplazar con...",
+    "toolbarReplaceButton": "Reemplazar",
+    "toolbarReplaceAllButton": "Reemplazar Todo"
 }

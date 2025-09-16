@@ -663,6 +663,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit Fullscreen'**
   String get exitFullscreenTooltip;
+
+  /// No description provided for @toolbarShowReplaceTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Show/Hide Replace Options'**
+  String get toolbarShowReplaceTooltip;
+
+  /// No description provided for @toolbarReplaceWithHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace with...'**
+  String get toolbarReplaceWithHint;
+
+  /// No description provided for @toolbarReplaceButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace'**
+  String get toolbarReplaceButton;
+
+  /// No description provided for @toolbarReplaceAllButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace All'**
+  String get toolbarReplaceAllButton;
 }
 
 class _AppLocalizationsDelegate

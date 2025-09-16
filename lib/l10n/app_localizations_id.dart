@@ -310,4 +310,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get exitFullscreenTooltip => 'Keluar dari layar penuh';
+
+  @override
+  String get toolbarShowReplaceTooltip =>
+      'Tampilkan/Sembunyikan Opsi Penggantian';
+
+  @override
+  String get toolbarReplaceWithHint => 'Ganti dengan...';
+
+  @override
+  String get toolbarReplaceButton => 'Ganti';
+
+  @override
+  String get toolbarReplaceAllButton => 'Ganti Semua';
 }

@@ -410,5 +410,9 @@
         "description": "Title for the header style selection menu in the editor toolbar."
     },
     "enterFullscreenTooltip": "Enter Fullscreen",
-    "exitFullscreenTooltip": "Exit Fullscreen"
+    "exitFullscreenTooltip": "Exit Fullscreen",
+    "toolbarShowReplaceTooltip": "Show/Hide Replace Options",
+    "toolbarReplaceWithHint": "Replace with...",
+    "toolbarReplaceButton": "Replace",
+    "toolbarReplaceAllButton": "Replace All"
 }

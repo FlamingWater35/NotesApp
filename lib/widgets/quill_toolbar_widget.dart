@@ -36,8 +36,10 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
 
   ToolbarSection _activeToolbarSection = ToolbarSection.none;
   int _currentSearchMatchIndex = -1;
+  bool _isReplaceVisible = false;
   bool _isSearchActive = false;
   bool _isSearchCaseSensitive = false;
+  final _replaceController = TextEditingController();
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
   final _searchMatches = <TextRange>[];
@@ -46,6 +48,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   void dispose() {
     _searchController.removeListener(_runSearch);
     _searchController.dispose();
+    _replaceController.dispose();
     _searchFocusNode.dispose();
     _clearHighlights();
     super.dispose();
@@ -78,12 +81,22 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
         _searchController.clear();
         _searchMatches.clear();
         _currentSearchMatchIndex = -1;
+        _isReplaceVisible = false;
+        _replaceController.clear();
       }
+    });
+  }
+
+  void _toggleReplaceView() {
+    setState(() {
+      _isReplaceVisible = !_isReplaceVisible;
     });
   }
 
   void _runSearch() {
     if (!_isSearchActive) return;
+
+    final isSearchFocused = _searchFocusNode.hasFocus;
 
     final query = _searchController.text;
     _clearHighlights();
@@ -114,17 +127,38 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     setState(() {
       _searchMatches.clear();
       _searchMatches.addAll(newMatches);
-      if (_searchMatches.isNotEmpty) {
-        _currentSearchMatchIndex = 0;
-        _applyAllHighlightsAndNavigate(0);
-      } else {
-        _currentSearchMatchIndex = -1;
-      }
+      _currentSearchMatchIndex = _searchMatches.isNotEmpty ? 0 : -1;
     });
+
+    _applyHighlightsOnly();
+
+    if (isSearchFocused) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_searchFocusNode.hasFocus) {
+          _searchFocusNode.requestFocus();
+        }
+      });
+    }
+  }
+
+  void _applyHighlightsOnly() {
+    for (var i = 0; i < _searchMatches.length; i++) {
+      final range = _searchMatches[i];
+      final attribute =
+          i == _currentSearchMatchIndex
+              ? _searchActiveHighlightAttribute
+              : _searchHighlightAttribute;
+      widget.controller.formatText(
+        range.start,
+        range.end - range.start,
+        attribute,
+      );
+    }
   }
 
   void _clearHighlights() {
-    for (final range in _searchMatches) {
+    final matchesToClear = List<TextRange>.from(_searchMatches);
+    for (final range in matchesToClear) {
       widget.controller.formatText(
         range.start,
         range.end - range.start,
@@ -133,39 +167,8 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     }
   }
 
-  void _applyAllHighlightsAndNavigate(int index) {
-    if (index < 0 || index >= _searchMatches.length) return;
-
-    for (final range in _searchMatches) {
-      widget.controller.formatText(
-        range.start,
-        range.end - range.start,
-        _searchHighlightAttribute,
-      );
-    }
-
-    final activeRange = _searchMatches[index];
-    widget.controller.formatText(
-      activeRange.start,
-      activeRange.end - activeRange.start,
-      _searchActiveHighlightAttribute,
-    );
-
-    widget.controller.updateSelection(
-      TextSelection(
-        baseOffset: activeRange.start,
-        extentOffset: activeRange.end,
-      ),
-      ChangeSource.local,
-    );
-  }
-
   void _navigateToMatch(int direction) {
     if (_searchMatches.isEmpty) return;
-
-    final newIndex =
-        (_currentSearchMatchIndex + direction + _searchMatches.length) %
-        _searchMatches.length;
 
     final oldActiveRange = _searchMatches[_currentSearchMatchIndex];
     widget.controller.formatText(
@@ -173,6 +176,10 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
       oldActiveRange.end - oldActiveRange.start,
       _searchHighlightAttribute,
     );
+
+    final newIndex =
+        (_currentSearchMatchIndex + direction + _searchMatches.length) %
+        _searchMatches.length;
 
     final newActiveRange = _searchMatches[newIndex];
     widget.controller.formatText(
@@ -192,6 +199,41 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     setState(() {
       _currentSearchMatchIndex = newIndex;
     });
+  }
+
+  void _replaceCurrentMatch() {
+    if (_currentSearchMatchIndex < 0 ||
+        _currentSearchMatchIndex >= _searchMatches.length) {
+      return;
+    }
+
+    final match = _searchMatches[_currentSearchMatchIndex];
+    final replacement = _replaceController.text;
+    final length = match.end - match.start;
+
+    widget.controller.replaceText(
+      match.start,
+      length,
+      replacement,
+      TextSelection.collapsed(offset: match.start + replacement.length),
+    );
+
+    _runSearch();
+  }
+
+  void _replaceAllMatches() {
+    if (_searchMatches.isEmpty) return;
+
+    final replacement = _replaceController.text;
+    final matches = List<TextRange>.from(_searchMatches);
+
+    for (var i = matches.length - 1; i >= 0; i--) {
+      final match = matches[i];
+      final length = match.end - match.start;
+      widget.controller.replaceText(match.start, length, replacement, null);
+    }
+
+    _runSearch();
   }
 
   Widget _buildSearchBar(BuildContext context) {
@@ -215,111 +257,160 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
           !_isSearchActive
               ? const SizedBox.shrink()
               : Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                  vertical: 6.0,
-                ),
+                padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   border: Border(
                     top: BorderSide(color: theme.dividerColor, width: 0.8),
                   ),
                 ),
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      tooltip: l10n.toolbarCloseSearchTooltip,
-                      onPressed: _toggleSearchView,
-                      iconSize: 22,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        focusNode: _searchFocusNode,
-                        decoration: InputDecoration(
-                          hintText: l10n.toolbarSearchHint,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                            borderSide: BorderSide.none,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            focusNode: _searchFocusNode,
+                            decoration: InputDecoration(
+                              hintText: l10n.toolbarSearchHint,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              isDense: true,
+                              filled: true,
+                              fillColor:
+                                  theme.colorScheme.surfaceContainerHighest,
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 16,
+                              ),
+                            ),
+                            style: theme.textTheme.bodyMedium,
                           ),
-                          isDense: true,
-                          filled: true,
-                          fillColor: theme.colorScheme.surfaceContainerHighest,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        if (_searchController.text.isNotEmpty)
+                          Text(
+                            hasMatches
+                                ? l10n.toolbarSearchMatchOf(
+                                  (_currentSearchMatchIndex + 1).toString(),
+                                  _searchMatches.length.toString(),
+                                )
+                                : l10n.toolbarNoResults,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color:
+                                  hasMatches
+                                      ? theme.colorScheme.onSurfaceVariant
+                                      : theme.colorScheme.error,
+                            ),
                           ),
-                          suffixIcon:
-                              _searchController.text.isNotEmpty
-                                  ? IconButton(
-                                    icon: const Icon(Icons.clear, size: 18),
-                                    onPressed: _searchController.clear,
-                                  )
-                                  : null,
+                        IconButton(
+                          icon: const Icon(Icons.arrow_upward),
+                          tooltip: l10n.toolbarPreviousMatch,
+                          onPressed:
+                              hasMatches ? () => _navigateToMatch(-1) : null,
+                          iconSize: 22,
                         ),
-                        style: theme.textTheme.bodyMedium,
-                      ),
+                        IconButton(
+                          icon: const Icon(Icons.arrow_downward),
+                          tooltip: l10n.toolbarNextMatch,
+                          onPressed:
+                              hasMatches ? () => _navigateToMatch(1) : null,
+                          iconSize: 22,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    if (_searchController.text.isNotEmpty)
-                      Text(
-                        hasMatches
-                            ? l10n.toolbarSearchMatchOf(
-                              (_currentSearchMatchIndex + 1).toString(),
-                              _searchMatches.length.toString(),
-                            )
-                            : l10n.toolbarNoResults,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color:
-                              hasMatches
-                                  ? theme.colorScheme.onSurfaceVariant
-                                  : theme.colorScheme.error,
+
+                    const SizedBox(height: 4),
+
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.find_replace_outlined,
+                            color:
+                                _isReplaceVisible
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurfaceVariant,
+                          ),
+                          tooltip: l10n.toolbarShowReplaceTooltip,
+                          onPressed: _toggleReplaceView,
+                          iconSize: 24,
+                        ),
+                        Text(
+                          l10n.toolbarCaseSensitive,
+                          style: theme.textTheme.labelMedium,
+                        ),
+                        const SizedBox(width: 4),
+                        Switch(
+                          value: _isSearchCaseSensitive,
+                          onChanged: (value) {
+                            setState(() => _isSearchCaseSensitive = value);
+                            _runSearch();
+                          },
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          tooltip: l10n.toolbarCloseSearchTooltip,
+                          onPressed: _toggleSearchView,
+                          iconSize: 24,
+                        ),
+                      ],
+                    ),
+
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut,
+                      child: Visibility(
+                        visible: _isReplaceVisible,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _replaceController,
+                                  decoration: InputDecoration(
+                                    hintText: l10n.toolbarReplaceWithHint,
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    isDense: true,
+                                    filled: true,
+                                    fillColor:
+                                        theme
+                                            .colorScheme
+                                            .surfaceContainerHighest,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 16,
+                                    ),
+                                  ),
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              TextButton(
+                                onPressed:
+                                    hasMatches ? _replaceCurrentMatch : null,
+                                child: Text(l10n.toolbarReplaceButton),
+                              ),
+                              TextButton(
+                                onPressed:
+                                    hasMatches ? _replaceAllMatches : null,
+                                child: Text(l10n.toolbarReplaceAllButton),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    const SizedBox(width: 4),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_upward),
-                      tooltip: l10n.toolbarPreviousMatch,
-                      onPressed: hasMatches ? () => _navigateToMatch(-1) : null,
-                      iconSize: 22,
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_downward),
-                      tooltip: l10n.toolbarNextMatch,
-                      onPressed: hasMatches ? () => _navigateToMatch(1) : null,
-                      iconSize: 22,
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                    ),
-                    IconButton(
-                      style: IconButton.styleFrom(
-                        backgroundColor:
-                            _isSearchCaseSensitive
-                                ? theme.colorScheme.primary.withAlpha(45)
-                                : Colors.transparent,
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                      ),
-                      icon: Icon(
-                        Icons.format_size,
-                        color:
-                            _isSearchCaseSensitive
-                                ? theme.colorScheme.primary
-                                : theme.iconTheme.color,
-                      ),
-                      tooltip: l10n.toolbarCaseSensitiveTooltip,
-                      onPressed: () {
-                        setState(
-                          () =>
-                              _isSearchCaseSensitive = !_isSearchCaseSensitive,
-                        );
-                        _runSearch();
-                      },
-                      iconSize: 22,
                     ),
                   ],
                 ),

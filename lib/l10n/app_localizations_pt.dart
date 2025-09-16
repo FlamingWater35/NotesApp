@@ -312,4 +312,17 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get exitFullscreenTooltip => 'Sair da tela cheia';
+
+  @override
+  String get toolbarShowReplaceTooltip =>
+      'Mostrar/Ocultar Opções de Substituição';
+
+  @override
+  String get toolbarReplaceWithHint => 'Substituir por...';
+
+  @override
+  String get toolbarReplaceButton => 'Substituir';
+
+  @override
+  String get toolbarReplaceAllButton => 'Substituir Tudo';
 }

@@ -318,4 +318,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get exitFullscreenTooltip => 'Quitter le mode plein écran';
+
+  @override
+  String get toolbarShowReplaceTooltip =>
+      'Afficher/Masquer les Options de Remplacement';
+
+  @override
+  String get toolbarReplaceWithHint => 'Remplacer par...';
+
+  @override
+  String get toolbarReplaceButton => 'Remplacer';
+
+  @override
+  String get toolbarReplaceAllButton => 'Tout Remplacer';
 }
