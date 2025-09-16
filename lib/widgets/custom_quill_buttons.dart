@@ -157,7 +157,7 @@ void _showFontSizeSheet(
     context: context,
     isScrollControlled: true,
     constraints: BoxConstraints(
-      maxHeight: MediaQuery.of(context).size.height * 0.32,
+      maxHeight: MediaQuery.of(context).size.height * 0.35,
     ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),

@@ -31,7 +31,30 @@ class QuillToolbarWidget extends StatefulWidget {
 }
 
 class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
+  static final _searchActiveHighlightAttribute = BackgroundAttribute('#ffcc80');
+  static final _searchHighlightAttribute = BackgroundAttribute('#fff59d');
+
   ToolbarSection _activeToolbarSection = ToolbarSection.none;
+  int _currentSearchMatchIndex = -1;
+  bool _isSearchActive = false;
+  bool _isSearchCaseSensitive = false;
+  final _searchController = TextEditingController();
+  final _searchFocusNode = FocusNode();
+  final _searchMatches = <TextRange>[];
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_runSearch);
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_runSearch);
+  }
 
   void _toggleActiveToolbarSection(ToolbarSection section) {
     setState(() {
@@ -43,181 +66,229 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     });
   }
 
-  void _showSearchDialog(
-    BuildContext context,
-    QuillController controller,
-    FocusNode? editorFocusNode,
-    AppLocalizations l10n,
-  ) {
-    final searchController = TextEditingController();
-    final matchPositions = <int>[];
-    int currentMatchIndex = -1;
-    bool isCaseSensitive = false;
-    String? lastSearchedText;
-
-    void runSearch(StateSetter setState) {
-      final query = searchController.text;
-      if (lastSearchedText == query) return;
-
-      lastSearchedText = query;
-      matchPositions.clear();
-      currentMatchIndex = -1;
-
-      if (query.isNotEmpty) {
-        final documentText = controller.document.toPlainText();
-        final textToSearch =
-            isCaseSensitive ? documentText : documentText.toLowerCase();
-        final queryToSearch = isCaseSensitive ? query : query.toLowerCase();
-
-        int startIndex = 0;
-        while ((startIndex = textToSearch.indexOf(queryToSearch, startIndex)) !=
-            -1) {
-          matchPositions.add(startIndex);
-          startIndex += query.length;
-        }
+  void _toggleSearchView() {
+    setState(() {
+      _isSearchActive = !_isSearchActive;
+      if (_isSearchActive) {
+        _searchFocusNode.requestFocus();
+      } else {
+        widget.editorFocusNode?.requestFocus();
+        _clearHighlights();
+        _searchController.clear();
+        _searchMatches.clear();
+        _currentSearchMatchIndex = -1;
       }
-      setState(() {});
-    }
+    });
+  }
 
-    void navigateToMatch(StateSetter setState, int direction) {
-      if (matchPositions.isEmpty) return;
+  void _runSearch() {
+    if (!_isSearchActive) return;
 
-      currentMatchIndex =
-          (currentMatchIndex + direction + matchPositions.length) %
-          matchPositions.length;
-      final position = matchPositions[currentMatchIndex];
-      final query = searchController.text;
+    final query = _searchController.text;
+    _clearHighlights();
 
-      editorFocusNode?.requestFocus();
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if (!mounted) return;
-        controller.updateSelection(
-          TextSelection(
-            baseOffset: position,
-            extentOffset: position + query.length,
-          ),
-          ChangeSource.local,
-        );
+    if (query.isEmpty) {
+      setState(() {
+        _searchMatches.clear();
+        _currentSearchMatchIndex = -1;
       });
-
-      setState(() {});
+      return;
     }
 
-    showDialog<void>(
-      context: context,
-      barrierColor: Colors.black38,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final hasQuery = searchController.text.isNotEmpty;
-            final hasMatches = matchPositions.isNotEmpty;
+    final documentText = widget.controller.document.toPlainText();
+    final textToSearch =
+        _isSearchCaseSensitive ? documentText : documentText.toLowerCase();
+    final queryToSearch = _isSearchCaseSensitive ? query : query.toLowerCase();
+    final newMatches = <TextRange>[];
 
-            return AlertDialog(
-              title: Text(l10n.toolbarSearchInNote),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      hintText: l10n.toolbarSearchHint,
-                      suffixIcon:
-                          hasQuery
-                              ? IconButton(
-                                icon: const Icon(Icons.clear, size: 20),
-                                onPressed: () {
-                                  searchController.clear();
-                                  runSearch(setState);
-                                },
-                              )
-                              : null,
-                    ),
-                    autofocus: true,
-                    onChanged: (value) => runSearch(setState),
-                    onSubmitted: (_) => navigateToMatch(setState, 1),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: isCaseSensitive,
-                            onChanged: (value) {
-                              setState(() {
-                                isCaseSensitive = value ?? false;
-                                lastSearchedText = null;
-                              });
-                              runSearch(setState);
-                            },
-                          ),
-                          Text(l10n.toolbarCaseSensitive),
-                        ],
-                      ),
-                      if (hasQuery)
-                        Text(
-                          hasMatches
-                              ? l10n.toolbarSearchMatchOf(
-                                (currentMatchIndex + 1).toString(),
-                                matchPositions.length.toString(),
-                              )
-                              : l10n.toolbarNoResults,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-              actionsAlignment: MainAxisAlignment.spaceBetween,
-              actions: [
-                TextButton(
-                  child: Text(l10n.toolbarCloseButtonLabel),
-                  onPressed: () {
-                    controller.updateSelection(
-                      TextSelection.collapsed(
-                        offset: controller.selection.baseOffset,
-                      ),
-                      ChangeSource.local,
-                    );
-                    Navigator.of(context).pop();
-                  },
+    int startIndex = 0;
+    while ((startIndex = textToSearch.indexOf(queryToSearch, startIndex)) !=
+        -1) {
+      newMatches.add(
+        TextRange(start: startIndex, end: startIndex + query.length),
+      );
+      startIndex += query.length;
+    }
+
+    setState(() {
+      _searchMatches.clear();
+      _searchMatches.addAll(newMatches);
+      if (_searchMatches.isNotEmpty) {
+        _currentSearchMatchIndex = 0;
+        _applyAllHighlightsAndNavigate(0);
+      } else {
+        _currentSearchMatchIndex = -1;
+      }
+    });
+  }
+
+  void _clearHighlights() {
+    for (final range in _searchMatches) {
+      widget.controller.formatText(
+        range.start,
+        range.end - range.start,
+        BackgroundAttribute(null),
+      );
+    }
+  }
+
+  void _applyAllHighlightsAndNavigate(int index) {
+    if (index < 0 || index >= _searchMatches.length) return;
+
+    for (final range in _searchMatches) {
+      widget.controller.formatText(
+        range.start,
+        range.end - range.start,
+        _searchHighlightAttribute,
+      );
+    }
+
+    final activeRange = _searchMatches[index];
+    widget.controller.formatText(
+      activeRange.start,
+      activeRange.end - activeRange.start,
+      _searchActiveHighlightAttribute,
+    );
+
+    widget.controller.updateSelection(
+      TextSelection(
+        baseOffset: activeRange.start,
+        extentOffset: activeRange.end,
+      ),
+      ChangeSource.local,
+    );
+  }
+
+  void _navigateToMatch(int direction) {
+    if (_searchMatches.isEmpty) return;
+
+    final newIndex =
+        (_currentSearchMatchIndex + direction + _searchMatches.length) %
+        _searchMatches.length;
+
+    final oldActiveRange = _searchMatches[_currentSearchMatchIndex];
+    widget.controller.formatText(
+      oldActiveRange.start,
+      oldActiveRange.end - oldActiveRange.start,
+      _searchHighlightAttribute,
+    );
+
+    final newActiveRange = _searchMatches[newIndex];
+    widget.controller.formatText(
+      newActiveRange.start,
+      newActiveRange.end - newActiveRange.start,
+      _searchActiveHighlightAttribute,
+    );
+
+    widget.controller.updateSelection(
+      TextSelection(
+        baseOffset: newActiveRange.start,
+        extentOffset: newActiveRange.end,
+      ),
+      ChangeSource.local,
+    );
+
+    setState(() {
+      _currentSearchMatchIndex = newIndex;
+    });
+  }
+
+  Widget _buildSearchBar(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final hasMatches = _searchMatches.isNotEmpty;
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      transitionBuilder: (child, animation) {
+        return SizeTransition(
+          sizeFactor: animation,
+          axisAlignment: -1.0,
+          child: child,
+        );
+      },
+      child:
+          !_isSearchActive
+              ? const SizedBox.shrink()
+              : Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 4.0,
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  border: Border(
+                    top: BorderSide(color: theme.dividerColor, width: 0.8),
+                  ),
+                ),
+                child: Row(
                   children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        focusNode: _searchFocusNode,
+                        decoration: InputDecoration(
+                          hintText: l10n.toolbarSearchHint,
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                          ),
+                        ),
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
+                    if (_searchController.text.isNotEmpty)
+                      Text(
+                        hasMatches
+                            ? l10n.toolbarSearchMatchOf(
+                              (_currentSearchMatchIndex + 1).toString(),
+                              _searchMatches.length.toString(),
+                            )
+                            : l10n.toolbarNoResults,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color:
+                              hasMatches
+                                  ? theme.colorScheme.onSurfaceVariant
+                                  : theme.colorScheme.error,
+                        ),
+                      ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.format_color_text,
+                        color:
+                            _isSearchCaseSensitive
+                                ? theme.colorScheme.primary
+                                : null,
+                      ),
+                      tooltip: l10n.toolbarCaseSensitiveTooltip,
+                      onPressed: () {
+                        setState(
+                          () =>
+                              _isSearchCaseSensitive = !_isSearchCaseSensitive,
+                        );
+                        _runSearch();
+                      },
+                    ),
                     IconButton(
                       icon: const Icon(Icons.arrow_upward),
                       tooltip: l10n.toolbarPreviousMatch,
-                      onPressed:
-                          hasMatches
-                              ? () => navigateToMatch(setState, -1)
-                              : null,
+                      onPressed: hasMatches ? () => _navigateToMatch(-1) : null,
                     ),
                     IconButton(
                       icon: const Icon(Icons.arrow_downward),
                       tooltip: l10n.toolbarNextMatch,
-                      onPressed:
-                          hasMatches
-                              ? () => navigateToMatch(setState, 1)
-                              : null,
+                      onPressed: hasMatches ? () => _navigateToMatch(1) : null,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      tooltip: l10n.toolbarCloseSearchTooltip,
+                      onPressed: _toggleSearchView,
                     ),
                   ],
                 ),
-              ],
-              contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-              actionsPadding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
               ),
-            );
-          },
-        );
-      },
-    ).whenComplete(() {
-      editorFocusNode?.requestFocus();
-    });
+    );
   }
 
   Widget _buildExpandableSectionContainer(
@@ -474,7 +545,6 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     Widget currentExpandedToolbar;
     switch (_activeToolbarSection) {
       case ToolbarSection.commonOptions:
@@ -553,16 +623,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                   IconButton(
                     icon: const Icon(Icons.search),
                     iconSize: QuillToolbarWidget.defaultMainToolbarIconSize,
-                    onPressed: () {
-                      if (mounted) {
-                        _showSearchDialog(
-                          context,
-                          widget.controller,
-                          widget.editorFocusNode,
-                          l10n,
-                        );
-                      }
-                    },
+                    onPressed: _toggleSearchView,
                   ),
                   QuillToolbarLinkStyleButton(
                     controller: widget.controller,
@@ -591,6 +652,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            _buildSearchBar(context),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               transitionBuilder: (Widget child, Animation<double> animation) {
