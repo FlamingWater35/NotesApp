@@ -28,6 +28,13 @@ const Map<String, String?> kFontSizes = {
   'Huge': 'huge',
 };
 
+const Map<String, Attribute> kHeaderStyles = {
+  'Normal': Attribute.header,
+  'Heading 1': Attribute.h1,
+  'Heading 2': Attribute.h2,
+  'Heading 3': Attribute.h3,
+};
+
 class CustomQuillToolbarFontSizeButton extends StatelessWidget {
   const CustomQuillToolbarFontSizeButton({
     required this.controller,
@@ -126,6 +133,61 @@ class CustomQuillToolbarFontFamilyButton extends StatelessWidget {
                 displayFamily,
                 style: defaultTextStyle.copyWith(
                   fontFamily: currentFamily,
+                  color: theme.textTheme.bodyLarge?.color,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.arrow_drop_down,
+                size: 20,
+                color: theme.iconTheme.color,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class CustomQuillToolbarHeaderStyleButton extends StatelessWidget {
+  const CustomQuillToolbarHeaderStyleButton({
+    required this.controller,
+    this.options,
+    super.key,
+  });
+
+  final QuillController controller;
+  final QuillToolbarSelectHeaderStyleDropdownButtonOptions? options;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final defaultTextStyle =
+        options?.textStyle ?? theme.textTheme.bodyMedium ?? const TextStyle();
+    final l10n = AppLocalizations.of(context);
+
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        final attributes = controller.getSelectionStyle().attributes;
+        final String currentStyle =
+            kHeaderStyles.entries
+                .firstWhere(
+                  (entry) =>
+                      attributes[entry.value.key]?.value == entry.value.value,
+                  orElse: () => const MapEntry('Normal', Attribute.header),
+                )
+                .key;
+
+        return TextButton(
+          onPressed: () => _showHeaderStyleSheet(context, controller, l10n),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                currentStyle,
+                style: defaultTextStyle.copyWith(
                   color: theme.textTheme.bodyLarge?.color,
                 ),
               ),
@@ -317,6 +379,97 @@ void _showFontFamilySheet(
                                 entry.value,
                               ),
                             );
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+void _showHeaderStyleSheet(
+  BuildContext context,
+  QuillController controller,
+  AppLocalizations l10n,
+) {
+  final theme = Theme.of(context);
+  final currentAttribute =
+      controller.getSelectionStyle().attributes[Attribute.header.key];
+
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.of(context).size.height * 0.35,
+    ),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+    ),
+    builder: (context) {
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Text(
+                  l10n.toolbarHeaderStyle,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: kHeaderStyles.length,
+                      itemBuilder: (context, index) {
+                        final entry = kHeaderStyles.entries.elementAt(index);
+
+                        final isSelected =
+                            currentAttribute?.value == entry.value.value;
+
+                        return ListTile(
+                          title: Text(entry.key),
+                          trailing: isSelected ? const Icon(Icons.check) : null,
+                          selected: isSelected,
+                          visualDensity: VisualDensity.compact,
+                          selectedTileColor: theme.colorScheme.primary
+                              .withAlpha(30),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          onTap: () {
+                            final attributeToApply =
+                                entry.key == 'Normal'
+                                    ? Attribute.clone(Attribute.header, null)
+                                    : entry.value;
+                            controller.formatSelection(attributeToApply);
                             Navigator.of(context).pop();
                           },
                         );

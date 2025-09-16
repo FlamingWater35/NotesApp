@@ -32,11 +32,13 @@ class QuillToolbarWidget extends StatefulWidget {
 
 class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   static final _searchActiveHighlightAttribute = BackgroundAttribute('#ffcc80');
+
   static final _searchHighlightAttribute = BackgroundAttribute('#fff59d');
 
   ToolbarSection _activeToolbarSection = ToolbarSection.none;
   int _currentSearchMatchIndex = -1;
   bool _isSearchActive = false;
+
   bool _isSearchCaseSensitive = false;
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
@@ -422,10 +424,9 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
 
   Widget _buildHeaderStyleToolbar(BuildContext context) {
     return _buildExpandableSectionContainer(context, [
-      QuillToolbarSelectHeaderStyleDropdownButton(
+      CustomQuillToolbarHeaderStyleButton(
         controller: widget.controller,
         options: QuillToolbarSelectHeaderStyleDropdownButtonOptions(
-          iconSize: QuillToolbarWidget.defaultToolbarIconSize,
           textStyle: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
