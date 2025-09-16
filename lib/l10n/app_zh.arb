@@ -100,5 +100,7 @@
     "toolbarNextMatch": "下一个匹配项",
     "toolbarCloseSearchTooltip": "关闭搜索",
     "toolbarCaseSensitiveTooltip": "切换大小写敏感",
-    "toolbarHeaderStyle": "标题样式"
+    "toolbarHeaderStyle": "标题样式",
+    "enterFullscreenTooltip": "进入全屏",
+    "exitFullscreenTooltip": "退出全屏"
 }

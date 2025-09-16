@@ -90,5 +90,7 @@
     "toolbarNextMatch": "Seuraava osuma",
     "toolbarCloseSearchTooltip": "Sulje Haku",
     "toolbarCaseSensitiveTooltip": "Vaihda Kirjainkokoherkkyys",
-    "toolbarHeaderStyle": "Otsikkotyyli"
+    "toolbarHeaderStyle": "Otsikkotyyli",
+    "enterFullscreenTooltip": "Koko näyttö",
+    "exitFullscreenTooltip": "Poistu koko näytön tilasta"
 }

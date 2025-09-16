@@ -305,4 +305,10 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get toolbarHeaderStyle => 'Otsikkotyyli';
+
+  @override
+  String get enterFullscreenTooltip => 'Koko näyttö';
+
+  @override
+  String get exitFullscreenTooltip => 'Poistu koko näytön tilasta';
 }

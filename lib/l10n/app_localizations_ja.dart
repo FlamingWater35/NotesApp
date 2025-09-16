@@ -300,4 +300,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get toolbarHeaderStyle => '見出しスタイル';
+
+  @override
+  String get enterFullscreenTooltip => '全画面表示';
+
+  @override
+  String get exitFullscreenTooltip => '全画面表示を終了';
 }

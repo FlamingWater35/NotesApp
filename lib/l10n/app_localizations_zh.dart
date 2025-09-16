@@ -299,4 +299,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get toolbarHeaderStyle => '标题样式';
+
+  @override
+  String get enterFullscreenTooltip => '进入全屏';
+
+  @override
+  String get exitFullscreenTooltip => '退出全屏';
 }

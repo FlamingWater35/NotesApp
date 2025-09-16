@@ -651,6 +651,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Header Style'**
   String get toolbarHeaderStyle;
+
+  /// No description provided for @enterFullscreenTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Fullscreen'**
+  String get enterFullscreenTooltip;
+
+  /// No description provided for @exitFullscreenTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit Fullscreen'**
+  String get exitFullscreenTooltip;
 }
 
 class _AppLocalizationsDelegate

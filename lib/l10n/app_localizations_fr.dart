@@ -312,4 +312,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get toolbarHeaderStyle => 'Style d\'En-tête';
+
+  @override
+  String get enterFullscreenTooltip => 'Passer en plein écran';
+
+  @override
+  String get exitFullscreenTooltip => 'Quitter le mode plein écran';
 }

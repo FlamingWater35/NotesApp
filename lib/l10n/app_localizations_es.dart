@@ -310,4 +310,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get toolbarHeaderStyle => 'Estilo de Encabezado';
+
+  @override
+  String get enterFullscreenTooltip => 'Entrar en pantalla completa';
+
+  @override
+  String get exitFullscreenTooltip => 'Salir de pantalla completa';
 }

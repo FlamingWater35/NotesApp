@@ -305,4 +305,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get toolbarHeaderStyle => 'Стиль заголовка';
+
+  @override
+  String get enterFullscreenTooltip => 'Во весь экран';
+
+  @override
+  String get exitFullscreenTooltip => 'Выйти из полноэкранного режима';
 }

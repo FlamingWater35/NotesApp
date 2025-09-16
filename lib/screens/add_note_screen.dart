@@ -25,6 +25,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   final ScrollController _editorScrollController = ScrollController();
   late DateTime _initialDate;
   bool _isDirty = false;
+  bool _isFullscreen = false;
   final _log = Logger('AddNoteScreenState');
   late QuillController _quillController;
   DateTime _selectedDate = DateTime.now();
@@ -133,6 +134,13 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
     }
   }
 
+  void _toggleFullscreen() {
+    setState(() {
+      _isFullscreen = !_isFullscreen;
+    });
+    _log.info("Fullscreen mode toggled to: $_isFullscreen");
+  }
+
   @override
   Widget build(BuildContext context) {
     _log.finer("Building AddNoteScreen widget");
@@ -143,6 +151,10 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
     return PopScope(
       canPop: !_isDirty,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (_isFullscreen) {
+          _toggleFullscreen();
+          return;
+        }
         _log.fine(
           'Pop invoked on AddNoteScreen: didPop: $didPop, isDirty: $_isDirty, result: $result',
         );
@@ -161,6 +173,16 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
         appBar: AppBar(
           title: Text(l10n.addNoteScreenTitle),
           actions: [
+            IconButton(
+              icon: Icon(
+                _isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
+              ),
+              onPressed: _toggleFullscreen,
+              tooltip:
+                  _isFullscreen
+                      ? l10n.exitFullscreenTooltip
+                      : l10n.enterFullscreenTooltip,
+            ),
             IconButton(
               icon: const Icon(Icons.check),
               onPressed: _saveNote,
@@ -182,6 +204,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
                 onSelectDate: () => _selectDate(context),
                 l10n: l10n,
                 isEditable: true,
+                isFullscreen: _isFullscreen,
               ),
             ),
             QuillToolbarWidget(

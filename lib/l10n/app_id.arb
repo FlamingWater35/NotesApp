@@ -90,5 +90,7 @@
     "toolbarNextMatch": "Kecocokan berikutnya",
     "toolbarCloseSearchTooltip": "Tutup Pencarian",
     "toolbarCaseSensitiveTooltip": "Ganti Peka Huruf",
-    "toolbarHeaderStyle": "Gaya Header"
+    "toolbarHeaderStyle": "Gaya Header",
+    "enterFullscreenTooltip": "Masuk layar penuh",
+    "exitFullscreenTooltip": "Keluar dari layar penuh"
 }

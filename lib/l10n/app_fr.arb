@@ -100,5 +100,7 @@
     "toolbarNextMatch": "Correspondance suivante",
     "toolbarCloseSearchTooltip": "Fermer la Recherche",
     "toolbarCaseSensitiveTooltip": "Basculer la Sensibilité à la Casse",
-    "toolbarHeaderStyle": "Style d'En-tête"
+    "toolbarHeaderStyle": "Style d'En-tête",
+    "enterFullscreenTooltip": "Passer en plein écran",
+    "exitFullscreenTooltip": "Quitter le mode plein écran"
 }

@@ -304,4 +304,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get toolbarHeaderStyle => 'Gaya Header';
+
+  @override
+  String get enterFullscreenTooltip => 'Masuk layar penuh';
+
+  @override
+  String get exitFullscreenTooltip => 'Keluar dari layar penuh';
 }

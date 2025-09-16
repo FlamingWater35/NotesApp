@@ -90,5 +90,7 @@
     "toolbarNextMatch": "Следующее совпадение",
     "toolbarCloseSearchTooltip": "Закрыть Поиск",
     "toolbarCaseSensitiveTooltip": "Переключить Учет Регистра",
-    "toolbarHeaderStyle": "Стиль заголовка"
+    "toolbarHeaderStyle": "Стиль заголовка",
+    "enterFullscreenTooltip": "Во весь экран",
+    "exitFullscreenTooltip": "Выйти из полноэкранного режима"
 }

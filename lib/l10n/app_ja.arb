@@ -90,5 +90,7 @@
     "toolbarNextMatch": "次の候補",
     "toolbarCloseSearchTooltip": "検索を閉じる",
     "toolbarCaseSensitiveTooltip": "大文字と小文字の区別を切り替え",
-    "toolbarHeaderStyle": "見出しスタイル"
+    "toolbarHeaderStyle": "見出しスタイル",
+    "enterFullscreenTooltip": "全画面表示",
+    "exitFullscreenTooltip": "全画面表示を終了"
 }

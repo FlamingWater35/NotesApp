@@ -90,5 +90,7 @@
     "toolbarNextMatch": "Próximo resultado",
     "toolbarCloseSearchTooltip": "Fechar Pesquisa",
     "toolbarCaseSensitiveTooltip": "Alternar Sensibilidade a Maiúsculas",
-    "toolbarHeaderStyle": "Estilo do Cabeçalho"
+    "toolbarHeaderStyle": "Estilo do Cabeçalho",
+    "enterFullscreenTooltip": "Entrar em tela cheia",
+    "exitFullscreenTooltip": "Sair da tela cheia"
 }

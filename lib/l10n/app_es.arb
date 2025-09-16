@@ -100,5 +100,7 @@
     "toolbarNextMatch": "Siguiente coincidencia",
     "toolbarCloseSearchTooltip": "Cerrar Búsqueda",
     "toolbarCaseSensitiveTooltip": "Alternar Distinción de Mayúsculas",
-    "toolbarHeaderStyle": "Estilo de Encabezado"
+    "toolbarHeaderStyle": "Estilo de Encabezado",
+    "enterFullscreenTooltip": "Entrar en pantalla completa",
+    "exitFullscreenTooltip": "Salir de pantalla completa"
 }
