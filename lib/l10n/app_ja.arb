@@ -81,18 +81,14 @@
     "versionNotAvailable": "N/A",
     "toolbarFontSize": "フォントサイズ",
     "toolbarFontFamily": "フォントファミリー",
-    "toolbarSearchInNote": "ノート内を検索",
     "toolbarSearchHint": "検索...",
     "toolbarCaseSensitive": "大文字と小文字を区別",
     "toolbarNoResults": "結果なし",
-    "toolbarCloseButtonLabel": "閉じる",
     "toolbarSearchMatchOf": "{current}/{total}",
-    "@toolbarSearchMatchOf": {
-        "placeholders": {
-            "current": { "type": "String" },
-            "total": { "type": "String" }
-        }
-    },
+    "@toolbarSearchMatchOf": { "placeholders": { "current": { "type": "String" }, "total": { "type": "String" } } },
     "toolbarPreviousMatch": "前の候補",
-    "toolbarNextMatch": "次の候補"
+    "toolbarNextMatch": "次の候補",
+    "toolbarCloseSearchTooltip": "検索を閉じる",
+    "toolbarCaseSensitiveTooltip": "大文字と小文字の区別を切り替え",
+    "toolbarHeaderStyle": "見出しスタイル"
 }

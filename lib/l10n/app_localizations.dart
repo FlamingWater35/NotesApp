@@ -598,12 +598,6 @@ abstract class AppLocalizations {
   /// **'Font Family'**
   String get toolbarFontFamily;
 
-  /// Title for the search dialog in the editor.
-  ///
-  /// In en, this message translates to:
-  /// **'Search in Note'**
-  String get toolbarSearchInNote;
-
   /// Hint text for the search input field in the editor.
   ///
   /// In en, this message translates to:
@@ -622,12 +616,6 @@ abstract class AppLocalizations {
   /// **'No results'**
   String get toolbarNoResults;
 
-  /// Label for the button that closes the editor search dialog.
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get toolbarCloseButtonLabel;
-
   /// Displays the current search match count (e.g., '1 of 5').
   ///
   /// In en, this message translates to:
@@ -645,6 +633,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next match'**
   String get toolbarNextMatch;
+
+  /// Tooltip for the button that closes the integrated search bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Search'**
+  String get toolbarCloseSearchTooltip;
+
+  /// Tooltip for the button that toggles case-sensitive search.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle Case Sensitive'**
+  String get toolbarCaseSensitiveTooltip;
+
+  /// Title for the header style selection menu in the editor toolbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Header Style'**
+  String get toolbarHeaderStyle;
 }
 
 class _AppLocalizationsDelegate

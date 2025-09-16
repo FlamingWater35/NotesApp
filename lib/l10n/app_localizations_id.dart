@@ -277,9 +277,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get toolbarFontFamily => 'Jenis Font';
 
   @override
-  String get toolbarSearchInNote => 'Cari di Catatan';
-
-  @override
   String get toolbarSearchHint => 'Cari...';
 
   @override
@@ -287,9 +284,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get toolbarNoResults => 'Tidak ada hasil';
-
-  @override
-  String get toolbarCloseButtonLabel => 'Tutup';
 
   @override
   String toolbarSearchMatchOf(String current, String total) {
@@ -301,4 +295,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get toolbarNextMatch => 'Kecocokan berikutnya';
+
+  @override
+  String get toolbarCloseSearchTooltip => 'Tutup Pencarian';
+
+  @override
+  String get toolbarCaseSensitiveTooltip => 'Ganti Peka Huruf';
+
+  @override
+  String get toolbarHeaderStyle => 'Gaya Header';
 }

@@ -284,9 +284,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get toolbarFontFamily => 'Famille de Police';
 
   @override
-  String get toolbarSearchInNote => 'Rechercher dans la Note';
-
-  @override
   String get toolbarSearchHint => 'Rechercher...';
 
   @override
@@ -294,9 +291,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get toolbarNoResults => 'Aucun résultat';
-
-  @override
-  String get toolbarCloseButtonLabel => 'Fermer';
 
   @override
   String toolbarSearchMatchOf(String current, String total) {
@@ -308,4 +302,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get toolbarNextMatch => 'Correspondance suivante';
+
+  @override
+  String get toolbarCloseSearchTooltip => 'Fermer la Recherche';
+
+  @override
+  String get toolbarCaseSensitiveTooltip =>
+      'Basculer la Sensibilité à la Casse';
+
+  @override
+  String get toolbarHeaderStyle => 'Style d\'En-tête';
 }

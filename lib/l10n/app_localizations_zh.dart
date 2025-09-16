@@ -272,9 +272,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get toolbarFontFamily => '字体系列';
 
   @override
-  String get toolbarSearchInNote => '在笔记中搜索';
-
-  @override
   String get toolbarSearchHint => '搜索...';
 
   @override
@@ -282,9 +279,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get toolbarNoResults => '无结果';
-
-  @override
-  String get toolbarCloseButtonLabel => '关闭';
 
   @override
   String toolbarSearchMatchOf(String current, String total) {
@@ -296,4 +290,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get toolbarNextMatch => '下一个匹配项';
+
+  @override
+  String get toolbarCloseSearchTooltip => '关闭搜索';
+
+  @override
+  String get toolbarCaseSensitiveTooltip => '切换大小写敏感';
+
+  @override
+  String get toolbarHeaderStyle => '标题样式';
 }

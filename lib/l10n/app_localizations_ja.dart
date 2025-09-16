@@ -273,9 +273,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get toolbarFontFamily => 'フォントファミリー';
 
   @override
-  String get toolbarSearchInNote => 'ノート内を検索';
-
-  @override
   String get toolbarSearchHint => '検索...';
 
   @override
@@ -283,9 +280,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get toolbarNoResults => '結果なし';
-
-  @override
-  String get toolbarCloseButtonLabel => '閉じる';
 
   @override
   String toolbarSearchMatchOf(String current, String total) {
@@ -297,4 +291,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get toolbarNextMatch => '次の候補';
+
+  @override
+  String get toolbarCloseSearchTooltip => '検索を閉じる';
+
+  @override
+  String get toolbarCaseSensitiveTooltip => '大文字と小文字の区別を切り替え';
+
+  @override
+  String get toolbarHeaderStyle => '見出しスタイル';
 }

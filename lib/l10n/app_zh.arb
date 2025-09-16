@@ -14,35 +14,17 @@
     "editNoteScreenTitle": "编辑笔记",
     "errorCouldNotLoadNoteData": "错误：无法加载笔记数据。",
     "errorSavingNote": "保存笔记时出错：{errorDetails}",
-    "@errorSavingNote": {
-        "placeholders": {
-            "errorDetails": {
-                "type": "String"
-            }
-        }
-    },
+    "@errorSavingNote": { "placeholders": { "errorDetails": { "type": "String" } } },
     "errorAppBarTitle": "错误",
     "failedToLoadNote": "加载笔记失败。",
     "saveChangesTooltip": "保存更改",
     "deleteNoteTooltip": "删除笔记",
     "deleteNoteDialogTitle": "删除笔记？",
     "deleteNoteDialogContent": "您确定要删除“{noteTitle}”吗？此操作无法撤销。",
-    "@deleteNoteDialogContent": {
-        "placeholders": {
-            "noteTitle": {
-                "type": "String"
-            }
-        }
-    },
+    "@deleteNoteDialogContent": { "placeholders": { "noteTitle": { "type": "String" } } },
     "deleteButtonLabel": "删除",
     "noteDeletedSnackbar": "笔记“{noteTitle}”已删除。",
-    "@noteDeletedSnackbar": {
-        "placeholders": {
-            "noteTitle": {
-                "type": "String"
-            }
-        }
-    },
+    "@noteDeletedSnackbar": { "placeholders": { "noteTitle": { "type": "String" } } },
     "sortPropertyDate": "日期",
     "sortPropertyTitle": "标题",
     "sortPropertyLastModified": "最后修改",
@@ -55,34 +37,21 @@
     "emptyNotesMessage": "还没有笔记。\n点击 + 按钮添加一个！",
     "noNotesFoundMessage": "未找到与您的搜索匹配的笔记。",
     "errorLoadingNotes": "加载笔记时出错：\n{errorDetails}",
-    "@errorLoadingNotes": {
-        "placeholders": {
-            "errorDetails": {
-                "type": "String"
-            }
-        }
-    },
+    "@errorLoadingNotes": { "placeholders": { "errorDetails": { "type": "String" } } },
     "addNoteFabTooltip": "添加笔记",
     "homeNavigationLabel": "主页",
     "settingsNavigationLabel": "设置",
     "settingsScreenTitle": "设置",
     "appVersionLoading": "加载中...",
     "appVersion": "版本 {version} ({buildNumber})",
-    "@appVersion": {
-        "placeholders": {
-            "version": { "type": "String" },
-            "buildNumber": { "type": "String" }
-        }
-    },
+    "@appVersion": { "placeholders": { "version": { "type": "String" }, "buildNumber": { "type": "String" } } },
     "errorLoadingVersion": "加载版本信息失败",
     "backupSuccessful": "备份成功！",
     "backupFailed": "备份失败或已取消。",
     "restoreSuccessful": "恢复成功！",
     "restoreFailed": "恢复失败或已取消。",
-
     "languageSectionTitle": "语言",
     "languageSystemDefault": "系统默认",
-
     "appearanceSectionTitle": "外观",
     "themeLight": "浅色",
     "themeDark": "深色",
@@ -98,30 +67,20 @@
     "updateStatusChecking": "正在检查更新...",
     "updateStatusAvailableTitle": "有可用更新！",
     "updateStatusCurrentVersion": "当前版本：{version}",
-    "@updateStatusCurrentVersion": {
-        "placeholders": { "version": { "type": "String" } }
-    },
+    "@updateStatusCurrentVersion": { "placeholders": { "version": { "type": "String" } } },
     "updateStatusNewVersion": "新版本：{version}",
-    "@updateStatusNewVersion": {
-        "placeholders": { "version": { "type": "String" } }
-    },
+    "@updateStatusNewVersion": { "placeholders": { "version": { "type": "String" } } },
     "updateDownloadInstallButton": "下载并安装",
     "updateStatusDownloading": "正在下载更新 ({version})...",
-    "@updateStatusDownloading": {
-        "placeholders": { "version": { "type": "String" } }
-    },
+    "@updateStatusDownloading": { "placeholders": { "version": { "type": "String" } } },
     "updateProgressPercent": "{progress}%",
-    "@updateProgressPercent": {
-        "placeholders": { "progress": { "type": "String" } }
-    },
+    "@updateProgressPercent": { "placeholders": { "progress": { "type": "String" } } },
     "updateStatusStartingInstall": "正在开始安装...",
     "updateStatusFailedTitle": "更新失败",
     "updateTryAgainButton": "重试检查",
     "updateStatusUpToDateTitle": "您已是最新版本！",
     "updateStatusLatestAvailable": "(最新可用：{version})",
-    "@updateStatusLatestAvailable": {
-        "placeholders": { "version": { "type": "String" } }
-    },
+    "@updateStatusLatestAvailable": { "placeholders": { "version": { "type": "String" } } },
     "updateCheckAgainButton": "再次检查",
     "updateStatusInstalled": "已显示安装对话框",
     "updateErrorNoNewUpdate": "没有可用的新更新。",
@@ -132,18 +91,14 @@
     "versionNotAvailable": "不可用",
     "toolbarFontSize": "字体大小",
     "toolbarFontFamily": "字体系列",
-    "toolbarSearchInNote": "在笔记中搜索",
     "toolbarSearchHint": "搜索...",
     "toolbarCaseSensitive": "区分大小写",
     "toolbarNoResults": "无结果",
-    "toolbarCloseButtonLabel": "关闭",
     "toolbarSearchMatchOf": "{current}/{total}",
-    "@toolbarSearchMatchOf": {
-        "placeholders": {
-            "current": { "type": "String" },
-            "total": { "type": "String" }
-        }
-    },
+    "@toolbarSearchMatchOf": { "placeholders": { "current": { "type": "String" }, "total": { "type": "String" } } },
     "toolbarPreviousMatch": "上一个匹配项",
-    "toolbarNextMatch": "下一个匹配项"
+    "toolbarNextMatch": "下一个匹配项",
+    "toolbarCloseSearchTooltip": "关闭搜索",
+    "toolbarCaseSensitiveTooltip": "切换大小写敏感",
+    "toolbarHeaderStyle": "标题样式"
 }

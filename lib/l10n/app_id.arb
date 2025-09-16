@@ -81,18 +81,14 @@
     "versionNotAvailable": "T/A",
     "toolbarFontSize": "Ukuran Font",
     "toolbarFontFamily": "Jenis Font",
-    "toolbarSearchInNote": "Cari di Catatan",
     "toolbarSearchHint": "Cari...",
     "toolbarCaseSensitive": "Peka huruf besar/kecil",
     "toolbarNoResults": "Tidak ada hasil",
-    "toolbarCloseButtonLabel": "Tutup",
     "toolbarSearchMatchOf": "{current} dari {total}",
-    "@toolbarSearchMatchOf": {
-        "placeholders": {
-            "current": { "type": "String" },
-            "total": { "type": "String" }
-        }
-    },
+    "@toolbarSearchMatchOf": { "placeholders": { "current": { "type": "String" }, "total": { "type": "String" } } },
     "toolbarPreviousMatch": "Kecocokan sebelumnya",
-    "toolbarNextMatch": "Kecocokan berikutnya"
+    "toolbarNextMatch": "Kecocokan berikutnya",
+    "toolbarCloseSearchTooltip": "Tutup Pencarian",
+    "toolbarCaseSensitiveTooltip": "Ganti Peka Huruf",
+    "toolbarHeaderStyle": "Gaya Header"
 }

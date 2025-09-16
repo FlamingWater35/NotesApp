@@ -14,35 +14,17 @@
     "editNoteScreenTitle": "Modifier la Note",
     "errorCouldNotLoadNoteData": "Erreur : Impossible de charger les données de la note.",
     "errorSavingNote": "Erreur lors de l'enregistrement de la note : {errorDetails}",
-    "@errorSavingNote": {
-        "placeholders": {
-            "errorDetails": {
-                "type": "String"
-            }
-        }
-    },
+    "@errorSavingNote": { "placeholders": { "errorDetails": { "type": "String" } } },
     "errorAppBarTitle": "Erreur",
     "failedToLoadNote": "Échec du chargement de la note.",
     "saveChangesTooltip": "Enregistrer les Modifications",
     "deleteNoteTooltip": "Supprimer la Note",
     "deleteNoteDialogTitle": "Supprimer la Note ?",
     "deleteNoteDialogContent": "Êtes-vous sûr de vouloir supprimer \"{noteTitle}\" ? Cette action est irréversible.",
-    "@deleteNoteDialogContent": {
-        "placeholders": {
-            "noteTitle": {
-                "type": "String"
-            }
-        }
-    },
+    "@deleteNoteDialogContent": { "placeholders": { "noteTitle": { "type": "String" } } },
     "deleteButtonLabel": "Supprimer",
     "noteDeletedSnackbar": "Note \"{noteTitle}\" supprimée.",
-    "@noteDeletedSnackbar": {
-        "placeholders": {
-            "noteTitle": {
-                "type": "String"
-            }
-        }
-    },
+    "@noteDeletedSnackbar": { "placeholders": { "noteTitle": { "type": "String" } } },
     "sortPropertyDate": "Date",
     "sortPropertyTitle": "Titre",
     "sortPropertyLastModified": "Dernière Modification",
@@ -55,34 +37,21 @@
     "emptyNotesMessage": "Aucune note pour l'instant.\nAppuyez sur le bouton + pour en ajouter une !",
     "noNotesFoundMessage": "Aucune note trouvée correspondant à votre recherche.",
     "errorLoadingNotes": "Erreur lors du chargement des notes :\n{errorDetails}",
-    "@errorLoadingNotes": {
-        "placeholders": {
-            "errorDetails": {
-                "type": "String"
-            }
-        }
-    },
+    "@errorLoadingNotes": { "placeholders": { "errorDetails": { "type": "String" } } },
     "addNoteFabTooltip": "Ajouter une Note",
     "homeNavigationLabel": "Accueil",
     "settingsNavigationLabel": "Paramètres",
     "settingsScreenTitle": "Paramètres",
     "appVersionLoading": "Chargement...",
     "appVersion": "Version {version} ({buildNumber})",
-    "@appVersion": {
-        "placeholders": {
-            "version": { "type": "String" },
-            "buildNumber": { "type": "String" }
-        }
-    },
+    "@appVersion": { "placeholders": { "version": { "type": "String" }, "buildNumber": { "type": "String" } } },
     "errorLoadingVersion": "Erreur de chargement de la version",
     "backupSuccessful": "Sauvegarde réussie !",
     "backupFailed": "Échec de la sauvegarde ou annulée.",
     "restoreSuccessful": "Restauration réussie !",
     "restoreFailed": "Échec de la restauration ou annulée.",
-
     "languageSectionTitle": "Langue",
     "languageSystemDefault": "Système par Défaut",
-
     "appearanceSectionTitle": "Apparence",
     "themeLight": "Clair",
     "themeDark": "Sombre",
@@ -98,30 +67,20 @@
     "updateStatusChecking": "Vérification des mises à jour...",
     "updateStatusAvailableTitle": "Mise à Jour Disponible !",
     "updateStatusCurrentVersion": "Version actuelle : {version}",
-    "@updateStatusCurrentVersion": {
-        "placeholders": { "version": { "type": "String" } }
-    },
+    "@updateStatusCurrentVersion": { "placeholders": { "version": { "type": "String" } } },
     "updateStatusNewVersion": "Nouvelle version : {version}",
-    "@updateStatusNewVersion": {
-        "placeholders": { "version": { "type": "String" } }
-    },
+    "@updateStatusNewVersion": { "placeholders": { "version": { "type": "String" } } },
     "updateDownloadInstallButton": "Télécharger et Installer",
     "updateStatusDownloading": "Téléchargement de la mise à jour ({version})...",
-    "@updateStatusDownloading": {
-        "placeholders": { "version": { "type": "String" } }
-    },
+    "@updateStatusDownloading": { "placeholders": { "version": { "type": "String" } } },
     "updateProgressPercent": "{progress}%",
-    "@updateProgressPercent": {
-        "placeholders": { "progress": { "type": "String" } }
-    },
+    "@updateProgressPercent": { "placeholders": { "progress": { "type": "String" } } },
     "updateStatusStartingInstall": "Démarrage de l'installation...",
     "updateStatusFailedTitle": "Échec de la Mise à Jour",
     "updateTryAgainButton": "Réessayer la Vérification",
     "updateStatusUpToDateTitle": "Vous êtes à jour !",
     "updateStatusLatestAvailable": "(Dernière disponible : {version})",
-    "@updateStatusLatestAvailable": {
-        "placeholders": { "version": { "type": "String" } }
-    },
+    "@updateStatusLatestAvailable": { "placeholders": { "version": { "type": "String" } } },
     "updateCheckAgainButton": "Vérifier à Nouveau",
     "updateStatusInstalled": "Dialogue d'installation affiché",
     "updateErrorNoNewUpdate": "Aucune nouvelle mise à jour disponible.",
@@ -132,18 +91,14 @@
     "versionNotAvailable": "N/D",
     "toolbarFontSize": "Taille de la Police",
     "toolbarFontFamily": "Famille de Police",
-    "toolbarSearchInNote": "Rechercher dans la Note",
     "toolbarSearchHint": "Rechercher...",
     "toolbarCaseSensitive": "Sensible à la casse",
     "toolbarNoResults": "Aucun résultat",
-    "toolbarCloseButtonLabel": "Fermer",
     "toolbarSearchMatchOf": "{current} sur {total}",
-    "@toolbarSearchMatchOf": {
-        "placeholders": {
-            "current": { "type": "String" },
-            "total": { "type": "String" }
-        }
-    },
+    "@toolbarSearchMatchOf": { "placeholders": { "current": { "type": "String" }, "total": { "type": "String" } } },
     "toolbarPreviousMatch": "Correspondance précédente",
-    "toolbarNextMatch": "Correspondance suivante"
+    "toolbarNextMatch": "Correspondance suivante",
+    "toolbarCloseSearchTooltip": "Fermer la Recherche",
+    "toolbarCaseSensitiveTooltip": "Basculer la Sensibilité à la Casse",
+    "toolbarHeaderStyle": "Style d'En-tête"
 }

@@ -278,9 +278,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get toolbarFontFamily => 'Fonttiperhe';
 
   @override
-  String get toolbarSearchInNote => 'Etsi muistiinpanosta';
-
-  @override
   String get toolbarSearchHint => 'Hae...';
 
   @override
@@ -288,9 +285,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get toolbarNoResults => 'Ei tuloksia';
-
-  @override
-  String get toolbarCloseButtonLabel => 'Sulje';
 
   @override
   String toolbarSearchMatchOf(String current, String total) {
@@ -302,4 +296,13 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get toolbarNextMatch => 'Seuraava osuma';
+
+  @override
+  String get toolbarCloseSearchTooltip => 'Sulje Haku';
+
+  @override
+  String get toolbarCaseSensitiveTooltip => 'Vaihda Kirjainkokoherkkyys';
+
+  @override
+  String get toolbarHeaderStyle => 'Otsikkotyyli';
 }

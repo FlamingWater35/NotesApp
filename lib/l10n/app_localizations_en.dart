@@ -277,9 +277,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toolbarFontFamily => 'Font Family';
 
   @override
-  String get toolbarSearchInNote => 'Search in Note';
-
-  @override
   String get toolbarSearchHint => 'Search...';
 
   @override
@@ -287,9 +284,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toolbarNoResults => 'No results';
-
-  @override
-  String get toolbarCloseButtonLabel => 'Close';
 
   @override
   String toolbarSearchMatchOf(String current, String total) {
@@ -301,4 +295,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toolbarNextMatch => 'Next match';
+
+  @override
+  String get toolbarCloseSearchTooltip => 'Close Search';
+
+  @override
+  String get toolbarCaseSensitiveTooltip => 'Toggle Case Sensitive';
+
+  @override
+  String get toolbarHeaderStyle => 'Header Style';
 }

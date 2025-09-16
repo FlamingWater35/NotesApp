@@ -278,9 +278,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get toolbarFontFamily => 'Семейство шрифтов';
 
   @override
-  String get toolbarSearchInNote => 'Искать в заметке';
-
-  @override
   String get toolbarSearchHint => 'Поиск...';
 
   @override
@@ -288,9 +285,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get toolbarNoResults => 'Нет результатов';
-
-  @override
-  String get toolbarCloseButtonLabel => 'Закрыть';
 
   @override
   String toolbarSearchMatchOf(String current, String total) {
@@ -302,4 +296,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get toolbarNextMatch => 'Следующее совпадение';
+
+  @override
+  String get toolbarCloseSearchTooltip => 'Закрыть Поиск';
+
+  @override
+  String get toolbarCaseSensitiveTooltip => 'Переключить Учет Регистра';
+
+  @override
+  String get toolbarHeaderStyle => 'Стиль заголовка';
 }
