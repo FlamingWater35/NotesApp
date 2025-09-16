@@ -284,12 +284,16 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                       tooltip: l10n.toolbarPreviousMatch,
                       onPressed: hasMatches ? () => _navigateToMatch(-1) : null,
                       iconSize: 22,
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
                     ),
                     IconButton(
                       icon: const Icon(Icons.arrow_downward),
                       tooltip: l10n.toolbarNextMatch,
                       onPressed: hasMatches ? () => _navigateToMatch(1) : null,
                       iconSize: 22,
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
                     ),
                     IconButton(
                       style: IconButton.styleFrom(
@@ -297,6 +301,8 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                             _isSearchCaseSensitive
                                 ? theme.colorScheme.primary.withAlpha(45)
                                 : Colors.transparent,
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
                       ),
                       icon: Icon(
                         Icons.format_size,
