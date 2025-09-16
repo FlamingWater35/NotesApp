@@ -369,10 +369,6 @@
     "@toolbarFontFamily": {
         "description": "Title for the font family selection menu in the editor toolbar."
     },
-    "toolbarSearchInNote": "Search in Note",
-    "@toolbarSearchInNote": {
-        "description": "Title for the search dialog in the editor."
-    },
     "toolbarSearchHint": "Search...",
     "@toolbarSearchHint": {
         "description": "Hint text for the search input field in the editor."
@@ -384,10 +380,6 @@
     "toolbarNoResults": "No results",
     "@toolbarNoResults": {
         "description": "Message shown when a search in the editor finds no results."
-    },
-    "toolbarCloseButtonLabel": "Close",
-    "@toolbarCloseButtonLabel": {
-        "description": "Label for the button that closes the editor search dialog."
     },
     "toolbarSearchMatchOf": "{current} of {total}",
     "@toolbarSearchMatchOf": {
@@ -404,5 +396,17 @@
     "toolbarNextMatch": "Next match",
     "@toolbarNextMatch": {
         "description": "Tooltip for the button to navigate to the next search match."
+    },
+    "toolbarCloseSearchTooltip": "Close Search",
+    "@toolbarCloseSearchTooltip": {
+        "description": "Tooltip for the button that closes the integrated search bar."
+    },
+    "toolbarCaseSensitiveTooltip": "Toggle Case Sensitive",
+    "@toolbarCaseSensitiveTooltip": {
+        "description": "Tooltip for the button that toggles case-sensitive search."
+    },
+    "toolbarHeaderStyle": "Header Style",
+    "@toolbarHeaderStyle": {
+        "description": "Title for the header style selection menu in the editor toolbar."
     }
 }

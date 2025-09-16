@@ -32,13 +32,11 @@ class QuillToolbarWidget extends StatefulWidget {
 
 class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   static final _searchActiveHighlightAttribute = BackgroundAttribute('#ffcc80');
-
   static final _searchHighlightAttribute = BackgroundAttribute('#fff59d');
 
   ToolbarSection _activeToolbarSection = ToolbarSection.none;
   int _currentSearchMatchIndex = -1;
   bool _isSearchActive = false;
-
   bool _isSearchCaseSensitive = false;
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
@@ -49,6 +47,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     _searchController.removeListener(_runSearch);
     _searchController.dispose();
     _searchFocusNode.dispose();
+    _clearHighlights();
     super.dispose();
   }
 
@@ -201,12 +200,15 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     final hasMatches = _searchMatches.isNotEmpty;
 
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 250),
       transitionBuilder: (child, animation) {
         return SizeTransition(
-          sizeFactor: animation,
+          sizeFactor: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOut,
+          ),
           axisAlignment: -1.0,
-          child: child,
+          child: FadeTransition(opacity: animation, child: child),
         );
       },
       child:
@@ -215,31 +217,52 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
               : Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 8.0,
-                  vertical: 4.0,
+                  vertical: 6.0,
                 ),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest,
+                  color: theme.colorScheme.surface,
                   border: Border(
                     top: BorderSide(color: theme.dividerColor, width: 0.8),
                   ),
                 ),
                 child: Row(
                   children: [
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      tooltip: l10n.toolbarCloseSearchTooltip,
+                      onPressed: _toggleSearchView,
+                      iconSize: 22,
+                    ),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: TextField(
                         controller: _searchController,
                         focusNode: _searchFocusNode,
                         decoration: InputDecoration(
                           hintText: l10n.toolbarSearchHint,
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8.0,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none,
                           ),
+                          isDense: true,
+                          filled: true,
+                          fillColor: theme.colorScheme.surfaceContainerHighest,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 16,
+                          ),
+                          suffixIcon:
+                              _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                    icon: const Icon(Icons.clear, size: 18),
+                                    onPressed: _searchController.clear,
+                                  )
+                                  : null,
                         ),
                         style: theme.textTheme.bodyMedium,
                       ),
                     ),
+                    const SizedBox(width: 8),
                     if (_searchController.text.isNotEmpty)
                       Text(
                         hasMatches
@@ -255,13 +278,32 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                                   : theme.colorScheme.error,
                         ),
                       ),
+                    const SizedBox(width: 4),
                     IconButton(
+                      icon: const Icon(Icons.arrow_upward),
+                      tooltip: l10n.toolbarPreviousMatch,
+                      onPressed: hasMatches ? () => _navigateToMatch(-1) : null,
+                      iconSize: 22,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_downward),
+                      tooltip: l10n.toolbarNextMatch,
+                      onPressed: hasMatches ? () => _navigateToMatch(1) : null,
+                      iconSize: 22,
+                    ),
+                    IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor:
+                            _isSearchCaseSensitive
+                                ? theme.colorScheme.primary.withAlpha(45)
+                                : Colors.transparent,
+                      ),
                       icon: Icon(
-                        Icons.format_color_text,
+                        Icons.format_size,
                         color:
                             _isSearchCaseSensitive
                                 ? theme.colorScheme.primary
-                                : null,
+                                : theme.iconTheme.color,
                       ),
                       tooltip: l10n.toolbarCaseSensitiveTooltip,
                       onPressed: () {
@@ -271,21 +313,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                         );
                         _runSearch();
                       },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_upward),
-                      tooltip: l10n.toolbarPreviousMatch,
-                      onPressed: hasMatches ? () => _navigateToMatch(-1) : null,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_downward),
-                      tooltip: l10n.toolbarNextMatch,
-                      onPressed: hasMatches ? () => _navigateToMatch(1) : null,
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      tooltip: l10n.toolbarCloseSearchTooltip,
-                      onPressed: _toggleSearchView,
+                      iconSize: 22,
                     ),
                   ],
                 ),
