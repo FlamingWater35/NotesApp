@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,14 +23,11 @@ enum SortProperty { date, title, lastModified, createdAt }
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final Duration _animationDuration = const Duration(milliseconds: 300);
   List<Note> _displayedNotes = [];
-  Timer? _emptyListTimer;
   final _log = Logger('HomeScreenState');
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
-  bool _shouldShowEmptyMessage = false;
   bool _sortAscending = false;
   SortProperty _sortBy = SortProperty.lastModified;
-  final Duration _timerBuffer = const Duration(milliseconds: 50);
 
   @override
   void didUpdateWidget(covariant HomeScreen oldWidget) {
@@ -52,7 +47,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void dispose() {
     _log.fine("dispose called");
-    _emptyListTimer?.cancel();
     _searchController.removeListener(_onSearchOrSortChanged);
     _searchController.dispose();
     _searchFocusNode.dispose();
@@ -166,62 +160,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       setState(() {
         _displayedNotes = newList;
       });
-      _handleEmptyMessage(newList, sourceNotes);
     }
   }
 
   void _onSearchOrSortChanged() {
     _updateDisplayedNotesAndEmptyMessage(widget.notes);
-  }
-
-  void _handleEmptyMessage(List<Note> filteredList, List<Note> sourceNotes) {
-    _emptyListTimer?.cancel();
-    final bool isEmptyResult = filteredList.isEmpty;
-    final bool showBecauseSearchFailed =
-        isEmptyResult && _searchController.text.isNotEmpty;
-    final bool showBecauseInitiallyEmpty =
-        isEmptyResult && _searchController.text.isEmpty && sourceNotes.isEmpty;
-    final bool shouldShowNow =
-        showBecauseSearchFailed ||
-        (isEmptyResult && !showBecauseInitiallyEmpty && sourceNotes.isNotEmpty);
-
-    if (shouldShowNow) {
-      _emptyListTimer = Timer(_animationDuration + _timerBuffer, () {
-        if (mounted) {
-          setState(() {
-            final currentFilteredList = getFilteredAndSortedNotes(
-              widget.notes,
-              _searchController,
-              _sortBy,
-              _sortAscending,
-            );
-            final currentSourceNotes = widget.notes;
-            final currentIsEmptyResult = currentFilteredList.isEmpty;
-            final currentShowBecauseSearchFailed =
-                currentIsEmptyResult && _searchController.text.isNotEmpty;
-            final currentShowBecauseInitiallyEmpty =
-                currentIsEmptyResult &&
-                _searchController.text.isEmpty &&
-                currentSourceNotes.isEmpty;
-            _shouldShowEmptyMessage =
-                currentShowBecauseSearchFailed ||
-                (currentIsEmptyResult &&
-                    !currentShowBecauseInitiallyEmpty &&
-                    currentSourceNotes.isNotEmpty);
-          });
-          _log.finer(
-            "Empty message timer fired. shouldShowEmptyMessage: $_shouldShowEmptyMessage",
-          );
-        }
-      });
-    } else {
-      if (mounted && _shouldShowEmptyMessage) {
-        setState(() {
-          _shouldShowEmptyMessage = false;
-        });
-        _log.finer("List not empty or initially empty, hiding empty message.");
-      }
-    }
   }
 
   @override
@@ -234,6 +177,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final bool showInitialEmptyMessage =
         widget.notes.isEmpty && _searchController.text.isEmpty;
+
+    final bool showNoResultsMessage =
+        _displayedNotes.isEmpty && !showInitialEmptyMessage;
 
     return Scaffold(
       appBar: AppBar(
@@ -322,16 +268,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         )
                         : Stack(
+                          alignment: Alignment.center,
                           children: [
                             animatedNoteList(
                               _displayedNotes,
                               _animationDuration,
+
                               widget,
                               ref,
                               _log,
                             ),
-                            if (_shouldShowEmptyMessage)
-                              Center(
+
+                            AnimatedOpacity(
+                              duration: _animationDuration,
+                              opacity: showNoResultsMessage ? 1.0 : 0.0,
+                              child: IgnorePointer(
+                                ignoring: !showNoResultsMessage,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 40.0,
@@ -357,6 +309,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ),
                                 ),
                               ),
+                            ),
                           ],
                         ),
               ),
