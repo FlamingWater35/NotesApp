@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill/quill_delta.dart';
 
 import '../l10n/app_localizations.dart';
 import 'custom_quill_buttons.dart';
@@ -11,6 +15,58 @@ enum ToolbarSection {
   headerStyle,
   listStyle,
   alignment,
+}
+
+const int _kHighlightMatchLimit = 3000;
+
+Map<String, dynamic> _findMatchesAndBuildDeltaOps(Map<String, dynamic> params) {
+  final String text = params['text'];
+  final String query = params['query'];
+  final int queryOriginalLength = params['query_original_length'];
+  final String activeColor = params['active_color'];
+  final String inactiveColor = params['inactive_color'];
+
+  final List<TextRange> matches = [];
+  if (query.isEmpty || queryOriginalLength <= 0) {
+    return {'matches': [], 'delta_ops': [], 'match_count': 0};
+  }
+
+  int matchCount = 0;
+  int startIndex = 0;
+  while ((startIndex = text.indexOf(query, startIndex)) != -1) {
+    matchCount++;
+    if (matchCount > _kHighlightMatchLimit) {
+      return {'matches': [], 'delta_ops': [], 'match_count': matchCount};
+    }
+    final endIndex = startIndex + queryOriginalLength;
+    matches.add(TextRange(start: startIndex, end: endIndex));
+    startIndex = endIndex;
+  }
+
+  final List<Map<String, dynamic>> deltaOps = [];
+  int currentIndex = 0;
+  for (int i = 0; i < matches.length; i++) {
+    final range = matches[i];
+    final color = i == 0 ? activeColor : inactiveColor;
+
+    if (range.start > currentIndex) {
+      deltaOps.add({'retain': range.start - currentIndex});
+    }
+    deltaOps.add({
+      'retain': range.end - range.start,
+      'attributes': {'background': color},
+    });
+    currentIndex = range.end;
+  }
+
+  final List<Map<String, int>> serializedMatches =
+      matches.map((m) => {'start': m.start, 'end': m.end}).toList();
+
+  return {
+    'matches': serializedMatches,
+    'delta_ops': deltaOps,
+    'match_count': matchCount,
+  };
 }
 
 class QuillToolbarWidget extends StatefulWidget {
@@ -36,37 +92,46 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
 
   ToolbarSection _activeToolbarSection = ToolbarSection.none;
   int _currentSearchMatchIndex = -1;
+  bool _highlightsSkipped = false;
   bool _isReplaceVisible = false;
   bool _isSearchActive = false;
   bool _isSearchCaseSensitive = false;
   final _replaceController = TextEditingController();
   final _searchController = TextEditingController();
+  Timer? _searchDebounce;
   final _searchFocusNode = FocusNode();
   final _searchMatches = <TextRange>[];
+  int _totalMatchCount = 0;
 
   @override
   void dispose() {
-    _searchController.removeListener(_runSearch);
+    _searchDebounce?.cancel();
+    _searchController.removeListener(_onSearchTextChanged);
     _searchController.dispose();
     _replaceController.dispose();
     _searchFocusNode.dispose();
-    _clearHighlights();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_runSearch);
+    _searchController.addListener(_onSearchTextChanged);
+  }
+
+  void _onSearchTextChanged() {
+    if (_searchDebounce?.isActive ?? false) _searchDebounce!.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      if (mounted) {
+        _performSearch();
+      }
+    });
   }
 
   void _toggleActiveToolbarSection(ToolbarSection section) {
     setState(() {
-      if (_activeToolbarSection == section) {
-        _activeToolbarSection = ToolbarSection.none;
-      } else {
-        _activeToolbarSection = section;
-      }
+      _activeToolbarSection =
+          (_activeToolbarSection == section) ? ToolbarSection.none : section;
     });
   }
 
@@ -76,13 +141,15 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
       if (_isSearchActive) {
         _searchFocusNode.requestFocus();
       } else {
-        widget.editorFocusNode?.requestFocus();
         _clearHighlights();
+        widget.editorFocusNode?.requestFocus();
         _searchController.clear();
         _searchMatches.clear();
         _currentSearchMatchIndex = -1;
+        _totalMatchCount = 0;
         _isReplaceVisible = false;
         _replaceController.clear();
+        _highlightsSkipped = false;
       }
     });
   }
@@ -93,10 +160,8 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     });
   }
 
-  void _runSearch() {
+  Future<void> _performSearch() async {
     if (!_isSearchActive) return;
-
-    final isSearchFocused = _searchFocusNode.hasFocus;
 
     final query = _searchController.text;
     _clearHighlights();
@@ -105,6 +170,8 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
       setState(() {
         _searchMatches.clear();
         _currentSearchMatchIndex = -1;
+        _totalMatchCount = 0;
+        _highlightsSkipped = false;
       });
       return;
     }
@@ -113,56 +180,70 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     final textToSearch =
         _isSearchCaseSensitive ? documentText : documentText.toLowerCase();
     final queryToSearch = _isSearchCaseSensitive ? query : query.toLowerCase();
-    final newMatches = <TextRange>[];
 
-    int startIndex = 0;
-    while ((startIndex = textToSearch.indexOf(queryToSearch, startIndex)) !=
-        -1) {
-      newMatches.add(
-        TextRange(start: startIndex, end: startIndex + query.length),
-      );
-      startIndex += query.length;
+    final result = await compute(_findMatchesAndBuildDeltaOps, {
+      'text': textToSearch,
+      'query': queryToSearch,
+      'query_original_length': query.length,
+      'active_color': _searchActiveHighlightAttribute.value,
+      'inactive_color': _searchHighlightAttribute.value,
+    });
+
+    if (!mounted) return;
+
+    final int matchCount = result['match_count'];
+    final bool limitExceeded = matchCount > _kHighlightMatchLimit;
+
+    if (limitExceeded) {
+      setState(() {
+        _totalMatchCount = matchCount;
+        _searchMatches.clear();
+        _currentSearchMatchIndex = -1;
+        _highlightsSkipped = true;
+      });
+      return;
     }
+
+    final List<dynamic> serializedMatches = result['matches'];
+    final List<TextRange> newMatches =
+        serializedMatches
+            .map((m) => TextRange(start: m['start'], end: m['end']))
+            .toList();
+    final List<Map<String, dynamic>> deltaOps = List<Map<String, dynamic>>.from(
+      result['delta_ops'],
+    );
 
     setState(() {
       _searchMatches.clear();
       _searchMatches.addAll(newMatches);
-      _currentSearchMatchIndex = _searchMatches.isNotEmpty ? 0 : -1;
+      _totalMatchCount = matchCount;
+      _currentSearchMatchIndex = newMatches.isNotEmpty ? 0 : -1;
+      _highlightsSkipped = false;
     });
 
-    _applyHighlightsOnly();
-
-    if (isSearchFocused) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && !_searchFocusNode.hasFocus) {
-          _searchFocusNode.requestFocus();
-        }
-      });
-    }
-  }
-
-  void _applyHighlightsOnly() {
-    for (var i = 0; i < _searchMatches.length; i++) {
-      final range = _searchMatches[i];
-      final attribute =
-          i == _currentSearchMatchIndex
-              ? _searchActiveHighlightAttribute
-              : _searchHighlightAttribute;
-      widget.controller.formatText(
-        range.start,
-        range.end - range.start,
-        attribute,
+    if (deltaOps.isNotEmpty) {
+      widget.controller.compose(
+        Delta.fromJson(deltaOps),
+        widget.controller.selection,
+        ChangeSource.local,
       );
     }
   }
 
   void _clearHighlights() {
-    final matchesToClear = List<TextRange>.from(_searchMatches);
-    for (final range in matchesToClear) {
-      widget.controller.formatText(
-        range.start,
-        range.end - range.start,
-        BackgroundAttribute(null),
+    if (_searchMatches.isEmpty) return;
+    final delta = Delta();
+    int currentIndex = 0;
+    for (final match in _searchMatches) {
+      delta.retain(match.start - currentIndex);
+      delta.retain(match.end - match.start, {'background': null});
+      currentIndex = match.end;
+    }
+    if (delta.isNotEmpty) {
+      widget.controller.compose(
+        delta,
+        widget.controller.selection,
+        ChangeSource.local,
       );
     }
   }
@@ -170,24 +251,33 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   void _navigateToMatch(int direction) {
     if (_searchMatches.isEmpty) return;
 
-    final oldActiveRange = _searchMatches[_currentSearchMatchIndex];
-    widget.controller.formatText(
-      oldActiveRange.start,
-      oldActiveRange.end - oldActiveRange.start,
-      _searchHighlightAttribute,
-    );
-
+    final oldIndex = _currentSearchMatchIndex;
     final newIndex =
-        (_currentSearchMatchIndex + direction + _searchMatches.length) %
-        _searchMatches.length;
+        (oldIndex + direction + _searchMatches.length) % _searchMatches.length;
 
+    if (oldIndex == newIndex) return;
+
+    final oldActiveRange = _searchMatches[oldIndex];
     final newActiveRange = _searchMatches[newIndex];
-    widget.controller.formatText(
-      newActiveRange.start,
-      newActiveRange.end - newActiveRange.start,
-      _searchActiveHighlightAttribute,
-    );
 
+    final rangesToUpdate = [
+      (range: oldActiveRange, attr: _searchHighlightAttribute),
+      (range: newActiveRange, attr: _searchActiveHighlightAttribute),
+    ]..sort((a, b) => a.range.start.compareTo(b.range.start));
+
+    final delta = Delta();
+    int currentIndex = 0;
+    for (final item in rangesToUpdate) {
+      delta.retain(item.range.start - currentIndex);
+      delta.retain(item.range.end - item.range.start, item.attr.toJson());
+      currentIndex = item.range.end;
+    }
+
+    widget.controller.compose(
+      delta,
+      widget.controller.selection,
+      ChangeSource.local,
+    );
     widget.controller.updateSelection(
       TextSelection(
         baseOffset: newActiveRange.start,
@@ -195,64 +285,56 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
       ),
       ChangeSource.local,
     );
-
     setState(() {
       _currentSearchMatchIndex = newIndex;
     });
   }
 
   void _replaceCurrentMatch() {
-    if (_currentSearchMatchIndex < 0 ||
-        _currentSearchMatchIndex >= _searchMatches.length) {
-      return;
-    }
-
+    if (_currentSearchMatchIndex < 0) return;
     final match = _searchMatches[_currentSearchMatchIndex];
     final replacement = _replaceController.text;
-    final length = match.end - match.start;
-
     widget.controller.replaceText(
       match.start,
-      length,
+      match.end - match.start,
       replacement,
       TextSelection.collapsed(offset: match.start + replacement.length),
     );
-
-    _runSearch();
+    _performSearch();
   }
 
   void _replaceAllMatches() {
     if (_searchMatches.isEmpty) return;
-
     final replacement = _replaceController.text;
     final matches = List<TextRange>.from(_searchMatches);
-
     for (var i = matches.length - 1; i >= 0; i--) {
       final match = matches[i];
-      final length = match.end - match.start;
-      widget.controller.replaceText(match.start, length, replacement, null);
+      widget.controller.replaceText(
+        match.start,
+        match.end - match.start,
+        replacement,
+        null,
+      );
     }
-
-    _runSearch();
+    _performSearch();
   }
 
   Widget _buildSearchBar(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
-    final hasMatches = _searchMatches.isNotEmpty;
+    final hasMatchesToNavigate = _searchMatches.isNotEmpty;
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
-      transitionBuilder: (child, animation) {
-        return SizeTransition(
-          sizeFactor: CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeInOut,
+      transitionBuilder:
+          (child, animation) => SizeTransition(
+            sizeFactor: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeInOut,
+            ),
+            axisAlignment: -1.0,
+            child: FadeTransition(opacity: animation, child: child),
           ),
-          axisAlignment: -1.0,
-          child: FadeTransition(opacity: animation, child: child),
-        );
-      },
       child:
           !_isSearchActive
               ? const SizedBox.shrink()
@@ -293,39 +375,61 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                         ),
                         const SizedBox(width: 8),
                         if (_searchController.text.isNotEmpty)
-                          Text(
-                            hasMatches
-                                ? l10n.toolbarSearchMatchOf(
-                                  (_currentSearchMatchIndex + 1).toString(),
-                                  _searchMatches.length.toString(),
-                                )
-                                : l10n.toolbarNoResults,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  hasMatches
-                                      ? theme.colorScheme.onSurfaceVariant
-                                      : theme.colorScheme.error,
-                            ),
-                          ),
+                          _highlightsSkipped
+                              ? Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.amber,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '$_kHighlightMatchLimit+ matches',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              )
+                              : Text(
+                                (_totalMatchCount > 0)
+                                    ? l10n.toolbarSearchMatchOf(
+                                      (_currentSearchMatchIndex + 1).toString(),
+                                      _totalMatchCount.toString(),
+                                    )
+                                    : l10n.toolbarNoResults,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color:
+                                      (_totalMatchCount > 0)
+                                          ? theme.colorScheme.onSurfaceVariant
+                                          : theme.colorScheme.error,
+                                ),
+                                textAlign: TextAlign.end,
+                              ),
                         IconButton(
                           icon: const Icon(Icons.arrow_upward),
                           tooltip: l10n.toolbarPreviousMatch,
                           onPressed:
-                              hasMatches ? () => _navigateToMatch(-1) : null,
+                              hasMatchesToNavigate
+                                  ? () => _navigateToMatch(-1)
+                                  : null,
                           iconSize: 22,
                         ),
                         IconButton(
                           icon: const Icon(Icons.arrow_downward),
                           tooltip: l10n.toolbarNextMatch,
                           onPressed:
-                              hasMatches ? () => _navigateToMatch(1) : null,
+                              hasMatchesToNavigate
+                                  ? () => _navigateToMatch(1)
+                                  : null,
                           iconSize: 22,
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 4),
-
                     Row(
                       children: [
                         IconButton(
@@ -349,7 +453,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                           value: _isSearchCaseSensitive,
                           onChanged: (value) {
                             setState(() => _isSearchCaseSensitive = value);
-                            _runSearch();
+                            _performSearch();
                           },
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
@@ -363,7 +467,6 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                         ),
                       ],
                     ),
-
                     AnimatedSize(
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.easeInOut,
@@ -399,12 +502,16 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                               const SizedBox(width: 8),
                               TextButton(
                                 onPressed:
-                                    hasMatches ? _replaceCurrentMatch : null,
+                                    hasMatchesToNavigate
+                                        ? _replaceCurrentMatch
+                                        : null,
                                 child: Text(l10n.toolbarReplaceButton),
                               ),
                               TextButton(
                                 onPressed:
-                                    hasMatches ? _replaceAllMatches : null,
+                                    hasMatchesToNavigate
+                                        ? _replaceAllMatches
+                                        : null,
                                 child: Text(l10n.toolbarReplaceAllButton),
                               ),
                             ],
