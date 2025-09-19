@@ -322,4 +322,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toolbarReplaceAllButton => 'Replace All';
+
+  @override
+  String toolbarTooManyMatchesShort(int count) {
+    return '$count+ matches';
+  }
 }

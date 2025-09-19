@@ -96,5 +96,6 @@
     "toolbarShowReplaceTooltip": "Показать/Скрыть Параметры Замены",
     "toolbarReplaceWithHint": "Заменить на...",
     "toolbarReplaceButton": "Заменить",
-    "toolbarReplaceAllButton": "Заменить Все"
+    "toolbarReplaceAllButton": "Заменить Все",
+    "toolbarTooManyMatchesShort": "Более {count} совпадений"
 }

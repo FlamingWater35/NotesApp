@@ -387,7 +387,9 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    '$_kHighlightMatchLimit+ matches',
+                                    l10n.toolbarTooManyMatchesShort(
+                                      _kHighlightMatchLimit,
+                                    ),
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.colorScheme.onSurfaceVariant,
                                     ),

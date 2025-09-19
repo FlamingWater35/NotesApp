@@ -96,5 +96,6 @@
     "toolbarShowReplaceTooltip": "Mostrar/Ocultar Opções de Substituição",
     "toolbarReplaceWithHint": "Substituir por...",
     "toolbarReplaceButton": "Substituir",
-    "toolbarReplaceAllButton": "Substituir Tudo"
+    "toolbarReplaceAllButton": "Substituir Tudo",
+    "toolbarTooManyMatchesShort": "Mais de {count} correspondências"
 }

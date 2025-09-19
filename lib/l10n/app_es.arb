@@ -106,5 +106,6 @@
     "toolbarShowReplaceTooltip": "Mostrar/Ocultar Opciones de Reemplazo",
     "toolbarReplaceWithHint": "Reemplazar con...",
     "toolbarReplaceButton": "Reemplazar",
-    "toolbarReplaceAllButton": "Reemplazar Todo"
+    "toolbarReplaceAllButton": "Reemplazar Todo",
+    "toolbarTooManyMatchesShort": "Más de {count} coincidencias"
 }

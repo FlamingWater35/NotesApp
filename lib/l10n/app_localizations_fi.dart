@@ -323,4 +323,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get toolbarReplaceAllButton => 'Korvaa Kaikki';
+
+  @override
+  String toolbarTooManyMatchesShort(int count) {
+    return 'Yli $count osumaa';
+  }
 }

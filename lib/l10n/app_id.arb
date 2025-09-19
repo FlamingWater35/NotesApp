@@ -96,5 +96,6 @@
     "toolbarShowReplaceTooltip": "Tampilkan/Sembunyikan Opsi Penggantian",
     "toolbarReplaceWithHint": "Ganti dengan...",
     "toolbarReplaceButton": "Ganti",
-    "toolbarReplaceAllButton": "Ganti Semua"
+    "toolbarReplaceAllButton": "Ganti Semua",
+    "toolbarTooManyMatchesShort": "{count}+ kecocokan"
 }

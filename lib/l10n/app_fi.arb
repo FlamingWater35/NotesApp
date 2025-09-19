@@ -96,5 +96,6 @@
     "toolbarShowReplaceTooltip": "Näytä/Piilota Korvausasetukset",
     "toolbarReplaceWithHint": "Korvaa...",
     "toolbarReplaceButton": "Korvaa",
-    "toolbarReplaceAllButton": "Korvaa Kaikki"
+    "toolbarReplaceAllButton": "Korvaa Kaikki",
+    "toolbarTooManyMatchesShort": "Yli {count} osumaa"
 }

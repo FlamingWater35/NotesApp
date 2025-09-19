@@ -687,6 +687,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Replace All'**
   String get toolbarReplaceAllButton;
+
+  /// Text shown when the number of search matches exceeds the highlight limit.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ matches'**
+  String toolbarTooManyMatchesShort(int count);
 }
 
 class _AppLocalizationsDelegate

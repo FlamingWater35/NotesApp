@@ -323,4 +323,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get toolbarReplaceAllButton => 'Ganti Semua';
+
+  @override
+  String toolbarTooManyMatchesShort(int count) {
+    return '$count+ kecocokan';
+  }
 }

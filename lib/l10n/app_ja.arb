@@ -96,5 +96,6 @@
     "toolbarShowReplaceTooltip": "置換オプションの表示/非表示",
     "toolbarReplaceWithHint": "置換後の文字列...",
     "toolbarReplaceButton": "置換",
-    "toolbarReplaceAllButton": "すべて置換"
+    "toolbarReplaceAllButton": "すべて置換",
+    "toolbarTooManyMatchesShort": "{count}件以上の一致"
 }

@@ -318,4 +318,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get toolbarReplaceAllButton => 'すべて置換';
+
+  @override
+  String toolbarTooManyMatchesShort(int count) {
+    return '$count件以上の一致';
+  }
 }

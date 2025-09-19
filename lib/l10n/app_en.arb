@@ -414,5 +414,15 @@
     "toolbarShowReplaceTooltip": "Show/Hide Replace Options",
     "toolbarReplaceWithHint": "Replace with...",
     "toolbarReplaceButton": "Replace",
-    "toolbarReplaceAllButton": "Replace All"
+    "toolbarReplaceAllButton": "Replace All",
+    "toolbarTooManyMatchesShort": "{count}+ matches",
+    "@toolbarTooManyMatchesShort": {
+        "description": "Text shown when the number of search matches exceeds the highlight limit.",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "3000"
+            }
+        }
+    }
 }

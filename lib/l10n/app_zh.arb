@@ -106,5 +106,6 @@
     "toolbarShowReplaceTooltip": "显示/隐藏替换选项",
     "toolbarReplaceWithHint": "替换为...",
     "toolbarReplaceButton": "替换",
-    "toolbarReplaceAllButton": "全部替换"
+    "toolbarReplaceAllButton": "全部替换",
+    "toolbarTooManyMatchesShort": "{count}+ 个匹配项"
 }

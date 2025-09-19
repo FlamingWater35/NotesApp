@@ -317,4 +317,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get toolbarReplaceAllButton => '全部替换';
+
+  @override
+  String toolbarTooManyMatchesShort(int count) {
+    return '$count+ 个匹配项';
+  }
 }
