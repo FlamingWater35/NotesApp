@@ -96,6 +96,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   bool _isReplaceVisible = false;
   bool _isSearchActive = false;
   bool _isSearchCaseSensitive = false;
+  String _lastSearchText = '';
   final _replaceController = TextEditingController();
   final _searchController = TextEditingController();
   Timer? _searchDebounce;
@@ -120,6 +121,11 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   }
 
   void _onSearchTextChanged() {
+    if (_lastSearchText == _searchController.text) {
+      return;
+    }
+    _lastSearchText = _searchController.text;
+
     if (_searchDebounce?.isActive ?? false) _searchDebounce!.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 400), () {
       if (mounted) {
@@ -150,6 +156,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
         _isReplaceVisible = false;
         _replaceController.clear();
         _highlightsSkipped = false;
+        _lastSearchText = '';
       }
     });
   }
