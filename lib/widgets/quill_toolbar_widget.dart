@@ -235,6 +235,10 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
         ChangeSource.local,
       );
     }
+
+    if (newMatches.isNotEmpty) {
+      _navigateToMatch(0, isInitialSearch: true);
+    }
   }
 
   void _clearHighlights() {
@@ -255,36 +259,34 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
     }
   }
 
-  void _navigateToMatch(int direction) {
+  void _navigateToMatch(int direction, {bool isInitialSearch = false}) {
     if (_searchMatches.isEmpty) return;
-
     final oldIndex = _currentSearchMatchIndex;
-    final newIndex =
-        (oldIndex + direction + _searchMatches.length) % _searchMatches.length;
-
-    if (oldIndex == newIndex) return;
-
-    final oldActiveRange = _searchMatches[oldIndex];
-    final newActiveRange = _searchMatches[newIndex];
-
-    final rangesToUpdate = [
-      (range: oldActiveRange, attr: _searchHighlightAttribute),
-      (range: newActiveRange, attr: _searchActiveHighlightAttribute),
-    ]..sort((a, b) => a.range.start.compareTo(b.range.start));
-
-    final delta = Delta();
-    int currentIndex = 0;
-    for (final item in rangesToUpdate) {
-      delta.retain(item.range.start - currentIndex);
-      delta.retain(item.range.end - item.range.start, item.attr.toJson());
-      currentIndex = item.range.end;
+    int newIndex;
+    if (isInitialSearch) {
+      newIndex = 0;
+    } else {
+      newIndex =
+          (oldIndex + direction + _searchMatches.length) %
+          _searchMatches.length;
     }
 
-    widget.controller.compose(
-      delta,
-      widget.controller.selection,
-      ChangeSource.local,
+    if (oldIndex != -1 && oldIndex < _searchMatches.length) {
+      final oldActiveRange = _searchMatches[oldIndex];
+      widget.controller.formatText(
+        oldActiveRange.start,
+        oldActiveRange.end - oldActiveRange.start,
+        _searchHighlightAttribute,
+      );
+    }
+
+    final newActiveRange = _searchMatches[newIndex];
+    widget.controller.formatText(
+      newActiveRange.start,
+      newActiveRange.end - newActiveRange.start,
+      _searchActiveHighlightAttribute,
     );
+
     widget.controller.updateSelection(
       TextSelection(
         baseOffset: newActiveRange.start,
@@ -292,6 +294,7 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
       ),
       ChangeSource.local,
     );
+
     setState(() {
       _currentSearchMatchIndex = newIndex;
     });
