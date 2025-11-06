@@ -26,10 +26,12 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
   late DateTime _initialDate;
   bool _isDirty = false;
   bool _isFullscreen = false;
+  bool _isSearchOpen = false;
   final _log = Logger('AddNoteScreenState');
   late QuillController _quillController;
   DateTime _selectedDate = DateTime.now();
   final TextEditingController _titleController = TextEditingController();
+  final GlobalKey<QuillToolbarWidgetState> _toolbarKey = GlobalKey();
 
   @override
   void dispose() {
@@ -151,6 +153,10 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
     return PopScope(
       canPop: !_isDirty,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (_isSearchOpen) {
+          _toolbarKey.currentState?.closeSearchView();
+          return;
+        }
         if (_isFullscreen) {
           _toggleFullscreen();
           return;
@@ -185,7 +191,7 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.check),
-              onPressed: _saveNote,
+              onPressed: _isSearchOpen ? null : _saveNote,
               tooltip: l10n.saveNoteTooltip,
             ),
             const SizedBox(width: 8),
@@ -208,8 +214,14 @@ class _AddNoteScreenState extends ConsumerState<AddNoteScreen> {
               ),
             ),
             QuillToolbarWidget(
+              key: _toolbarKey,
               controller: _quillController,
               editorFocusNode: _editorFocusNode,
+              onSearchVisibilityChanged: (isOpen) {
+                if (mounted) {
+                  setState(() => _isSearchOpen = isOpen);
+                }
+              },
             ),
           ],
         ),

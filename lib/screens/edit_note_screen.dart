@@ -35,12 +35,14 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
   bool _isDirty = false;
   bool _isFullscreen = false;
   bool _isSaving = false;
+  bool _isSearchOpen = false;
   final _log = Logger('EditNoteScreenState');
   String _originalContentJson = '';
   Note? _originalNote;
   late QuillController _quillController;
   DateTime? _selectedDate;
   late TextEditingController _titleController;
+  final GlobalKey<QuillToolbarWidgetState> _toolbarKey = GlobalKey();
 
   @override
   void dispose() {
@@ -234,6 +236,10 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
     return PopScope(
       canPop: !_isDirty || _isSaving,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (_isSearchOpen) {
+          _toolbarKey.currentState?.closeSearchView();
+          return;
+        }
         if (_isFullscreen) {
           _toggleFullscreen();
           return;
@@ -284,7 +290,10 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: IconButton(
                   icon: const Icon(Icons.check),
-                  onPressed: (_isDirty && !_isSaving) ? _updateNote : null,
+                  onPressed:
+                      (_isDirty && !_isSaving && !_isSearchOpen)
+                          ? _updateNote
+                          : null,
                   tooltip: l10n.saveChangesTooltip,
                 ),
               ),
@@ -311,8 +320,14 @@ class _EditNoteScreenState extends ConsumerState<EditNoteScreen> {
                   ),
                 ),
                 QuillToolbarWidget(
+                  key: _toolbarKey,
                   controller: _quillController,
                   editorFocusNode: _editorFocusNode,
+                  onSearchVisibilityChanged: (isOpen) {
+                    if (mounted) {
+                      setState(() => _isSearchOpen = isOpen);
+                    }
+                  },
                 ),
               ],
             ),

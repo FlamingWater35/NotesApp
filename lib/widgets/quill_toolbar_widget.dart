@@ -74,6 +74,7 @@ class QuillToolbarWidget extends StatefulWidget {
     super.key,
     required this.controller,
     this.editorFocusNode,
+    this.onSearchVisibilityChanged,
   });
 
   static const double defaultMainToolbarIconSize = 30.0;
@@ -81,12 +82,13 @@ class QuillToolbarWidget extends StatefulWidget {
 
   final QuillController controller;
   final FocusNode? editorFocusNode;
+  final ValueChanged<bool>? onSearchVisibilityChanged;
 
   @override
-  State<QuillToolbarWidget> createState() => _QuillToolbarWidgetState();
+  QuillToolbarWidgetState createState() => QuillToolbarWidgetState();
 }
 
-class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
+class QuillToolbarWidgetState extends State<QuillToolbarWidget> {
   static final _searchActiveHighlightAttribute = BackgroundAttribute('#ffcc80');
   static final _searchHighlightAttribute = BackgroundAttribute('#fff59d');
 
@@ -159,6 +161,13 @@ class _QuillToolbarWidgetState extends State<QuillToolbarWidget> {
         _lastSearchText = '';
       }
     });
+    widget.onSearchVisibilityChanged?.call(_isSearchActive);
+  }
+
+  void closeSearchView() {
+    if (_isSearchActive) {
+      _toggleSearchView();
+    }
   }
 
   void _toggleReplaceView() {
