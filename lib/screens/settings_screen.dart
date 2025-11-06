@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../models/note_model.dart';
 import '../components/backup_service.dart';
@@ -27,51 +26,15 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   static const Duration _settingAnimationDuration = Duration(milliseconds: 300);
 
-  String _appVersion = '';
   bool _areNotesEmpty = true;
   List<Note> _currentNotes = [];
   bool _isBackupRestoreRunning = false;
   final _log = Logger('SettingsScreen');
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _getAppVersion();
-  }
-
-  @override
   void initState() {
     super.initState();
     _checkNotes();
-  }
-
-  Future<void> _getAppVersion() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final l10n = AppLocalizations.of(context);
-      setState(() {
-        _appVersion = l10n.appVersionLoading;
-      });
-    });
-
-    try {
-      final PackageInfo info = await PackageInfo.fromPlatform();
-      if (mounted) {
-        final l10n = AppLocalizations.of(context);
-        setState(() {
-          _appVersion = l10n.appVersion(info.version, info.buildNumber);
-        });
-        _log.info("App version loaded: $_appVersion");
-      }
-    } catch (e, stackTrace) {
-      _log.severe("Error getting package info", e, stackTrace);
-      if (mounted) {
-        final l10n = AppLocalizations.of(context);
-        setState(() {
-          _appVersion = l10n.errorLoadingVersion;
-        });
-      }
-    }
   }
 
   Future<void> _checkNotes() async {
@@ -180,10 +143,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final theme = Theme.of(context);
     final currentMode = ref.watch(themeProvider);
     final Locale? currentLocale = ref.watch(localeProvider);
-
-    if (_appVersion.isEmpty && mounted) {
-      _appVersion = l10n.appVersionLoading;
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -327,17 +286,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   const SizedBox(height: 8),
                 ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                _appVersion,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.outline,
-                ),
-                textAlign: TextAlign.center,
               ),
             ),
           ],
